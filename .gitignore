@@ -1,0 +1,21 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.ipynb_checkpoints/
+
+# --- Fortran ---
+*.o
+*.mod
+*.smod
+*.a
+*.so
+*.out
+*.exe
+
+# --- Sistema (Fedora/Linux) ---
+.DS_Store
+.directory
+*~
