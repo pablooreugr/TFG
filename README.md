@@ -3,7 +3,7 @@
 Este TFG es el cálculo del campo magnético solar mediante la aproximación de campo magnético débil.
 En esta aproximacion tenemos que calcular el campo magnético del sol mediante la siguiente aproximación:
 
-$V = -C g_{eff} \lambda^2 B_{\paralelo} \frac{d I_0}{d \lambda}$
+$V = -C g_{eff} \lambda^2 B_{\| \|} \frac{d I_0}{d \lambda}$
 
 Aparte se estudiará la difracción y como utilizarlo para corregir la imagen de manera que este bastante mejor optimizado el
 arreglo de la imagen original.
