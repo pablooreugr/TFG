@@ -19,3 +19,7 @@ venv/
 .DS_Store
 .directory
 *~
+
+# --- Datos ----  (esto es porque los datos ocupan mucho)
+data/
+
