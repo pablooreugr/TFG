@@ -11,28 +11,40 @@ with fits.open(ruta_archivo) as hdul:
     datos = hdul[0].data
     cabecera = hdul[0].header
 
-datos_int_lambda = datos[:, 0, 200, 1000]
+
+pixelx = 300
+pixely = 600
+datos_int_lambda = datos[:, 0, pixely, pixelx]
+datos_V_lambda = datos[:, 3, pixely, pixelx]
 
 numLongitudesOnda = datos.shape[0] #Me ayuda a saber el numero de datos que hay
 eje_lambda = np.array([cabecera[f'L_{i}'] for i in range(numLongitudesOnda)]) #Extraigo los valores de la longitud de onda de la cabezera [A
 
-derivada_inten_lambda = np.gradient(datos_int_lambda, eje_lambda)
+derivada_inten_lambda = np.gradient(datos_int_lambda, eje_lambda) # El primer valor es el eje y, y el segundo el x
 
 
+# A partir de aquí voy a intentar calcular el minimo cuadrado vectorizado
+# Para calcular la pendiente
 
+m = np.dot(datos_V_lambda, derivada_inten_lambda)/np.dot(derivada_inten_lambda, derivada_inten_lambda)
 
+# Recta de mínimos cuadrados (pasa por el origen)
+y_fit = m * derivada_inten_lambda
 
+plt.figure(figsize=(8,5))
 
-# Ahora ya puedes graficar Stokes I (datos_int_lambda) frente a eje_lambda
-plt.figure(figsize=(8, 5))
-plt.plot(eje_lambda, datos_int_lambda, marker='o', linestyle='-', color='black')
-plt.plot(eje_lambda, derivada_inten_lambda, marker='o', linestyle='-', color='red')
+# datos reales
+plt.scatter(derivada_inten_lambda, datos_V_lambda, color='black', label='Datos')
 
-plt.xlabel(r'Longitud de onda $\lambda$ ($\text{\AA}$)')
-plt.ylabel('Intensidad (Stokes I)')
-plt.title('Perfil de la línea de Mg I (5172 \AA)')
+# recta ajustada
+x_linea = np.linspace(derivada_inten_lambda.min(), derivada_inten_lambda.max(), 200)
+plt.plot(x_linea, m*x_linea, color='red', label=f'Ajuste: y = {m:.3e} x')
+
+plt.xlabel('Stokes I')
+plt.ylabel('Stokes V')
+plt.title('Ajuste lineal por mínimos cuadrados')
 plt.grid(True, alpha=0.3)
+plt.legend()
+
 plt.show()
-
-
 
