@@ -22,4 +22,5 @@ venv/
 
 # --- Datos ----  (esto es porque los datos ocupan mucho)
 data/
+output/
 

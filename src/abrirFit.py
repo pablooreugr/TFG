@@ -22,10 +22,11 @@ with fits.open(ruta_archivo) as hdul:
 
 # 4. Comprobamos la forma (shape) de nuestra matriz de datos
 print("\nLa forma de los datos es:", datos.shape)
+print(repr(cabecera))
 
 imagen_intensidad = datos[0, 0, :, :] # El primer datos es la longitud de onda, la segunda el parametro de stokes, la tercera los pixeles del eje y, y la ultima los pixeles del eje x
 
 plt.figure(figsize=(8, 8))
-plt.imshow(imagen_intensidad, cmap='hot', origin='upper')
+plt.imshow(imagen_intensidad, cmap='hot', origin='lower')
 plt.show()
 
