@@ -5,12 +5,10 @@ import numpy as np
 
 ruta_archivo = 'data/prueba.fits'
 
-g_eff = 1.5 # Linea del magnesio I
+g_eff = 1.75 # Linea del magnesio I
 constanteFormula = 4.67e-13 #
 
-# 3. Abrimos el archivo FITS
-# Usamos 'with' para asegurarnos de que el archivo se cierra de forma segura
-# en la memoria una vez que terminamos de leerlo.
+# Abrimos el archivo FITS
 with fits.open(ruta_archivo) as hdul:
     datos = hdul[0].data
     cabecera = hdul[0].header
