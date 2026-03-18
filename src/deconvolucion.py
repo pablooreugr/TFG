@@ -328,39 +328,64 @@ def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/
 #                print(f'Calculado el s:{s}, k: {k}, t: {t}, m: {m}')
 
 
-#ruta_archivo = 'data/prueba.fits'
-#
-#with fits.open(ruta_archivo) as hdul:
-#    datos = hdul[0].data
-#    cabecera = hdul[0].header
-#
-#imagenInt = datos[0, 0, :, :]
-#
-#miPsf = psfAiry(imagenInt, 1.32/3.0)
-#
-#imagenCorregida = deconvolucionWienerMulti(imagenInt, miPsf)
-#
-#fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
-#
-## Marco 1: Imagen Original
-#axs[0].imshow(imagenInt, cmap='hot', origin='lower')
-#axs[0].set_title('Imagen Original (Borrosa)')
+ruta_archivo = 'data/prueba.fits'
+
+with fits.open(ruta_archivo) as hdul:
+    datos = hdul[0].data
+    cabecera = hdul[0].header
+
+imagenInt = datos[0, 0, :, :]
+
+# Generamos la PSF
+miPsf = psfAiry(imagenInt, 1.32/3.0)
+
+# Calculamos las 3 deconvoluciones
+print("Calculando Fourier...")
+img_fourier = deconvolucionFourierMulti(imagenInt, miPsf)
+
+print("Calculando Wiener...")
+img_wiener = deconvolucionWienerMulti(imagenInt, miPsf)
+
+print("Calculando Richardson-Lucy (esto puede tardar unos segundos)...")
+# He puesto pasos=20 para agilizar la prueba, súbelo a 100 o 1000 si necesitas más iteraciones
+img_rl = deconvolucionRLMulti(imagenInt, miPsf, epsilon=1) 
+
+# Ampliamos a 5 columnas y ajustamos el tamaño de la figura
+fig, axs = plt.subplots(nrows=1, ncols=5, figsize=(25, 5))
+
+# Marco 1: Imagen Original
+axs[0].imshow(imagenInt, cmap='hot', origin='lower')
+axs[0].set_title('Imagen Original (Borrosa)')
 #axs[0].set_xlim(600, 800)
 #axs[0].set_ylim(500, 700)
-## Marco 2: La PSF
-#axs[1].imshow(miPsf, cmap='hot', origin='lower')
-#axs[1].set_title(f'PSF')
-#ny, nx = miPsf.shape
-#cy, cx = ny // 2, nx // 2
+
+# Marco 2: La PSF
+axs[1].imshow(miPsf, cmap='hot', origin='lower')
+axs[1].set_title('PSF')
+ny, nx = miPsf.shape
+cy, cx = ny // 2, nx // 2
 #axs[1].set_xlim(cx - 100, cx + 100)
 #axs[1].set_ylim(cy - 100, cy + 100)
-## Marco 3: Resultado
-#axs[2].imshow(imagenCorregida, cmap='hot', origin='lower')
-#axs[2].set_title(f'Deconvolución')
+
+# Marco 3: Deconvolución Fourier
+axs[2].imshow(img_fourier, cmap='hot', origin='lower')
+axs[2].set_title('Deconvolución (Fourier)')
 #axs[2].set_xlim(600, 800)
 #axs[2].set_ylim(500, 700)
-#plt.tight_layout()
-#
-#plt.show()
+
+# Marco 4: Deconvolución Wiener
+axs[3].imshow(img_wiener, cmap='hot', origin='lower')
+axs[3].set_title('Deconvolución (Wiener)')
+#axs[3].set_xlim(600, 800)
+#axs[3].set_ylim(500, 700)
+
+# Marco 5: Deconvolución Richardson-Lucy
+axs[4].imshow(img_rl, cmap='hot', origin='lower')
+axs[4].set_title('Deconvolución (RL)')
+#axs[4].set_xlim(600, 800)
+#axs[4].set_ylim(500, 700)
+
+plt.tight_layout()
+plt.show()
 
 
