@@ -356,34 +356,34 @@ fig, axs = plt.subplots(nrows=1, ncols=5, figsize=(25, 5))
 # Marco 1: Imagen Original
 axs[0].imshow(imagenInt, cmap='hot', origin='lower')
 axs[0].set_title('Imagen Original (Borrosa)')
-#axs[0].set_xlim(600, 800)
-#axs[0].set_ylim(500, 700)
+axs[0].set_xlim(600, 800)
+axs[0].set_ylim(500, 700)
 
 # Marco 2: La PSF
 axs[1].imshow(miPsf, cmap='hot', origin='lower')
 axs[1].set_title('PSF')
 ny, nx = miPsf.shape
 cy, cx = ny // 2, nx // 2
-#axs[1].set_xlim(cx - 100, cx + 100)
-#axs[1].set_ylim(cy - 100, cy + 100)
+axs[1].set_xlim(cx - 100, cx + 100)
+axs[1].set_ylim(cy - 100, cy + 100)
 
 # Marco 3: Deconvolución Fourier
 axs[2].imshow(img_fourier, cmap='hot', origin='lower')
 axs[2].set_title('Deconvolución (Fourier)')
-#axs[2].set_xlim(600, 800)
-#axs[2].set_ylim(500, 700)
+axs[2].set_xlim(600, 800)
+axs[2].set_ylim(500, 700)
 
 # Marco 4: Deconvolución Wiener
 axs[3].imshow(img_wiener, cmap='hot', origin='lower')
 axs[3].set_title('Deconvolución (Wiener)')
-#axs[3].set_xlim(600, 800)
-#axs[3].set_ylim(500, 700)
+axs[3].set_xlim(600, 800)
+axs[3].set_ylim(500, 700)
 
 # Marco 5: Deconvolución Richardson-Lucy
 axs[4].imshow(img_rl, cmap='hot', origin='lower')
 axs[4].set_title('Deconvolución (RL)')
-#axs[4].set_xlim(600, 800)
-#axs[4].set_ylim(500, 700)
+axs[4].set_xlim(600, 800)
+axs[4].set_ylim(500, 700)
 
 plt.tight_layout()
 plt.show()
