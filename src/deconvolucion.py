@@ -53,11 +53,7 @@ def deconvolucionFourier_paralela(imagen, psf, epsilon=1e-15):
     return np.real(resultado_complejo)
 
 
-
-
-def deconvolucionFourier(imagen, psf):
-    # Hay que preparar la psf porque resulta que aunque la PSF esta centrada en cero
-    # el algoritmo de fft no lo toma como en cero, sino que tiene que tomarlo a la izquierda del todo
+def prepararFourier(imagen, psf):
     psf_preparada = np.fft.ifftshift(psf) # Se supone que esto lo arregla
     psf_Fourier = np.fft.fft2(psf_preparada)
 
@@ -66,6 +62,14 @@ def deconvolucionFourier(imagen, psf):
     #Preparamos la psf fourier
     H_4D = psf_Fourier[np.newaxis, np.newaxis, :, :]
 
+    return imagenFourier, H_4D
+
+
+def deconvolucionFourier(imagen, psf):
+    # Hay que preparar la psf porque resulta que aunque la PSF esta centrada en cero
+    # el algoritmo de fft no lo toma como en cero, sino que tiene que tomarlo a la izquierda del todo
+    imagenFourier, H_4D = prepararFourier(imagen, psf)
+
     epsilon = 1e-15
     #epsilon = 0.05
     X_fourier = imagenFourier / (H_4D + epsilon)
@@ -73,6 +77,23 @@ def deconvolucionFourier(imagen, psf):
     resultado_complejo = np.fft.ifft2(X_fourier, axes=(2, 3))
 
     return np.real(resultado_complejo)
+
+def deconvolucionWiener(imagen, psf, k=1e-4):
+    imagenFourier, H_4D = prepararFourier(imagen, psf)
+
+    # A partir de ahora construyo el filtro de Weiner
+    numerador = np.conjugate(H_4D)
+
+    denominador = np.abs(H_4D)**2 + k
+
+    filtro = numerador/denominador
+
+    X_fourier = imagenFourier * filtro
+
+    resultado_complejo = np.fft.ifft2(X_fourier, axes=(2, 3))
+
+    return np.real(resultado_complejo)
+    
 
 
 
@@ -91,7 +112,8 @@ imagenIntensidad = datos[0, 0, :, :]
 mi_psf = psfGaussiana(datos, sigma=3.0) 
 
 # 4. Hacemos la deconvolución pasándole los datos y la PSF que acabamos de guardar
-datosArreglados = deconvolucionFourier(datos, mi_psf)
+#datosArreglados = deconvolucionFourier(datos, mi_psf)
+datosArreglados = deconvolucionWiener(datos, mi_psf, 1e-3)
 
 # 5. Extraemos la imagen arreglada 2D para poder dibujarla
 datosArregladosInt = datosArreglados[0, 0, :, :]
