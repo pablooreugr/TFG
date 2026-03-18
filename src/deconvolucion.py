@@ -117,9 +117,6 @@ def deconvolucionWiener(imagen, psf, k=1e-4):
     return np.real(resultado_complejo)
     
 
-
-import matplotlib.pyplot as plt
-
 def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/prueba.fits'):
     """
     Realiza una prueba de deconvolución sobre una imagen FITS.
