@@ -2,6 +2,7 @@ from astropy.io import fits
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.fft as sp_fft
+from scipy.signal import fftconvolve
 from scipy.special import j1
 import numexpr as ne
 
@@ -35,8 +36,8 @@ def psfGaussiana(datos, sigma=3.0):
 
 def psfAiry(datos, escala=1.0):
     # 1. Dimensiones y creación de la malla (igual que en la gaussiana)
-    nx = datos.shape[3]
-    ny = datos.shape[2]
+    nx = datos.shape[1]
+    ny = datos.shape[0]
     ejeX = np.arange(-nx // 2, nx // 2)
     ejeY = np.arange(-ny // 2, ny // 2)
     X, Y = np.meshgrid(ejeX, ejeY, indexing='ij')
@@ -48,8 +49,8 @@ def psfAiry(datos, escala=1.0):
     # 4. Intensidad (al cuadrado)
     psf = termino_interno**2
     
-    # 5. Normalizamos para que no altere el brillo total de la imagen
-    psf /= np.sum(psf)
+    psf = psf - psf.min() # Forzamos que el fondo sea 0 absoluto
+    psf = psf / np.sum(psf)
     
     return psf
 
@@ -60,17 +61,16 @@ def deconvolucionFourier_paralela(imagen, psf, epsilon=1e-15):
     
     # 1. FFT de la PSF (paralelizada en todos los núcleos)
     H = sp_fft.fft2(psf_preparada, workers=-1)
-    H_4D = H[np.newaxis, np.newaxis, :, :]
     
     # 2. FFT de la imagen 4D (paralelizada en todos los núcleos)
     # resultado_complejoworkers=-1 le dice que use el 100% de tu CPU
     G = sp_fft.fft2
     # 3. División matemática (paralelizada con NumExpr)
     # Ne.evaluate compila la fórmula y la divide entre los hilos de la CPU
-    X_fourier = ne.evaluate("G / (H_4D + epsilon)")
+    X_fourier = ne.evaluate("G / (H + epsilon)")
     
     # 4. Inversa de Fourier (paralelizada en todos los núcleos)
-    resultado_complejo = sp_fft.ifft2(X_fourier, axes=(2, 3), workers=-1)
+    resultado_complejo = sp_fft.ifft2(X_fourier, workers=-1)
     
     return np.real(resultado_complejo)
 
@@ -79,43 +79,165 @@ def prepararFourier(imagen, psf):
     psf_preparada = np.fft.ifftshift(psf) # Se supone que esto lo arregla
     psf_Fourier = np.fft.fft2(psf_preparada)
 
-    imagenFourier = np.fft.fft2(imagen, axes=(2, 3))
+    imagenFourier = np.fft.fft2(imagen)
 
-    #Preparamos la psf fourier
-    H_4D = psf_Fourier[np.newaxis, np.newaxis, :, :]
+    return imagenFourier, psf_Fourier
 
-    return imagenFourier, H_4D
+def prepararFourierMulti(imagen, psf):
+    psf_preparada = np.fft.ifftshift(psf)
+    psf_furier = sp_fft.fft2(psf_preparada, workers=-1)
+
+    imagenFourier = sp_fft.fft2(imagen, workers=-1)
+
+    return imagenFourier, psf_furier
 
 
-def deconvolucionFourier(imagen, psf, k=1e-4):
+def deconvolucionFourier(imagen, psf, k=1e-3):
     # Hay que preparar la psf porque resulta que aunque la PSF esta centrada en cero
     # el algoritmo de fft no lo toma como en cero, sino que tiene que tomarlo a la izquierda del todo
-    imagenFourier, H_4D = prepararFourier(imagen, psf)
+    imagenFourier, psfFurier = prepararFourier(imagen, psf)
 
     epsilon = k
     #epsilon = 0.05
-    X_fourier = imagenFourier / (H_4D + epsilon)
+    X_fourier = imagenFourier / (psfFurier + epsilon)
 
-    resultado_complejo = np.fft.ifft2(X_fourier, axes=(2, 3))
+    resultado_complejo = np.fft.ifft2(X_fourier)
 
     return np.real(resultado_complejo)
 
-def deconvolucionWiener(imagen, psf, k=1e-4):
-    imagenFourier, H_4D = prepararFourier(imagen, psf)
+def deconvolucionFourierMulti(imagen, psf, k=1e-3):
+    # Hay que preparar la psf porque resulta que aunque la PSF esta centrada en cero
+    # el algoritmo de fft no lo toma como en cero, sino que tiene que tomarlo a la izquierda del todo
+    imagenFourier, psfFurier = prepararFourierMulti(imagen, psf)
+
+    epsilon = k
+    #epsilon = 0.05
+    X_fourier = ne.evaluate("imagenFourier / (psfFurier + epsilon)")
+
+    resultado_complejo = sp_fft.ifft2(X_fourier, workers=-1)
+
+    return np.real(resultado_complejo)
+
+
+def deconvolucionWiener(imagen, psf, k=1e-3):
+    imagenFourier, psfFourier = prepararFourier(imagen, psf)
 
     # A partir de ahora construyo el filtro de Weiner
-    numerador = np.conjugate(H_4D)
+    numerador = np.conjugate(psfFourier)
 
-    denominador = np.abs(H_4D)**2 + k
+    denominador = np.abs(psfFourier)**2 + k
 
     filtro = numerador/denominador
 
     X_fourier = imagenFourier * filtro
 
-    resultado_complejo = np.fft.ifft2(X_fourier, axes=(2, 3))
+    resultado_complejo = np.fft.ifft2(X_fourier)
 
     return np.real(resultado_complejo)
+
+def deconvolucionWienerMulti(imagen, psf, k=1e-3):
+    imagenFourier, psfFourier = prepararFourierMulti(imagen, psf)
+
+    # A partir de ahora construyo el filtro de Weiner
+    numerador = np.conjugate(psfFourier)
+
+    denominador = ne.evaluate('abs(psfFourier)**2 + k')
+
+    filtro = ne.evaluate('numerador/denominador')
+
+    X_fourier = ne.evaluate('imagenFourier * filtro')
+
+    resultado_complejo = sp_fft.ifft2(X_fourier, workers=-1)
+
+    return np.real(resultado_complejo)
+
+
+def deconvolucionRL(imagen, psf, pasos = 1000, k=1e-3, epsilon=1):
+    psf_preparada = np.fft.ifftshift(psf)
+    psfFourier = np.fft.fft2(psf_preparada)
+
+    psfInvertido = np.flip(psf_preparada)
+    psfInvFurier = np.fft.fft2(psfInvertido)
     
+    o_ene = imagen
+
+    for i in range(pasos): #sustituyo para ahorrar el espacio
+        print(f'Paso {i}')
+        o_ene = np.fft.fft2(o_ene)
+        denominador = o_ene * psfFourier
+        denominador = np.real(np.fft.ifft2(denominador))
+        o_ene = np.real(np.fft.ifft2(o_ene))
+
+        fraccion = imagen/(denominador + k)
+        del denominador
+
+        fraccion = np.fft.fft2(fraccion)
+        fraccion = fraccion * psfInvFurier
+        fraccion = np.real(np.fft.ifft2(fraccion))
+
+        o_ene1 = o_ene * fraccion
+        del fraccion
+
+        valor = np.mean((o_ene1 - o_ene)**2)
+        print(valor)
+        o_ene = o_ene1
+        del o_ene1
+
+        if (valor <= epsilon):
+            print('Finalizado prematuramente')
+            break
+    
+    return o_ene
+
+def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
+    # Usamos sp_fft para las preparaciones iniciales
+    psf_preparada = sp_fft.ifftshift(psf)
+    psfFourier = sp_fft.fft2(psf_preparada, workers=-1)
+
+    psfInvertido = np.flip(psf_preparada)
+    psfInvFurier = sp_fft.fft2(psfInvertido, workers=-1)
+    
+    # Hacemos una copia para no alterar la imagen original por referencia
+    o_ene = np.copy(imagen)
+
+    for i in range(pasos):
+        print(f'Paso {i}')
+        
+        # 1. Transformamos o_ene sin sobrescribir la variable original espacial
+        o_ene_fourier = sp_fft.fft2(o_ene, workers=-1)
+        
+        # 2. Calculamos el denominador en frecuencia y volvemos al dominio espacial
+        denominador_fourier = ne.evaluate('o_ene_fourier * psfFourier')
+        denominador = np.real(sp_fft.ifft2(denominador_fourier, workers=-1))
+
+        # 3. Calculamos la fracción usando numexpr
+        fraccion = ne.evaluate('imagen / (denominador + k)')
+        del denominador
+
+        # 4. Pasamos la fracción a frecuencia, multiplicamos y volvemos al espacio
+        fraccion_fourier = sp_fft.fft2(fraccion, workers=-1)
+        fraccion_fourier = ne.evaluate('fraccion_fourier * psfInvFurier')
+        fraccion = np.real(sp_fft.ifft2(fraccion_fourier, workers=-1))
+
+        # 5. Calculamos la nueva estimación de la imagen
+        o_ene1 = ne.evaluate('o_ene * fraccion')
+        del fraccion
+
+        # 6. Calculamos el error cuadrático medio (MSE) con numexpr para la resta
+        # np.mean es muy eficiente por sí solo, pero vectorizamos la resta y la potencia
+        diferencia_cuadrada = ne.evaluate('(o_ene1 - o_ene)**2')
+        valor = np.mean(diferencia_cuadrada)
+        print(valor)
+        
+        o_ene = o_ene1
+        del o_ene1
+
+        if valor <= epsilon:
+            print('Finalizado prematuramente')
+            break
+    
+    return o_ene
+
 
 def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/prueba.fits'):
     """
@@ -192,21 +314,53 @@ def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/
     print(f"✅ Imagen guardada en: {nombre_archivo}")
     return datosArreglados
 
-sigma = [1, 3, 5]
-valorK = [1e-5, 1e-3, 1e-1, 1]
-tipoPsf = ['airy', 'gaussiana']
-metodo = ['fourier', 'wiener']
+#Para probar el algoritmo de deconvolucion
+#sigma = [1, 3, 5]
+#valorK = [1e-5, 1e-3, 1e-1, 1]
+#tipoPsf = ['airy', 'gaussiana']
+#metodo = ['fourier', 'wiener']
+#
+#for s in sigma:
+#    for k in valorK:
+#        for t in tipoPsf:
+#            for m in metodo:
+#                probar_deconvolucion(s, k, t, m)
+#                print(f'Calculado el s:{s}, k: {k}, t: {t}, m: {m}')
 
-for s in sigma:
-    for k in valorK:
-        for t in tipoPsf:
-            for m in metodo:
-                probar_deconvolucion(s, k, t, m)
-                print(f'Calculado el s:{s}, k: {k}, t: {t}, m: {m}')
 
-#print("wiwiwi")
-#caca = []
-#while True:
-#    caca.append([0])
+#ruta_archivo = 'data/prueba.fits'
+#
+#with fits.open(ruta_archivo) as hdul:
+#    datos = hdul[0].data
+#    cabecera = hdul[0].header
+#
+#imagenInt = datos[0, 0, :, :]
+#
+#miPsf = psfAiry(imagenInt, 1.32/3.0)
+#
+#imagenCorregida = deconvolucionWienerMulti(imagenInt, miPsf)
+#
+#fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
+#
+## Marco 1: Imagen Original
+#axs[0].imshow(imagenInt, cmap='hot', origin='lower')
+#axs[0].set_title('Imagen Original (Borrosa)')
+#axs[0].set_xlim(600, 800)
+#axs[0].set_ylim(500, 700)
+## Marco 2: La PSF
+#axs[1].imshow(miPsf, cmap='hot', origin='lower')
+#axs[1].set_title(f'PSF')
+#ny, nx = miPsf.shape
+#cy, cx = ny // 2, nx // 2
+#axs[1].set_xlim(cx - 100, cx + 100)
+#axs[1].set_ylim(cy - 100, cy + 100)
+## Marco 3: Resultado
+#axs[2].imshow(imagenCorregida, cmap='hot', origin='lower')
+#axs[2].set_title(f'Deconvolución')
+#axs[2].set_xlim(600, 800)
+#axs[2].set_ylim(500, 700)
+#plt.tight_layout()
+#
+#plt.show()
 
 
