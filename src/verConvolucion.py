@@ -42,7 +42,7 @@ def update(val):
     slider_k.valtext.set_text(str(k_actual))
 
     # Construimos el nombre del archivo igual que en tu generador
-    nombre_archivo = f'output/deconvolucion_{metodo_actual}_{psf_actual}_sigma{sigma_actual}_k{k_actual}.png'
+    nombre_archivo = f'output/deconvolucion/deconvolucion_{metodo_actual}_{psf_actual}_sigma{sigma_actual}_k{k_actual}.png'
     
     ax.clear()
     ax.axis('off')
