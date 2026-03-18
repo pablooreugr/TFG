@@ -87,12 +87,12 @@ def prepararFourier(imagen, psf):
     return imagenFourier, H_4D
 
 
-def deconvolucionFourier(imagen, psf):
+def deconvolucionFourier(imagen, psf, k=1e-4):
     # Hay que preparar la psf porque resulta que aunque la PSF esta centrada en cero
     # el algoritmo de fft no lo toma como en cero, sino que tiene que tomarlo a la izquierda del todo
     imagenFourier, H_4D = prepararFourier(imagen, psf)
 
-    epsilon = 1e-15
+    epsilon = k
     #epsilon = 0.05
     X_fourier = imagenFourier / (H_4D + epsilon)
 
@@ -118,61 +118,98 @@ def deconvolucionWiener(imagen, psf, k=1e-4):
     
 
 
+import matplotlib.pyplot as plt
 
-# --- A partir de aquí probamos si el código funciona ---
+def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/prueba.fits'):
+    """
+    Realiza una prueba de deconvolución sobre una imagen FITS.
+    
+    Parámetros:
+    - sigma: float, valor de sigma para la PSF.
+    - k: float, constante para el filtro de deconvolución.
+    - tipo_psf: str, 'gaussiana' o 'airy' (por defecto 'airy').
+    - metodo: str, 'wiener' o 'fourier' (por defecto 'wiener').
+    - ruta: str, ruta al archivo FITS.
+    """
+    
+    # 1. Recogemos los datos
+    datos, cabecera = recogerLosDatos(ruta)
 
-ruta = 'data/prueba.fits'
+    # 2. Extraemos la imagen original 2D (Asumiendo que es intensidad)
+    imagenIntensidad = datos[0, 0, :, :]
 
-# 1. Recogemos los datos
-datos, cabecera = recogerLosDatos(ruta)
+    # 3. Calculamos la PSF basándonos en la elección del usuario
+    tipo_psf = tipo_psf.lower()
+    if tipo_psf == 'gaussiana':
+        mi_psf = psfGaussiana(datos, sigma)
+    elif tipo_psf == 'airy':
+        escala = 1.37 / sigma  # La escala equivalente 
+        mi_psf = psfAiry(datos, escala)
+    else:
+        raise ValueError("⚠️ Error: El parámetro tipo_psf debe ser 'gaussiana' o 'airy'")
 
-# 2. Extraemos la imagen original 2D (Asumiendo que es intensidad)
-imagenIntensidad = datos[0, 0, :, :]
+    # 4. Hacemos la deconvolución según el método elegido
+    metodo = metodo.lower()
+    if metodo == 'wiener':
+        datosArreglados = deconvolucionWiener(datos, mi_psf, k)
+    elif metodo == 'fourier':
+        datosArreglados = deconvolucionFourier(datos, mi_psf, k)
+    else:
+        raise ValueError("⚠️ Error: El parámetro metodo debe ser 'wiener' o 'fourier'")
 
-# 3. Calculamos la PSF y la GUARDAMOS en una variable
-# Le pasamos los datos para que coja el tamaño automáticamente
-#mi_psf = psfGaussiana(datos, sigma=3.0) 
-escala = 1.37/3 # La escala equivalente para un sigma de 3.0
-mi_psf = psfAiry(datos, escala)
+    # 5. Extraemos la imagen arreglada 2D para poder dibujarla
+    datosArregladosInt = datosArreglados[0, 0, :, :]
 
-# 4. Hacemos la deconvolución pasándole los datos y la PSF que acabamos de guardar
-#datosArreglados = deconvolucionFourier(datos, mi_psf)
-datosArreglados = deconvolucionWiener(datos, mi_psf, 1e-3)
+    # --- SECCIÓN DE DIBUJO ---
+    fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
 
-# 5. Extraemos la imagen arreglada 2D para poder dibujarla
-datosArregladosInt = datosArreglados[0, 0, :, :]
+    # Marco 1: Imagen Original
+    axs[0].imshow(imagenIntensidad, cmap='hot', origin='lower')
+    axs[0].set_title('Imagen Original (Borrosa)')
+    axs[0].set_xlim(600, 800)
+    axs[0].set_ylim(500, 700)
 
-# --- SECCIÓN DE DIBUJO ---
+    # Marco 2: La PSF
+    axs[1].imshow(mi_psf, cmap='hot', origin='lower')
+    axs[1].set_title(f'PSF ({tipo_psf.capitalize()})')
+    ny, nx = mi_psf.shape
+    cy, cx = ny // 2, nx // 2
+    axs[1].set_xlim(cx - 100, cx + 100)
+    axs[1].set_ylim(cy - 100, cy + 100)
 
-# --- SECCIÓN DE DIBUJO ---
+    # Marco 3: Resultado
+    axs[2].imshow(datosArregladosInt, cmap='hot', origin='lower')
+    axs[2].set_title(f'Deconvolución ({metodo.capitalize()})')
+    axs[2].set_xlim(600, 800)
+    axs[2].set_ylim(500, 700)
 
-# Creamos un lienzo grande con 1 fila y 3 columnas
-fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
+    plt.tight_layout()
+    
+    # 6. Guardamos la figura directamente en output con todos los parámetros en el nombre
+    nombre_archivo = f'output/deconvolucion_{metodo}_{tipo_psf}_sigma{sigma}_k{k}.png'
+    plt.savefig(nombre_archivo)
+    
+    # Cerramos la figura para liberar memoria
+    plt.close(fig)
+    
+    print(f"✅ Imagen guardada en: {nombre_archivo}")
+    return datosArreglados
 
-# Marco 1: Imagen Original
-axs[0].imshow(imagenIntensidad, cmap='hot', origin='lower')
-axs[0].set_title('Imagen Original (Borrosa)')
-# Limitamos los ejes X e Y a los píxeles que has pedido
-axs[0].set_xlim(600, 800)
-axs[0].set_ylim(500, 700)
+sigma = [1, 3, 5]
+valorK = [1e-5, 1e-3, 1e-1, 1]
+tipoPsf = ['airy', 'gaussiana']
+metodo = ['fourier', 'wiener']
 
-# Marco 2: La PSF
-axs[1].imshow(mi_psf, cmap='hot', origin='lower')
-axs[1].set_title('PSF (Nuestra Lente)')
-# Calculamos el centro de la imagen para hacer el zoom de 200x200
-ny, nx = mi_psf.shape
-cy, cx = ny // 2, nx // 2
-# Establecemos los límites a +/- 100 píxeles desde el centro
-axs[1].set_xlim(cx - 100, cx + 100)
-axs[1].set_ylim(cy - 100, cy + 100)
+for s in sigma:
+    for k in valorK:
+        for t in tipoPsf:
+            for m in metodo:
+                probar_deconvolucion(s, k, t, m)
+                print(f'Calculado el s:{s}, k: {k}, t: {t}, m: {m}')
 
-# Marco 3: Resultado
-axs[2].imshow(datosArregladosInt, cmap='hot', origin='lower')
-axs[2].set_title('Imagen Deconvolucionada')
-# Limitamos los ejes igual que en la primera imagen
-axs[2].set_xlim(600, 800)
-axs[2].set_ylim(500, 700)
+#print("wiwiwi")
+#caca = []
+#while True:
+#    caca.append([0])
 
-# Ajustamos un poco el espacio para que no se pisen los títulos y mostramos
-plt.tight_layout()
-plt.show()
+
