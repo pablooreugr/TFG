@@ -1,6 +1,8 @@
 from astropy.io import fits
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.fft as sp_fft
+import numexpr as ne
 
 def recogerLosDatos(rutaArchivo):
     with fits.open(rutaArchivo) as hdul:
@@ -29,6 +31,28 @@ def psfGaussiana(datos, sigma=3.0):
     psf /= np.sum(psf)
     
     return psf
+
+def deconvolucionFourier_paralela(imagen, psf, epsilon=1e-15):
+    # Centramos la PSF
+    psf_preparada = np.fft.ifftshift(psf)
+    
+    # 1. FFT de la PSF (paralelizada en todos los núcleos)
+    H = sp_fft.fft2(psf_preparada, workers=-1)
+    H_4D = H[np.newaxis, np.newaxis, :, :]
+    
+    # 2. FFT de la imagen 4D (paralelizada en todos los núcleos)
+    # resultado_complejoworkers=-1 le dice que use el 100% de tu CPU
+    G = sp_fft.fft2
+    # 3. División matemática (paralelizada con NumExpr)
+    # Ne.evaluate compila la fórmula y la divide entre los hilos de la CPU
+    X_fourier = ne.evaluate("G / (H_4D + epsilon)")
+    
+    # 4. Inversa de Fourier (paralelizada en todos los núcleos)
+    resultado_complejo = sp_fft.ifft2(X_fourier, axes=(2, 3), workers=-1)
+    
+    return np.real(resultado_complejo)
+
+
 
 
 def deconvolucionFourier(imagen, psf):
