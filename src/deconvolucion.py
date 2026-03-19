@@ -55,6 +55,35 @@ def psfAiry(datos, escala=1.0):
     return psf
 
 
+
+def psfNiandrejo(datos, escala=1.0):
+    # 1. Obtenemos las dimensiones espaciales correctas
+    nx = datos.shape[1]
+    ny = datos.shape[0]
+    
+    # 2. Creamos los vectores centrados
+    ejeX = np.arange(-nx // 2, nx // 2)
+    ejeY = np.arange(-ny // 2, ny // 2)
+    
+    # 3. Creamos la malla 2D
+    X, Y = np.meshgrid(ejeX, ejeY, indexing='ij')
+    
+    # 4. Calculamos la distancia al cuadrado
+    distancia_cuadrada = (X**2 + Y**2)
+    
+    # 5. Aplicamos el perfil Lorentziano usando 'escala' para ensanchar el montículo
+    # Al hacer esto, ya NO necesitamos usar np.where ni corregir el centro a mano,
+    # porque el centro da exactamente 1.0 de forma natural.
+    psf = 1 / (1 + (distancia_cuadrada / escala**2))
+
+    psf = np.where(distancia_cuadrada == 0, 1, 1 / distancia_cuadrada)
+    
+    # 6. Normalizamos la PSF (que la suma de toda la luz sea 1)
+    psf /= np.sum(psf)
+    
+    return psf
+
+
 def deconvolucionFourier_paralela(imagen, psf, epsilon=1e-15):
     # Centramos la PSF
     psf_preparada = np.fft.ifftshift(psf)
@@ -337,7 +366,7 @@ with fits.open(ruta_archivo) as hdul:
 imagenInt = datos[0, 0, :, :]
 
 # Generamos la PSF
-miPsf = psfAiry(imagenInt, 1.32/3.0)
+miPsf = psfNiandrejo(imagenInt, 3.0)
 
 # Calculamos las 3 deconvoluciones
 print("Calculando Fourier...")
@@ -348,7 +377,7 @@ img_wiener = deconvolucionWienerMulti(imagenInt, miPsf)
 
 print("Calculando Richardson-Lucy (esto puede tardar unos segundos)...")
 # He puesto pasos=20 para agilizar la prueba, súbelo a 100 o 1000 si necesitas más iteraciones
-img_rl = deconvolucionRLMulti(imagenInt, miPsf, epsilon=1) 
+img_rl = deconvolucionRLMulti(imagenInt, miPsf, epsilon=10) 
 
 # Ampliamos a 5 columnas y ajustamos el tamaño de la figura
 fig, axs = plt.subplots(nrows=1, ncols=5, figsize=(25, 5))
