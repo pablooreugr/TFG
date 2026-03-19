@@ -34,7 +34,7 @@ def psfGaussiana(datos, sigma=3.0):
     
     return psf
 
-def psfAiry(datos, escala=1.0):
+def psfAiry(datos, escala=1.32/3):
     # 1. Dimensiones y creación de la malla (igual que en la gaussiana)
     nx = datos.shape[1]
     ny = datos.shape[0]
@@ -364,10 +364,10 @@ if __name__ == "__main__":
         datos = hdul[0].data
         cabecera = hdul[0].header
     
-    imagenInt = datos[0, 0, :, :]
+    imagenInt = datos[0, 3, :, :]
     
     # Generamos la PSF
-    miPsf = psfNiandrejo(imagenInt, 3.0)
+    miPsf = psfAiry(imagenInt)
     
     # Calculamos las 3 deconvoluciones
     print("Calculando Fourier...")
@@ -378,7 +378,7 @@ if __name__ == "__main__":
     
     print("Calculando Richardson-Lucy (esto puede tardar unos segundos)...")
     # He puesto pasos=20 para agilizar la prueba, súbelo a 100 o 1000 si necesitas más iteraciones
-    img_rl = deconvolucionRLMulti(imagenInt, miPsf, epsilon=10) 
+    img_rl = deconvolucionRLMulti(imagenInt, miPsf, epsilon=10, pasos=10) 
     
     # Ampliamos a 5 columnas y ajustamos el tamaño de la figura
     fig, axs = plt.subplots(nrows=1, ncols=5, figsize=(25, 5))
