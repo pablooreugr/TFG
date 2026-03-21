@@ -191,7 +191,7 @@ def deconvolucionRL(imagen, psf, pasos = 1000, k=1e-3, epsilon=1):
     o_ene = imagen
 
     for i in range(pasos): #sustituyo para ahorrar el espacio
-        print(f'Paso {i}')
+        #print(f'Paso {i}')
         o_ene = np.fft.fft2(o_ene)
         denominador = o_ene * psfFourier
         denominador = np.real(np.fft.ifft2(denominador))
@@ -230,7 +230,7 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
     o_ene = np.copy(imagen)
 
     for i in range(pasos):
-        print(f'Paso {i}')
+        #print(f'Paso {i}')
         
         # 1. Transformamos o_ene sin sobrescribir la variable original espacial
         o_ene_fourier = sp_fft.fft2(o_ene, workers=-1)
