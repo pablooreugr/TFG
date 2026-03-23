@@ -208,7 +208,7 @@ def deconvolucionRL(imagen, psf, pasos = 1000, k=1e-3, epsilon=1):
         del fraccion
 
         valor = np.mean((o_ene1 - o_ene)**2)
-        print(valor)
+        #print(valor)
         o_ene = o_ene1
         del o_ene1
 
@@ -256,7 +256,7 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
         # np.mean es muy eficiente por sí solo, pero vectorizamos la resta y la potencia
         diferencia_cuadrada = ne.evaluate('(o_ene1 - o_ene)**2')
         valor = np.mean(diferencia_cuadrada)
-        print(valor)
+        #print(valor)
         
         o_ene = o_ene1
         del o_ene1
@@ -386,8 +386,8 @@ if __name__ == "__main__":
     # Marco 1: Imagen Original
     axs[0].imshow(imagenInt, cmap='hot', origin='lower')
     axs[0].set_title('Imagen Original (Borrosa)')
-    axs[0].set_xlim(600, 800)
-    axs[0].set_ylim(500, 700)
+    axs[0].set_ylim(600, 800)
+    axs[0].set_xlim(500, 700)
     
     # Marco 2: La PSF
     axs[1].imshow(miPsf, cmap='hot', origin='lower')
@@ -400,20 +400,20 @@ if __name__ == "__main__":
     # Marco 3: Deconvolución Fourier
     axs[2].imshow(img_fourier, cmap='hot', origin='lower')
     axs[2].set_title('Deconvolución (Fourier)')
-    axs[2].set_xlim(600, 800)
-    axs[2].set_ylim(500, 700)
+    axs[2].set_ylim(600, 800)
+    axs[2].set_xlim(500, 700)
     
     # Marco 4: Deconvolución Wiener
     axs[3].imshow(img_wiener, cmap='hot', origin='lower')
     axs[3].set_title('Deconvolución (Wiener)')
-    axs[3].set_xlim(600, 800)
-    axs[3].set_ylim(500, 700)
+    axs[3].set_ylim(600, 800)
+    axs[3].set_xlim(500, 700)
     
     # Marco 5: Deconvolución Richardson-Lucy
     axs[4].imshow(img_rl, cmap='hot', origin='lower')
     axs[4].set_title('Deconvolución (RL)')
-    axs[4].set_xlim(600, 800)
-    axs[4].set_ylim(500, 700)
+    axs[4].set_ylim(600, 800)
+    axs[4].set_xlim(500, 700)
     
     plt.tight_layout()
     plt.show()
