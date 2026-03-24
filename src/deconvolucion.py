@@ -213,7 +213,7 @@ def deconvolucionRL(imagen, psf, pasos = 1000, k=1e-3, epsilon=1):
         del o_ene1
 
         if (valor <= epsilon):
-            print('Finalizado prematuramente')
+            print(f'Finalizado prematuramente, i={i}')
             break
     
     return o_ene
@@ -255,15 +255,19 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
         # 6. Calculamos el error cuadrático medio (MSE) con numexpr para la resta
         # np.mean es muy eficiente por sí solo, pero vectorizamos la resta y la potencia
         diferencia_cuadrada = ne.evaluate('(o_ene1 - o_ene)**2')
-        valor = np.mean(diferencia_cuadrada)
+        denominador = ne.evaluate('(o_ene)**2')
+
+        valor = np.sum(diferencia_cuadrada)/np.sum(denominador)
         #print(valor)
         
         o_ene = o_ene1
         del o_ene1
 
         if valor <= epsilon:
-            print('Finalizado prematuramente')
+            print(f'Finalizado prematuramente, i={i}, valor = {valor}')
             break
+
+    print(f'Finalizado a los {pasos} pasos')
     
     return o_ene
 

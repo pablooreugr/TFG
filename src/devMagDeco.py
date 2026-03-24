@@ -40,6 +40,7 @@ def decFourierAxis0(imagen, psf, k=1e-3):
 
 def decFourierAxis0Multi(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
+        print(f"Deconvolución Fourier (Multi) - Lambda {i}...")
         imagen[i] = decon.deconvolucionFourierMulti(imagen[i], psf, k)
 
     return imagen
@@ -176,8 +177,23 @@ def generar_comprobaciones_multi(imagen_datos, lambdas, metDecon='wiener',
         I_decon = decFourierAxis0Multi(np.copy(I_orig), psf, k)
         V_decon = decFourierAxis0Multi(np.copy(V_orig), psf, k)
     elif metDecon == 'rl':
+        print("Deconvolución RL - Intensidad...")
         I_decon = decRLAxis0Multi(np.copy(I_orig), psf, iteraciones, k, epsilon)
-        V_decon = decRLAxis0Multi(np.copy(V_orig), psf, iteraciones, k, epsilon)
+
+        V_pos = np.where(V_orig > 0, V_orig, 0)
+
+        V_neg = np.where(V_orig < 0, abs(V_orig), 0)
+
+        print("Deconvolución RL - V (positivo)...")
+
+        V_pos = decRLAxis0Multi(np.copy(V_pos), psf, iteraciones, k, epsilon)
+
+        print("Deconvolución RL - V (negativo)...")
+
+        V_neg = decRLAxis0Multi(np.copy(V_neg), psf, iteraciones, k, epsilon)
+
+        V_decon = V_pos - V_neg
+
     else:
         raise ValueError("Método no reconocido. Usa 'wiener', 'fourier' o 'rl'.")
 
@@ -266,7 +282,7 @@ def generar_comprobaciones_multi(imagen_datos, lambdas, metDecon='wiener',
         plt.tight_layout()
         
         # Guardamos usando la ruta que especificaste
-        nombre_archivo = f"output/comprobacion/mag_{metDecon}_{tipo_psf}_p{param_psf}_k{k:.1e}_eps{epsilon}_it{iteraciones}_lam{i:03d}.png"
+        nombre_archivo = f"output/pruebaV2/mag_{metDecon}_{tipo_psf}_p{param_psf}_k{k:.1e}_eps{epsilon}_it{iteraciones}_lam{i:03d}.png"
 
         plt.savefig(nombre_archivo, dpi=150)
         plt.close(fig) 
@@ -275,6 +291,7 @@ def generar_comprobaciones_multi(imagen_datos, lambdas, metDecon='wiener',
 
 
 if __name__ == "__main__":
+    import os
     print("Iniciando el programa de comprobación masiva...")
     
     # 1. Cargamos los datos
@@ -285,59 +302,58 @@ if __name__ == "__main__":
 
     # Extraemos el eje lambda de la cabecera
     eje_lambda = np.array([cabecera[f'L_{i}'] for i in range(datos.shape[0])])
+
+    # 2. Definimos las listas de parámetros para el barrido
+    #metodos = ['fourier', 'wiener', 'rl']
+    metodos = ['rl']
+    tipos_psf = ['airy', 'gaussiana']  # Asumiendo 'airy' y 'gaussiana' como las 2 PSFs
+    params_psf = [1.0, 3.0, 5.0]
+    valores_k = [1e-4, 1e-3, 1e-2]
+    iteraciones_rl = [15, 30, 50]
     
-    # 2. Definimos las listas de parámetros a barrer (según tus notas)
-    metodos = ['fourier', 'wiener', 'rl']
-    tipos_psf = ['gaussiana', 'airy']
-    escalas = [1.0, 3.0, 5.0]
-    valores_k = [1e-4, 1e-3, 0.1]
-    valores_epsilon = [100.0, 50.0, 10.0, 1.0]
+    # Parámetro constante basado en tu ejemplo
+    epsilon_base = 1.0e-12 
+
+    # Asegurarnos de que el directorio de salida (hardcodeado en tu función) existe
+    os.makedirs('output/pruebaV2', exist_ok=True)
+
+    # 3. Bucle de barrido
+    for metodo in metodos:
+        for psf in tipos_psf:
+            for p_psf in params_psf:
+                for k_val in valores_k:
+                    
+                    # Si el método es RL, iteramos también sobre la lista de iteraciones
+                    if metodo == 'rl':
+                        for iters in iteraciones_rl:
+                            print(f"\n=== Ejecutando: {metodo.upper()} | PSF: {psf} (p={p_psf}) | k={k_val:.1e} | Iters={iters} ===")
+                            generar_comprobaciones_multi(
+                                imagen_datos=datos,
+                                lambdas=eje_lambda,
+                                metDecon=metodo,
+                                tipo_psf=psf,
+                                param_psf=p_psf,
+                                iteraciones=iters,
+                                k=k_val,
+                                epsilon=epsilon_base,
+                                output_dir='output/comprobacion'
+                            )
+                    
+                    # Si es Fourier o Wiener, ejecutamos solo una vez (sin importar iteraciones)
+                    else:
+                        print(f"\n=== Ejecutando: {metodo.upper()} | PSF: {psf} (p={p_psf}) | k={k_val:.1e} ===")
+                        generar_comprobaciones_multi(
+                            imagen_datos=datos,
+                            lambdas=eje_lambda,
+                            metDecon=metodo,
+                            tipo_psf=psf,
+                            param_psf=p_psf,
+                            iteraciones=0, # Valor dummy, Fourier y Wiener no lo usan
+                            k=k_val,
+                            epsilon=epsilon_base,
+                            output_dir='output/comprobacion'
+                        )
     
-    # Carpeta donde irá todo (para no mezclar con pruebas anteriores)
-    # Carpeta donde irá todo (la misma que antes)
-    carpeta_salida = 'comprobaciones_barrido_total'
-
-    # =====================================================================
-    # PARTE 1: Terminar el bloque que fue interrumpido (Escala 3.0, K = 0.1)
-    # Incluimos eps=100.0 para sobreescribir los archivos que quedaron a medias
-    # =====================================================================
-    print("\n--- 🛠️ INICIANDO PARTE 1: Reanudando Escala 3.0, K=0.1 ---")
-    epsilons_parte1 = [100.0, 50.0, 10.0, 1.0]
-
-    for eps in epsilons_parte1:
-        print(f"🚀 Reanudando -> Método: RL | PSF: airy | Escala: 3.0 | K: 0.1 | Eps: {eps}")
-        generar_comprobaciones_multi(
-            imagen_datos=datos,
-            lambdas=eje_lambda,
-            metDecon='rl',
-            tipo_psf='airy',
-            param_psf=3.0,
-            k=0.1,
-            epsilon=eps,
-            output_dir=carpeta_salida
-        )
-
-    # =====================================================================
-    # PARTE 2: Ejecutar la última escala completa (Escala 5.0)
-    # =====================================================================
-    print("\n--- 🚀 INICIANDO PARTE 2: Ejecutando Escala 5.0 completa ---")
-    valores_k_parte2 = [1e-4, 1e-3, 0.1]
-    valores_epsilon_parte2 = [100.0, 50.0, 10.0, 1.0]
-
-    for k_val in valores_k_parte2:
-        for eps in valores_epsilon_parte2:
-            print(f"🚀 Ejecutando -> Método: RL | PSF: airy | Escala: 5.0 | K: {k_val} | Eps: {eps}")
-            generar_comprobaciones_multi(
-                imagen_datos=datos,
-                lambdas=eje_lambda,
-                metDecon='rl',
-                tipo_psf='airy',
-                param_psf=5.0,
-                k=k_val,
-                epsilon=eps,
-                output_dir=carpeta_salida
-            )
-
-    print("\n✅ ¡Barrido total finalizado con éxito!")
+    print("\n✅ ¡Barrido de parámetros completado con éxito!")
 
 
