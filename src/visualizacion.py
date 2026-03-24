@@ -1,99 +1,107 @@
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, RadioButtons
-import matplotlib.image as mpimg
 import os
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import RadioButtons, Slider
+import matplotlib.image as mpimg
 
-# --- 1. DEFINICIÓN DE LOS PARÁMETROS EXPLORADOS ---
-metodos = ['wiener', 'fourier', 'rl']
-tipos_psf = ['airy', 'gaussiana']
-escalas = [1.0, 3.0, 5.0]
-valores_k = [1e-4, 1e-3, 0.1]
-valores_epsilon = [1.0, 10.0, 50.0, 100.0]
-lambdas = [5172.429, 5172.532, 5172.634, 5172.687, 5172.738, 5172.79, 5172.841, 5172.942, 5173.044, 5173.4]
-iteraciones = 1000
+# ==========================================
+# 1. CONFIGURACIÓN DE PARÁMETROS
+# ==========================================
+# Cambia esto si tus imágenes están en otra carpeta (ej. 'output/pruebaV2')
+DIRECTORIO_IMAGENES = 'output/pruebaV2' 
 
-# --- 2. CONFIGURACIÓN DE LA FIGURA ---
-fig, ax_img = plt.subplots(figsize=(12, 9))
-plt.subplots_adjust(bottom=0.45) 
+lambdas = [5172.429, 5172.532, 5172.634, 5172.687, 5172.738, 
+           5172.79,  5172.841, 5172.942, 5173.044, 5173.4]
 
-# --- 3. CREACIÓN DE LOS EJES PARA LOS WIDGETS ---
-ax_escala  = fig.add_axes([0.25, 0.35, 0.5, 0.03])
-ax_k       = fig.add_axes([0.25, 0.30, 0.5, 0.03])
-ax_epsilon = fig.add_axes([0.25, 0.25, 0.5, 0.03])
-ax_lambda  = fig.add_axes([0.25, 0.20, 0.5, 0.03])
+# Opciones disponibles según tu barrido
+metodos = ('fourier', 'wiener', 'rl')
+psfs = ('airy', 'gaussiana')
+params_psf = ('1.0', '3.0', '5.0')
+valores_k = ('1e-04', '1e-03', '1e-02') # Representación en string para los botones
+iteraciones_rl = ('15', '30', '50')
+epsilon_str = "1e-12" # Fijo según tu código
 
-ax_radio_metodo = fig.add_axes([0.25, 0.05, 0.2, 0.12])
-ax_radio_psf    = fig.add_axes([0.55, 0.05, 0.2, 0.12])
+# ==========================================
+# 2. CONFIGURACIÓN DE LA INTERFAZ
+# ==========================================
+fig, ax_img = plt.subplots(figsize=(14, 8))
+plt.subplots_adjust(left=0.35, bottom=0.15) # Dejamos espacio a la izquierda y abajo para los controles
+ax_img.axis('off')
 
-# --- 4. CREACIÓN DE LOS WIDGETS ---
-# AL QUITAR 'valstep=1', LOS SLIDERS AHORA SE MUEVEN DE FORMA CONTINUA
-slider_escala  = Slider(ax_escala, 'Escala / Sigma', 0, len(escalas)-1, valinit=1)
-slider_k       = Slider(ax_k, 'Valor K', 0, len(valores_k)-1, valinit=1)
-slider_epsilon = Slider(ax_epsilon, 'Epsilon (solo RL)', 0, len(valores_epsilon)-1, valinit=0)
-slider_lambda  = Slider(ax_lambda, 'Índice Lambda', 0, len(lambdas)-1, valinit=0)
+# --- Creación de Ejes para los Widgets ---
+# Coordenadas: [izquierda, abajo, ancho, alto]
+ax_metodo = plt.axes([0.02, 0.70, 0.12, 0.15], facecolor='lightgoldenrodyellow')
+ax_psf    = plt.axes([0.02, 0.50, 0.12, 0.15], facecolor='lightgoldenrodyellow')
+ax_param  = plt.axes([0.16, 0.50, 0.12, 0.15], facecolor='lightgoldenrodyellow')
+ax_k      = plt.axes([0.02, 0.30, 0.12, 0.15], facecolor='lightgoldenrodyellow')
+ax_iter   = plt.axes([0.16, 0.30, 0.12, 0.15], facecolor='lightgoldenrodyellow')
+ax_lambda = plt.axes([0.35, 0.05, 0.55, 0.03], facecolor='lightgoldenrodyellow')
 
-radio_metodo = RadioButtons(ax_radio_metodo, metodos)
-radio_psf    = RadioButtons(ax_radio_psf, tipos_psf)
+# --- Títulos de los selectores ---
+ax_metodo.set_title('Método Decon.')
+ax_psf.set_title('Tipo PSF')
+ax_param.set_title('Parámetro PSF')
+ax_k.set_title('Valor k')
+ax_iter.set_title('Iteraciones (Solo RL)')
 
-# --- 5. LÓGICA DE ACTUALIZACIÓN ---
-def update(val):
-    metodo = radio_metodo.value_selected
-    psf = radio_psf.value_selected
+# --- Widgets ---
+radio_metodo = RadioButtons(ax_metodo, metodos)
+radio_psf    = RadioButtons(ax_psf, psfs)
+radio_param  = RadioButtons(ax_param, params_psf)
+radio_k      = RadioButtons(ax_k, valores_k)
+radio_iter   = RadioButtons(ax_iter, iteraciones_rl)
+slider_lam   = Slider(ax_lambda, 'Índice Lambda', 0, len(lambdas)-1, valinit=0, valstep=1, valfmt='%0.0f')
+
+# ==========================================
+# 3. FUNCIÓN DE ACTUALIZACIÓN
+# ==========================================
+def actualizar(val):
+    # Recoger valores de los selectores
+    met = radio_metodo.value_selected
+    tipo_psf = radio_psf.value_selected
+    p_psf = float(radio_param.value_selected)
+    k_val = float(radio_k.value_selected)
+    it_val = int(radio_iter.value_selected)
+    lam_idx = int(slider_lam.val)
     
-    # REDONDEAMOS EL VALOR CONTINUO AL ÍNDICE ENTERO MÁS CERCANO
-    idx_escala = int(round(slider_escala.val))
-    idx_k      = int(round(slider_k.val))
-    idx_eps    = int(round(slider_epsilon.val))
-    idx_lam    = int(round(slider_lambda.val))
-    
-    escala = escalas[idx_escala]
-    k = valores_k[idx_k]
-    epsilon = valores_epsilon[idx_eps]
-    
-    # Modificamos el texto mostrado para ver el valor real saltando
-    slider_escala.valtext.set_text(f"{escala}")
-    slider_k.valtext.set_text(f"{k:.1e}")
-    slider_epsilon.valtext.set_text(f"{epsilon}")
-    slider_lambda.valtext.set_text(f"λ {idx_lam} ({lambdas[idx_lam]:.3f} Å)")
-
-    # Lógica específica: Formato de Epsilon según el método (Tu corrección anterior)
-    if metodo in ['wiener', 'fourier']:
-        epsilon_str = "1" # Sin decimal para wiener/fourier
-        ax_epsilon.set_alpha(0.3) 
-    else:
-        epsilon_str = str(epsilon) # Con decimal para RL (ej. "1.0")
-        ax_epsilon.set_alpha(1.0)
+    # Lógica importante: Si no es RL, las iteraciones se guardaron como 0
+    if met in ['fourier', 'wiener']:
+        it_val = 0
         
-    k_str = f"{k:.1e}"
+    # Reconstruir el nombre del archivo exactamente como lo guarda tu script
+    nombre_archivo = f"mag_{met}_{tipo_psf}_p{p_psf}_k{k_val:.1e}_eps{epsilon_str}_it{it_val}_lam{lam_idx:03d}.png"
+    ruta_completa = os.path.join(DIRECTORIO_IMAGENES, nombre_archivo)
     
-    # Construir la ruta de la imagen
-    filename = f"output/comprobacion/mag_{metodo}_{psf}_p{escala}_k{k_str}_eps{epsilon_str}_it{iteraciones}_lam{idx_lam:03d}.png"
-    
-    # Cargar y mostrar
+    # Limpiar el eje de la imagen
     ax_img.clear()
     ax_img.axis('off')
     
-    if os.path.exists(filename):
-        img = mpimg.imread(filename)
+    # Intentar cargar la imagen
+    if os.path.exists(ruta_completa):
+        img = mpimg.imread(ruta_completa)
         ax_img.imshow(img)
-        ax_img.set_title(f"Mostrando: {filename}", fontsize=10)
+        titulo = f"Longitud de onda: {lambdas[lam_idx]:.3f} Å\nArchivo: {nombre_archivo}"
+        ax_img.set_title(titulo, fontsize=11, color='black')
     else:
-        ax_img.text(0.5, 0.5, 'Imagen no encontrada\n\n' + filename, 
+        # Si la combinación no existe, mostrar un mensaje de error
+        ax_img.text(0.5, 0.5, f"❌ IMAGEN NO ENCONTRADA\n\n{nombre_archivo}", 
                     horizontalalignment='center', verticalalignment='center', 
-                    transform=ax_img.transAxes, color='red', fontsize=12)
-        ax_img.set_title("Archivo no encontrado")
+                    color='red', fontsize=14, transform=ax_img.transAxes)
+        ax_img.set_title("Combinación sin datos", color='red')
         
     fig.canvas.draw_idle()
 
-# --- 6. VINCULAR EVENTOS ---
-slider_escala.on_changed(update)
-slider_k.on_changed(update)
-slider_epsilon.on_changed(update)
-slider_lambda.on_changed(update)
-radio_metodo.on_clicked(update)
-radio_psf.on_clicked(update)
+# ==========================================
+# 4. CONECTAR EVENTOS E INICIAR
+# ==========================================
+radio_metodo.on_clicked(actualizar)
+radio_psf.on_clicked(actualizar)
+radio_param.on_clicked(actualizar)
+radio_k.on_clicked(actualizar)
+radio_iter.on_clicked(actualizar)
+slider_lam.on_changed(actualizar)
 
-# Llamada inicial
-update(None)
+# Llamada inicial para cargar la primera imagen al abrir
+actualizar(None)
 
 plt.show()
