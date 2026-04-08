@@ -271,6 +271,30 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
     
     return o_ene
 
+def deconvolucionMulti(imagen, psf, metodo='rl', k=1e-3, iteraciones=30, epsilon=1):
+    if (imagen < 0).any():
+        imagenPos = np.where(imagen <= 0, 0, imagen)
+        imagenNeg = np.abs(np.where(imagen < 0, imagen, 0))
+
+        if metodo == 'rl':
+            imagenPos = deconvolucionRLMulti(imagenPos, psf, iteraciones, k, epsilon)
+            imagenNeg = deconvolucionRLMulti(imagenNeg, psf, iteraciones, k, epsilon)
+        elif metodo == 'f':
+            imagenPos = deconvolucionFourierMulti(imagenPos, psf, k)
+            imagenNeg = deconvolucionFourierMulti(imagenNeg, psf, k)
+        elif metodo == 'w':
+            imagenPos = deconvolucionWienerMulti(imagenPos, psf, k)
+            imagenNeg = deconvolucionWienerMulti(imagenNeg, psf, k)
+
+        return imagenPos - imagenNeg
+    else:
+        if metodo == 'rl':
+            return deconvolucionRLMulti(imagen, psf, iteraciones, k, epsilon)
+        elif metodo == 'f':
+            return deconvolucionFourierMulti(imagen, psf, k)
+        elif metodo == 'w':
+            return deconvolucionWienerMulti(imagen, psf, k)
+    
 
 def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/prueba.fits'):
     """
