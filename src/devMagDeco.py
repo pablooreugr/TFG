@@ -7,7 +7,6 @@ import deconvolucion as decon
 g_eff = 1.75 # Linea del magnesio I
 constanteFormula = 4.67e-13 
 
-
 def decWienerAxis0(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionWiener(imagen[i], psf, k)

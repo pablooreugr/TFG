@@ -1,6 +1,7 @@
 from astropy.io import fits
 import matplotlib.pyplot as plt
 import numpy as np
+import deconvolucion as deco
 
 
 ruta_archivo = 'data/prueba.fits'
@@ -21,6 +22,8 @@ datos_v_lambda = datos[:, 3, :, :]
 numLongitudesOnda = datos.shape[0] #Me ayuda a saber el numero de datos que hay
 eje_lambda = np.array([cabecera[f'L_{i}'] for i in range(numLongitudesOnda)]) #Extraigo los valores de la longitud de onda de la cabezera [A
 
+# Representacion
+
 lambda_cuadrado = eje_lambda**2
 lambda_cuadrado_3d = lambda_cuadrado[:, np.newaxis, np.newaxis] #Esto me convierte [lambda, 1, 1] en 3D, para poder multiplicar todos los valores uno a uno
 
@@ -38,7 +41,6 @@ numerador = np.sum((datos_v_lambda - v_predicho)**2, axis=0)
 
 # Denominador: Suma de la varianza total
 denominador = np.sum((datos_v_lambda - mediaDatosV)**2, axis=0)
-
 # Calculamos R^2 (NumPy resta el 1 a cada píxel automáticamente)
 mapa_r_cuadrado = 1 - (numerador / denominador)
 
