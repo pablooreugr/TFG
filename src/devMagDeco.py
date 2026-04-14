@@ -47,6 +47,7 @@ def decFourierAxis0Multi(imagen, psf, k=1e-3):
 def decAxis0Multi(imagen, psf, metDecon='w', iteraciones=30, k=1e-3, epsilon=1):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionMulti(imagen[i], psf, metDecon, iteraciones, k, epsilon)
+    return imagen
 
 
 def magnetismoDirectamente(imagen, psf, lambdas, metDecon='wiener', iteraciones=1000, k=1e-3, epsilon=1):
@@ -172,6 +173,31 @@ def dibujarMagYR(campoMagnetico, mapa_r_cuadrado):
     plt.show()
 
 
+def dibujarComparacionPSF(psf_cargada, psf_airy):
+    """
+    Compara la PSF cargada con la PSF de Airy en un mismo plot.
+    """
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 5))
+
+    # --- PSF cargada ---
+    im1 = ax1.imshow(psf_cargada, cmap='viridis')
+    ax1.set_title('PSF Cargada')
+    fig.colorbar(im1, ax=ax1, label='Intensidad')
+
+    # --- PSF de Airy ---
+    im2 = ax2.imshow(psf_airy, cmap='viridis')
+    ax2.set_title('PSF de Airy')
+    fig.colorbar(im2, ax=ax2, label='Intensidad')
+
+    # --- Diferencia ---
+    im3 = ax3.imshow(psf_cargada - psf_airy, cmap='RdBu_r')
+    ax3.set_title('Diferencia (Cargada - Airy)')
+    fig.colorbar(im3, ax=ax3, label='Diferencia')
+
+    plt.tight_layout()
+    plt.show()
+
+
 
 if __name__ == "__main__":
     # Cargar la imagen FITS
@@ -185,6 +211,16 @@ if __name__ == "__main__":
     eje_lambda = np.array([cabecera[f'L_{i}'] for i in range(datos.shape[0])])
 
     psf = np.load("data/PSF_517_1600_x_1600_px.npy")
+    print(f"Tamaño de PSF: {psf.shape}")
+    print(f"Tamaño de imagen original: {datos.shape}")
+
+    psf = psf / np.sum(psf)  # Normalizamos la PSF para que su suma sea 1
+    
+    # Recortar la imagen a 1600x1600 (centrada)
+    target_size = psf.shape[0]  # 1600
+    start = (datos.shape[2] - target_size) // 2
+    datos = datos[:, :, start:start+target_size, start:start+target_size]
+    print(f"Tamaño de imagen después de recorte: {datos.shape}")
 
     intensidad = datos[:, 0, :, :]
     V = datos[:, 3, :, :]
@@ -193,6 +229,7 @@ if __name__ == "__main__":
     V = decAxis0Multi(V, psf, metDecon='w', k=1e-3)
 
     campoMagnetico, mapa_r_cuadrado = calcularMagnetismo(intensidad, V, eje_lambda)
+
 
     
 
