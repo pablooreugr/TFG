@@ -222,16 +222,111 @@ if __name__ == "__main__":
     datos = datos[:, :, start:start+target_size, start:start+target_size]
     print(f"Tamaño de imagen después de recorte: {datos.shape}")
 
-    intensidad = datos[:, 0, :, :]
-    V = datos[:, 3, :, :]
+    intensidad_orig = datos[:, 0, :, :]
+    V_orig = datos[:, 3, :, :]
 
-    intensidad = decAxis0Multi(intensidad, psf, metDecon='w', k=1e-3)
-    V = decAxis0Multi(V, psf, metDecon='w', k=1e-3)
+    # 1. Generamos la PSF de Airy con las dimensiones recortadas
+    psf_airy = decon.psfAiry(intensidad_orig[0])
 
-    campoMagnetico, mapa_r_cuadrado = calcularMagnetismo(intensidad, V, eje_lambda)
-
-
+    print("--- Calculando con PSF Cargada ---")
+    intensidad_cargada = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='w', k=1e-3)
+    V_cargada = decAxis0Multi(V_orig.copy(), psf, metDecon='w', k=1e-3)
+    campo_cargada, r2_cargada = calcularMagnetismo(intensidad_cargada, V_cargada, eje_lambda)
     
+    print("--- Calculando con PSF de Airy ---")
+    intensidad_airy = decAxis0Multi(intensidad_orig.copy(), psf_airy, metDecon='w', k=1e-3)
+    V_airy = decAxis0Multi(V_orig.copy(), psf_airy, metDecon='w', k=1e-3)
+    campo_airy, r2_airy = calcularMagnetismo(intensidad_airy, V_airy, eje_lambda)
 
-    dibujarMagYR(campoMagnetico, mapa_r_cuadrado)
+    print("--- Generando plots (1/2: PSF e Intensidad) ---")
+    fig1, axs1 = plt.subplots(2, 3, figsize=(18, 10))
+    fig1.canvas.manager.set_window_title('PSF e Intensidad')
+
+    # --- Fila 0 (Plot 1): PSFs ---
+    im = axs1[0, 0].imshow(psf, cmap='viridis')
+    axs1[0, 0].set_title('PSF Cargada')
+    axs1[0, 0].set_xlim(700, 900)
+    axs1[0, 0].set_ylim(700, 900)
+    fig1.colorbar(im, ax=axs1[0, 0])
+
+    im = axs1[0, 1].imshow(psf_airy, cmap='viridis')
+    axs1[0, 1].set_title('PSF Airy')
+    axs1[0, 1].set_xlim(700, 900)
+    axs1[0, 1].set_ylim(700, 900)
+    fig1.colorbar(im, ax=axs1[0, 1])
+
+    im = axs1[0, 2].imshow(psf - psf_airy, cmap='RdBu_r')
+    axs1[0, 2].set_title('Diferencia (Cargada - Airy)')
+    axs1[0, 2].set_xlim(700, 900)
+    axs1[0, 2].set_ylim(700, 900)
+    fig1.colorbar(im, ax=axs1[0, 2])
+
+    ylim_recorte = (500, 700)
+    xlim_recorte = (600, 800)
+
+    # --- Fila 1 (Plot 1): Intensidad ---
+    im = axs1[1, 0].imshow(intensidad_cargada[0], cmap='hot', origin='lower')
+    axs1[1, 0].set_title('Intensidad (PSF Cargada)')
+    axs1[1, 0].set_ylim(ylim_recorte)
+    axs1[1, 0].set_xlim(xlim_recorte)
+    fig1.colorbar(im, ax=axs1[1, 0])
+
+    im = axs1[1, 1].imshow(intensidad_airy[0], cmap='hot', origin='lower')
+    axs1[1, 1].set_title('Intensidad (PSF Airy)')
+    axs1[1, 1].set_ylim(ylim_recorte)
+    axs1[1, 1].set_xlim(xlim_recorte)
+    fig1.colorbar(im, ax=axs1[1, 1])
+
+    im = axs1[1, 2].imshow(intensidad_cargada[0] - intensidad_airy[0], cmap='RdBu_r', origin='lower')
+    axs1[1, 2].set_title('Diferencia Intensidad (Cargada - Airy)')
+    axs1[1, 2].set_ylim(ylim_recorte)
+    axs1[1, 2].set_xlim(xlim_recorte)
+    fig1.colorbar(im, ax=axs1[1, 2])
+
+    fig1.tight_layout()
+
+    print("--- Generando plots (2/2: Magnetograma y R^2) ---")
+    fig2, axs2 = plt.subplots(2, 3, figsize=(18, 10))
+    fig2.canvas.manager.set_window_title('Magnetograma y R^2')
+
+    # --- Fila 0 (Plot 2): Campo Magnético ---
+    im = axs2[0, 0].imshow(campo_cargada, cmap='RdBu_r')
+    axs2[0, 0].set_title('Campo Magnético (PSF Cargada)')
+    axs2[0, 0].set_ylim(ylim_recorte)
+    axs2[0, 0].set_xlim(xlim_recorte)
+    fig2.colorbar(im, ax=axs2[0, 0])
+
+    im = axs2[0, 1].imshow(campo_airy, cmap='RdBu_r')
+    axs2[0, 1].set_title('Campo Magnético (PSF Airy)')
+    axs2[0, 1].set_ylim(ylim_recorte)
+    axs2[0, 1].set_xlim(xlim_recorte)
+    fig2.colorbar(im, ax=axs2[0, 1])
+
+    im = axs2[0, 2].imshow(campo_cargada - campo_airy, cmap='RdBu_r')
+    axs2[0, 2].set_title('Diferencia Campo (Cargada - Airy)')
+    axs2[0, 2].set_ylim(ylim_recorte)
+    axs2[0, 2].set_xlim(xlim_recorte)
+    fig2.colorbar(im, ax=axs2[0, 2])
+
+    # --- Fila 1 (Plot 2): R^2 ---
+    im = axs2[1, 0].imshow(r2_cargada, vmin=0, vmax=1, cmap='viridis')
+    axs2[1, 0].set_title('R^2 (PSF Cargada)')
+    axs2[1, 0].set_ylim(ylim_recorte)
+    axs2[1, 0].set_xlim(xlim_recorte)
+    fig2.colorbar(im, ax=axs2[1, 0])
+
+    im = axs2[1, 1].imshow(r2_airy, vmin=0, vmax=1, cmap='viridis')
+    axs2[1, 1].set_title('R^2 (PSF Airy)')
+    axs2[1, 1].set_ylim(ylim_recorte)
+    axs2[1, 1].set_xlim(xlim_recorte)
+    fig2.colorbar(im, ax=axs2[1, 1])
+
+    im = axs2[1, 2].imshow(r2_cargada - r2_airy, cmap='RdBu_r')
+    axs2[1, 2].set_title('Diferencia R^2 (Cargada - Airy)')
+    axs2[1, 2].set_ylim(ylim_recorte)
+    axs2[1, 2].set_xlim(xlim_recorte)
+    fig2.colorbar(im, ax=axs2[1, 2])
+
+    fig2.tight_layout()
+    plt.show()
 
