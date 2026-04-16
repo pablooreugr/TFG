@@ -7,37 +7,38 @@ import deconvolucion as decon
 g_eff = 1.75 # Linea del magnesio I
 constanteFormula = 4.67e-13 
 
-def decWienerAxis0(imagen, psf):
+def decWienerAxis0(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionWiener(imagen[i], psf, k)
 
     return imagen
 
-def decWienerAxis0Multi(imagen, psf):
+def decWienerAxis0Multi(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionWienerMulti(imagen[i], psf, k)
 
     return imagen
 
-def decRLAxis0(imagen, psf, iteraciones=500, epsilon=1):
+def decRLAxis0(imagen, psf, iteraciones=500, epsilon=1, k=1e-3):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionRL(imagen[i], psf, iteraciones, k, epsilon)
 
     return imagen
 
-def decRLAxis0Multi(imagen, psf, iteraciones=500, epsilon=1):
+def decRLAxis0Multi(imagen, psf, iteraciones=500, epsilon=1, k=1e-3):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionRLMulti(imagen[i], psf, iteraciones, k, epsilon)
 
     return imagen
 
-def decFourierAxis0(imagen, psf):
+def decFourierAxis0(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
+
         imagen[i] = decon.deconvolucionFourier(imagen[i], psf, k)
 
     return imagen
 
-def decFourierAxis0Multi(imagen, psf):
+def decFourierAxis0Multi(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
         print(f"Deconvolución Fourier (Multi) - Lambda {i}...")
         imagen[i] = decon.deconvolucionFourierMulti(imagen[i], psf, k)
@@ -89,7 +90,7 @@ def magnetismoDirectamente(imagen, psf, lambdas, metDecon='wiener', iteraciones=
     return campoMagnetico, mapa_r_cuadrado
 
 
-def magnetismoDirectamenteMulti(imagen, psf, lambdas, metDecon='wiener', iteraciones=1000, epsilon=1): # En este calculamos la deconvolucion de V y de I directamente, luego sacamos por regresion lineal el magnetismo
+def magnetismoDirectamenteMulti(imagen, psf, lambdas, metDecon='wiener', iteraciones=1000, epsilon=1, k=1e-3): # En este calculamos la deconvolucion de V y de I directamente, luego sacamos por regresion lineal el magnetismo
     imagenIntensidad = imagen[:, 0, :, :]
     imagenV = imagen[:, 3, :, :]
 
@@ -220,72 +221,65 @@ if __name__ == "__main__":
     target_size = psf.shape[0]  # 1600
     start = (datos.shape[2] - target_size) // 2
     datos = datos[:, :, start:start+target_size, start:start+target_size]
-    print(f"Tamaño de imagen después de recorte: {datos.shape}")
-
+    
     intensidad_orig = datos[:, 0, :, :]
-    V_orig = datos[:, 3, :, :]
-
-    # 1. Generamos la PSF de Airy con las dimensiones recortadas
+    
+    print("1. Calculando la PSF de Airy...")
     psf_airy = decon.psfAiry(intensidad_orig[0])
-
-    print("--- 1. Original (Sin Deconvolución) ---")
-    campo_orig, r2_orig = calcularMagnetismo(intensidad_orig, V_orig, eje_lambda)
-
-    print("--- 2. Calculando con Fourier ---")
-    intensidad_fourier = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='f')
-    V_fourier = decAxis0Multi(V_orig.copy(), psf, metDecon='f')
-    campo_fourier, r2_fourier = calcularMagnetismo(intensidad_fourier, V_fourier, eje_lambda)
-
-    print("--- 3. Calculando con Wiener Básico (PSF cargada) ---")
-    intensidad_basico = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='w')
-    V_basico = decAxis0Multi(V_orig.copy(), psf, metDecon='w')
-    campo_basico, r2_basico = calcularMagnetismo(intensidad_basico, V_basico, eje_lambda)
     
-    # === METODO DE FRAN OMITIDO ===
-    # print("--- Calculando con Wiener Fran (Zernikes) ---")
+    print("2. Deconvolucionando con PSF Cargada (Original) ...")
+    intensidad_dec_orig = decWienerAxis0Multi(np.copy(intensidad_orig), psf, k=1e-3)
     
-    print("--- 4. Calculando con Wiener Scikit-Image (Manual) ---")
-    intensidad_scikit = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='w_skimage')
-    V_scikit = decAxis0Multi(V_orig.copy(), psf, metDecon='w_skimage')
-    campo_scikit, r2_scikit = calcularMagnetismo(intensidad_scikit, V_scikit, eje_lambda)
+    print("3. Deconvolucionando con PSF de Airy ...")
+    intensidad_dec_airy = decWienerAxis0Multi(np.copy(intensidad_orig), psf_airy, k=1e-3)
 
-    print("--- 5. Calculando con Richardson-Lucy ---")
-    intensidad_rl = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='rl', iteraciones=30)
-    V_rl = decAxis0Multi(V_orig.copy(), psf, metDecon='rl', iteraciones=30, k=1e-10)
-    campo_rl, r2_rl = calcularMagnetismo(intensidad_rl, V_rl, eje_lambda)
+    print("4. Deconvolucionando Scikit con PSF Cargada ...")
+    intensidad_sk_orig = decAxis0Multi(np.copy(intensidad_orig), psf, metDecon='w_skimage', k=1e-3)
+    
+    print("5. Deconvolucionando Scikit con PSF de Airy ...")
+    intensidad_sk_airy = decAxis0Multi(np.copy(intensidad_orig), psf_airy, metDecon='w_skimage', k=1e-3)
 
-    print("--- Generando plots comparativos ---")
-    fig, axs = plt.subplots(5, 3, figsize=(18, 25))
-    fig.canvas.manager.set_window_title('Comparativa Métodos de Deconvolución')
-
+    print("Generando Gráficos...")
+    fig, axs = plt.subplots(2, 3, figsize=(18, 12))
+    fig.canvas.manager.set_window_title('Comparativa Wiener: Básico vs Scikit')
+    
+    idx = 0 # Primer valor de lambda
     ylim_recorte = (500, 700)
     xlim_recorte = (600, 800)
+    
+    # --- Fila 0: Wiener Básico ---
+    im0 = axs[0, 0].imshow(intensidad_orig[idx], cmap='hot', origin='lower')
+    axs[0, 0].set_title('Intensidad Original')
+    axs[0, 0].set_ylim(ylim_recorte)
+    axs[0, 0].set_xlim(xlim_recorte)
+    fig.colorbar(im0, ax=axs[0, 0])
+    
+    im1 = axs[0, 1].imshow(intensidad_dec_orig[idx], cmap='hot', origin='lower')
+    axs[0, 1].set_title('Wiener Básico (PSF Orig)')
+    axs[0, 1].set_ylim(ylim_recorte)
+    axs[0, 1].set_xlim(xlim_recorte)
+    fig.colorbar(im1, ax=axs[0, 1])
+    
+    im2 = axs[0, 2].imshow(intensidad_dec_airy[idx], cmap='hot', origin='lower')
+    axs[0, 2].set_title('Wiener Básico (PSF Airy)')
+    axs[0, 2].set_ylim(ylim_recorte)
+    axs[0, 2].set_xlim(xlim_recorte)
+    fig.colorbar(im2, ax=axs[0, 2])
 
-    def plot_row(row_idx, int_img, mag_img, r2_img, title_prefix):
-        im = axs[row_idx, 0].imshow(int_img[0], cmap='hot', origin='lower')
-        axs[row_idx, 0].set_title(f'Intensidad ({title_prefix})')
-        axs[row_idx, 0].set_ylim(ylim_recorte)
-        axs[row_idx, 0].set_xlim(xlim_recorte)
-        fig.colorbar(im, ax=axs[row_idx, 0])
-
-        im = axs[row_idx, 1].imshow(mag_img, cmap='RdBu_r')
-        axs[row_idx, 1].set_title(f'Campo Magnético ({title_prefix})')
-        axs[row_idx, 1].set_ylim(ylim_recorte)
-        axs[row_idx, 1].set_xlim(xlim_recorte)
-        fig.colorbar(im, ax=axs[row_idx, 1])
-
-        im = axs[row_idx, 2].imshow(r2_img, vmin=0, vmax=1, cmap='viridis')
-        axs[row_idx, 2].set_title(f'R^2 ({title_prefix})')
-        axs[row_idx, 2].set_ylim(ylim_recorte)
-        axs[row_idx, 2].set_xlim(xlim_recorte)
-        fig.colorbar(im, ax=axs[row_idx, 2])
-
-    plot_row(0, intensidad_orig, campo_orig, r2_orig, 'Original')
-    plot_row(1, intensidad_fourier, campo_fourier, r2_fourier, 'Fourier')
-    plot_row(2, intensidad_basico, campo_basico, r2_basico, 'Wiener Bás.')
-    plot_row(3, intensidad_scikit, campo_scikit, r2_scikit, 'Scikit')
-    plot_row(4, intensidad_rl, campo_rl, r2_rl, 'Richardson-Lucy')
-
-    fig.tight_layout(pad=3.0, h_pad=3.0, w_pad=2.0)
-    plt.savefig('output/comparativa_deconvolucion.png')
-
+    # --- Fila 1: Wiener Scikit ---
+    axs[1, 0].axis('off')  # No hace falta ver la original otra vez
+    
+    im3 = axs[1, 1].imshow(intensidad_sk_orig[idx], cmap='hot', origin='lower')
+    axs[1, 1].set_title('Wiener Scikit-Image (PSF Orig)')
+    axs[1, 1].set_ylim(ylim_recorte)
+    axs[1, 1].set_xlim(xlim_recorte)
+    fig.colorbar(im3, ax=axs[1, 1])
+    
+    im4 = axs[1, 2].imshow(intensidad_sk_airy[idx], cmap='hot', origin='lower')
+    axs[1, 2].set_title('Wiener Scikit-Image (PSF Airy)')
+    axs[1, 2].set_ylim(ylim_recorte)
+    axs[1, 2].set_xlim(xlim_recorte)
+    fig.colorbar(im4, ax=axs[1, 2])
+    
+    plt.tight_layout()
+    plt.show()

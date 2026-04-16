@@ -177,7 +177,7 @@ def deconvolucionWienerMulti(imagen, psf, k=1e-3):
     X_fourier = ne.evaluate('imagenFourier * filtro')
 
     resultado_complejo = sp_fft.ifft2(X_fourier, workers=-1)
-
+    
     return np.real(resultado_complejo)
 
 def deconvolucionWienerFran(imagen, zernikes):
