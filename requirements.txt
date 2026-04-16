@@ -16,9 +16,12 @@ frozenlist==1.8.0
 fsspec==2026.2.0
 h5py==3.16.0
 idna==3.11
+ImageIO==2.37.3
 kiwisolver==1.4.9
+lazy-loader==0.5
 matplotlib==3.10.8
 multidict==6.7.1
+networkx==3.6.1
 numexpr==2.14.1
 numpy==2.4.2
 packaging==26.0
@@ -32,9 +35,11 @@ pyparsing==3.3.2
 python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 requests==2.32.5
+scikit-image==0.26.0
 scipy==1.17.1
 six==1.17.0
 sunpy==7.1.0
+tifffile==2026.4.11
 tqdm==4.67.3
 urllib3==2.6.3
 yarl==1.23.0

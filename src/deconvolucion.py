@@ -180,6 +180,56 @@ def deconvolucionWienerMulti(imagen, psf, k=1e-3):
 
     return np.real(resultado_complejo)
 
+def deconvolucionWienerFran(imagen, zernikes):
+    """
+    Deconvolución de Wiener avanzada propuesta por Fran.
+    Llama a restore_ima del módulo pd_functions_v22 usando los coeficientes de Zernike.
+    """
+    import sys
+    import os
+    # Aseguramos que el módulo se pueda importar correctamente
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    mod_path = os.path.join(dir_path, 'mod')
+    if mod_path not in sys.path:
+        sys.path.append(mod_path)
+    
+    try:
+        import pd_functions_v22 as pdf
+    except ModuleNotFoundError as e:
+        print(f"\\n⚠️ AVISO: No se puede ejecutar el método de Fran. Falta una dependencia de su código personal: {e}")
+        print("Asegúrate de pedirle a Fran los archivos 'shift_func.py' y 'zernike.py' y ponlos en la carpeta 'src/mod/'.")
+        print("Devolviendo imagen en blanco (ceros) para no interrumpir el resto de procesos...")
+        return np.zeros_like(imagen)
+    
+    # La función devuelve la imagen restaurada y el filtro de ruido empleado.
+    # Solo necesitamos la imagen reconstruida.
+    imagen_restaurada, filtro = pdf.restore_ima(imagen, zernikes)
+    
+    return np.real(imagen_restaurada)
+
+def deconvolucionWienerScikit(imagen, psf, balance=1e-3):
+    """
+    Implementación nativa oficial de la librería scikit-image del filtro de Wiener,
+    utilizando el módulo recién instalado por el usuario.
+    """
+    from skimage import restoration
+    
+    # 1. NORMALIZACIÓN DE ENERGÍA (Por qué se dispara a 35000):
+    # scikit-image evalúa la frecuencia DC (frecuencia 0, intensidad media) del filtro. 
+    # Por defecto, skimage asume que la integral de luz de la PSF es exactamente 1.0. 
+    # Si nuestra tu PSF suma un valor muy pequeño (ej. 0.025), la librería asume que 
+    # la óptica cortó ese diferencial de luz y multiplica toda la foto final por casi x40!
+    # Solución: Normalizamos la suma ponderada del núcleo a 1.0:
+    psf_norm = psf / np.sum(psf)
+    
+    # IMPORTANTE: skimage usa un filtro Laplaciano (corte agresivo de altas frecuencias) 
+    # como regularizador por defecto, no una constante K plana como tu método Básico. 
+    # Un balance de 1e-3 en el Laplaciano emborrona la imagen muchísimo más porque ataca más rápido las siluetas.
+    # Le pasamos la PSF limpia y normalizada:
+    imagen_restaurada = restoration.wiener(imagen, psf_norm, balance=balance, clip=False)
+    
+    return imagen_restaurada
+
 
 def deconvolucionRL(imagen, psf, pasos = 1000, k=1e-3, epsilon=1):
     psf_preparada = np.fft.ifftshift(psf)
@@ -271,7 +321,7 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
     
     return o_ene
 
-def deconvolucionMulti(imagen, psf, metodo='rl', k=1e-3, iteraciones=30, epsilon=1):
+def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, epsilon=1, zernikes=None):
     if (imagen < 0).any():
         imagenPos = np.where(imagen <= 0, 0, imagen)
         imagenNeg = np.abs(np.where(imagen < 0, imagen, 0))
@@ -285,6 +335,12 @@ def deconvolucionMulti(imagen, psf, metodo='rl', k=1e-3, iteraciones=30, epsilon
         elif metodo == 'w':
             imagenPos = deconvolucionWienerMulti(imagenPos, psf, k)
             imagenNeg = deconvolucionWienerMulti(imagenNeg, psf, k)
+        elif metodo == 'w_fran' and zernikes is not None:
+            imagenPos = deconvolucionWienerFran(imagenPos, zernikes)
+            imagenNeg = deconvolucionWienerFran(imagenNeg, zernikes)
+        elif metodo == 'w_skimage' and psf is not None:
+            imagenPos = deconvolucionWienerScikit(imagenPos, psf, balance=k)
+            imagenNeg = deconvolucionWienerScikit(imagenNeg, psf, balance=k)
 
         return imagenPos - imagenNeg
     else:
@@ -294,6 +350,10 @@ def deconvolucionMulti(imagen, psf, metodo='rl', k=1e-3, iteraciones=30, epsilon
             return deconvolucionFourierMulti(imagen, psf, k)
         elif metodo == 'w':
             return deconvolucionWienerMulti(imagen, psf, k)
+        elif metodo == 'w_fran' and zernikes is not None:
+            return deconvolucionWienerFran(imagen, zernikes)
+        elif metodo == 'w_skimage' and psf is not None:
+            return deconvolucionWienerScikit(imagen, psf, balance=k)
     
 
 def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/prueba.fits'):

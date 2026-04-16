@@ -7,50 +7,50 @@ import deconvolucion as decon
 g_eff = 1.75 # Linea del magnesio I
 constanteFormula = 4.67e-13 
 
-def decWienerAxis0(imagen, psf, k=1e-3):
+def decWienerAxis0(imagen, psf):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionWiener(imagen[i], psf, k)
 
     return imagen
 
-def decWienerAxis0Multi(imagen, psf, k=1e-3):
+def decWienerAxis0Multi(imagen, psf):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionWienerMulti(imagen[i], psf, k)
 
     return imagen
 
-def decRLAxis0(imagen, psf, iteraciones=500, k=1e-3, epsilon=1):
+def decRLAxis0(imagen, psf, iteraciones=500, epsilon=1):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionRL(imagen[i], psf, iteraciones, k, epsilon)
 
     return imagen
 
-def decRLAxis0Multi(imagen, psf, iteraciones=500, k=1e-3, epsilon=1):
+def decRLAxis0Multi(imagen, psf, iteraciones=500, epsilon=1):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionRLMulti(imagen[i], psf, iteraciones, k, epsilon)
 
     return imagen
 
-def decFourierAxis0(imagen, psf, k=1e-3):
+def decFourierAxis0(imagen, psf):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionFourier(imagen[i], psf, k)
 
     return imagen
 
-def decFourierAxis0Multi(imagen, psf, k=1e-3):
+def decFourierAxis0Multi(imagen, psf):
     for i in range(imagen.shape[0]):
         print(f"Deconvolución Fourier (Multi) - Lambda {i}...")
         imagen[i] = decon.deconvolucionFourierMulti(imagen[i], psf, k)
 
     return imagen
 
-def decAxis0Multi(imagen, psf, metDecon='w', iteraciones=30, k=1e-3, epsilon=1):
+def decAxis0Multi(imagen, psf=None, metDecon='w', iteraciones=30, epsilon=1, zernikes=None, k=1e-3):
     for i in range(imagen.shape[0]):
-        imagen[i] = decon.deconvolucionMulti(imagen[i], psf, metDecon, iteraciones, k, epsilon)
+        imagen[i] = decon.deconvolucionMulti(imagen[i], psf=psf, metodo=metDecon, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes)
     return imagen
 
 
-def magnetismoDirectamente(imagen, psf, lambdas, metDecon='wiener', iteraciones=1000, k=1e-3, epsilon=1):
+def magnetismoDirectamente(imagen, psf, lambdas, metDecon='wiener', iteraciones=1000, epsilon=1, k=1e-3):
     imagenIntensidad = imagen[:, 0, :, :]
     imagenV = imagen[:, 3, :, :]
 
@@ -89,7 +89,7 @@ def magnetismoDirectamente(imagen, psf, lambdas, metDecon='wiener', iteraciones=
     return campoMagnetico, mapa_r_cuadrado
 
 
-def magnetismoDirectamenteMulti(imagen, psf, lambdas, metDecon='wiener', iteraciones=1000, k=1e-3, epsilon=1): # En este calculamos la deconvolucion de V y de I directamente, luego sacamos por regresion lineal el magnetismo
+def magnetismoDirectamenteMulti(imagen, psf, lambdas, metDecon='wiener', iteraciones=1000, epsilon=1): # En este calculamos la deconvolucion de V y de I directamente, luego sacamos por regresion lineal el magnetismo
     imagenIntensidad = imagen[:, 0, :, :]
     imagenV = imagen[:, 3, :, :]
 
@@ -228,105 +228,64 @@ if __name__ == "__main__":
     # 1. Generamos la PSF de Airy con las dimensiones recortadas
     psf_airy = decon.psfAiry(intensidad_orig[0])
 
-    print("--- Calculando con PSF Cargada ---")
-    intensidad_cargada = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='w', k=1e-3)
-    V_cargada = decAxis0Multi(V_orig.copy(), psf, metDecon='w', k=1e-3)
-    campo_cargada, r2_cargada = calcularMagnetismo(intensidad_cargada, V_cargada, eje_lambda)
+    print("--- 1. Original (Sin Deconvolución) ---")
+    campo_orig, r2_orig = calcularMagnetismo(intensidad_orig, V_orig, eje_lambda)
+
+    print("--- 2. Calculando con Fourier ---")
+    intensidad_fourier = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='f')
+    V_fourier = decAxis0Multi(V_orig.copy(), psf, metDecon='f')
+    campo_fourier, r2_fourier = calcularMagnetismo(intensidad_fourier, V_fourier, eje_lambda)
+
+    print("--- 3. Calculando con Wiener Básico (PSF cargada) ---")
+    intensidad_basico = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='w')
+    V_basico = decAxis0Multi(V_orig.copy(), psf, metDecon='w')
+    campo_basico, r2_basico = calcularMagnetismo(intensidad_basico, V_basico, eje_lambda)
     
-    print("--- Calculando con PSF de Airy ---")
-    intensidad_airy = decAxis0Multi(intensidad_orig.copy(), psf_airy, metDecon='w', k=1e-3)
-    V_airy = decAxis0Multi(V_orig.copy(), psf_airy, metDecon='w', k=1e-3)
-    campo_airy, r2_airy = calcularMagnetismo(intensidad_airy, V_airy, eje_lambda)
+    # === METODO DE FRAN OMITIDO ===
+    # print("--- Calculando con Wiener Fran (Zernikes) ---")
+    
+    print("--- 4. Calculando con Wiener Scikit-Image (Manual) ---")
+    intensidad_scikit = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='w_skimage')
+    V_scikit = decAxis0Multi(V_orig.copy(), psf, metDecon='w_skimage')
+    campo_scikit, r2_scikit = calcularMagnetismo(intensidad_scikit, V_scikit, eje_lambda)
 
-    print("--- Generando plots (1/2: PSF e Intensidad) ---")
-    fig1, axs1 = plt.subplots(2, 3, figsize=(18, 10))
-    fig1.canvas.manager.set_window_title('PSF e Intensidad')
+    print("--- 5. Calculando con Richardson-Lucy ---")
+    intensidad_rl = decAxis0Multi(intensidad_orig.copy(), psf, metDecon='rl', iteraciones=30)
+    V_rl = decAxis0Multi(V_orig.copy(), psf, metDecon='rl', iteraciones=30, k=1e-10)
+    campo_rl, r2_rl = calcularMagnetismo(intensidad_rl, V_rl, eje_lambda)
 
-    # --- Fila 0 (Plot 1): PSFs ---
-    im = axs1[0, 0].imshow(psf, cmap='viridis')
-    axs1[0, 0].set_title('PSF Cargada')
-    axs1[0, 0].set_xlim(700, 900)
-    axs1[0, 0].set_ylim(700, 900)
-    fig1.colorbar(im, ax=axs1[0, 0])
-
-    im = axs1[0, 1].imshow(psf_airy, cmap='viridis')
-    axs1[0, 1].set_title('PSF Airy')
-    axs1[0, 1].set_xlim(700, 900)
-    axs1[0, 1].set_ylim(700, 900)
-    fig1.colorbar(im, ax=axs1[0, 1])
-
-    im = axs1[0, 2].imshow(psf - psf_airy, cmap='RdBu_r')
-    axs1[0, 2].set_title('Diferencia (Cargada - Airy)')
-    axs1[0, 2].set_xlim(700, 900)
-    axs1[0, 2].set_ylim(700, 900)
-    fig1.colorbar(im, ax=axs1[0, 2])
+    print("--- Generando plots comparativos ---")
+    fig, axs = plt.subplots(5, 3, figsize=(18, 25))
+    fig.canvas.manager.set_window_title('Comparativa Métodos de Deconvolución')
 
     ylim_recorte = (500, 700)
     xlim_recorte = (600, 800)
 
-    # --- Fila 1 (Plot 1): Intensidad ---
-    im = axs1[1, 0].imshow(intensidad_cargada[0], cmap='hot', origin='lower')
-    axs1[1, 0].set_title('Intensidad (PSF Cargada)')
-    axs1[1, 0].set_ylim(ylim_recorte)
-    axs1[1, 0].set_xlim(xlim_recorte)
-    fig1.colorbar(im, ax=axs1[1, 0])
+    def plot_row(row_idx, int_img, mag_img, r2_img, title_prefix):
+        im = axs[row_idx, 0].imshow(int_img[0], cmap='hot', origin='lower')
+        axs[row_idx, 0].set_title(f'Intensidad ({title_prefix})')
+        axs[row_idx, 0].set_ylim(ylim_recorte)
+        axs[row_idx, 0].set_xlim(xlim_recorte)
+        fig.colorbar(im, ax=axs[row_idx, 0])
 
-    im = axs1[1, 1].imshow(intensidad_airy[0], cmap='hot', origin='lower')
-    axs1[1, 1].set_title('Intensidad (PSF Airy)')
-    axs1[1, 1].set_ylim(ylim_recorte)
-    axs1[1, 1].set_xlim(xlim_recorte)
-    fig1.colorbar(im, ax=axs1[1, 1])
+        im = axs[row_idx, 1].imshow(mag_img, cmap='RdBu_r')
+        axs[row_idx, 1].set_title(f'Campo Magnético ({title_prefix})')
+        axs[row_idx, 1].set_ylim(ylim_recorte)
+        axs[row_idx, 1].set_xlim(xlim_recorte)
+        fig.colorbar(im, ax=axs[row_idx, 1])
 
-    im = axs1[1, 2].imshow(intensidad_cargada[0] - intensidad_airy[0], cmap='RdBu_r', origin='lower')
-    axs1[1, 2].set_title('Diferencia Intensidad (Cargada - Airy)')
-    axs1[1, 2].set_ylim(ylim_recorte)
-    axs1[1, 2].set_xlim(xlim_recorte)
-    fig1.colorbar(im, ax=axs1[1, 2])
+        im = axs[row_idx, 2].imshow(r2_img, vmin=0, vmax=1, cmap='viridis')
+        axs[row_idx, 2].set_title(f'R^2 ({title_prefix})')
+        axs[row_idx, 2].set_ylim(ylim_recorte)
+        axs[row_idx, 2].set_xlim(xlim_recorte)
+        fig.colorbar(im, ax=axs[row_idx, 2])
 
-    fig1.tight_layout()
+    plot_row(0, intensidad_orig, campo_orig, r2_orig, 'Original')
+    plot_row(1, intensidad_fourier, campo_fourier, r2_fourier, 'Fourier')
+    plot_row(2, intensidad_basico, campo_basico, r2_basico, 'Wiener Bás.')
+    plot_row(3, intensidad_scikit, campo_scikit, r2_scikit, 'Scikit')
+    plot_row(4, intensidad_rl, campo_rl, r2_rl, 'Richardson-Lucy')
 
-    print("--- Generando plots (2/2: Magnetograma y R^2) ---")
-    fig2, axs2 = plt.subplots(2, 3, figsize=(18, 10))
-    fig2.canvas.manager.set_window_title('Magnetograma y R^2')
-
-    # --- Fila 0 (Plot 2): Campo Magnético ---
-    im = axs2[0, 0].imshow(campo_cargada, cmap='RdBu_r')
-    axs2[0, 0].set_title('Campo Magnético (PSF Cargada)')
-    axs2[0, 0].set_ylim(ylim_recorte)
-    axs2[0, 0].set_xlim(xlim_recorte)
-    fig2.colorbar(im, ax=axs2[0, 0])
-
-    im = axs2[0, 1].imshow(campo_airy, cmap='RdBu_r')
-    axs2[0, 1].set_title('Campo Magnético (PSF Airy)')
-    axs2[0, 1].set_ylim(ylim_recorte)
-    axs2[0, 1].set_xlim(xlim_recorte)
-    fig2.colorbar(im, ax=axs2[0, 1])
-
-    im = axs2[0, 2].imshow(campo_cargada - campo_airy, cmap='RdBu_r')
-    axs2[0, 2].set_title('Diferencia Campo (Cargada - Airy)')
-    axs2[0, 2].set_ylim(ylim_recorte)
-    axs2[0, 2].set_xlim(xlim_recorte)
-    fig2.colorbar(im, ax=axs2[0, 2])
-
-    # --- Fila 1 (Plot 2): R^2 ---
-    im = axs2[1, 0].imshow(r2_cargada, vmin=0, vmax=1, cmap='viridis')
-    axs2[1, 0].set_title('R^2 (PSF Cargada)')
-    axs2[1, 0].set_ylim(ylim_recorte)
-    axs2[1, 0].set_xlim(xlim_recorte)
-    fig2.colorbar(im, ax=axs2[1, 0])
-
-    im = axs2[1, 1].imshow(r2_airy, vmin=0, vmax=1, cmap='viridis')
-    axs2[1, 1].set_title('R^2 (PSF Airy)')
-    axs2[1, 1].set_ylim(ylim_recorte)
-    axs2[1, 1].set_xlim(xlim_recorte)
-    fig2.colorbar(im, ax=axs2[1, 1])
-
-    im = axs2[1, 2].imshow(r2_cargada - r2_airy, cmap='RdBu_r')
-    axs2[1, 2].set_title('Diferencia R^2 (Cargada - Airy)')
-    axs2[1, 2].set_ylim(ylim_recorte)
-    axs2[1, 2].set_xlim(xlim_recorte)
-    fig2.colorbar(im, ax=axs2[1, 2])
-
-    fig2.tight_layout()
-    plt.show()
+    fig.tight_layout(pad=3.0, h_pad=3.0, w_pad=2.0)
+    plt.savefig('output/comparativa_deconvolucion.png')
 
