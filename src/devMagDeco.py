@@ -45,9 +45,9 @@ def decFourierAxis0Multi(imagen, psf, k=1e-3):
 
     return imagen
 
-def decAxis0Multi(imagen, psf=None, metDecon='w', iteraciones=30, epsilon=1, zernikes=None, k=1e-3):
+def decAxis0Multi(imagen, psf=None, metodo='w', iteraciones=30, epsilon=1, zernikes=None, k=1e-3):
     for i in range(imagen.shape[0]):
-        imagen[i] = decon.deconvolucionMulti(imagen[i], psf=psf, metodo=metDecon, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes)
+        imagen[i] = decon.deconvolucionMulti(imagen[i], psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes)
     return imagen
 
 
@@ -227,8 +227,28 @@ if __name__ == "__main__":
     #psf = decon.psfAiry(intensidad_orig[0, :, :])
     psf = psf_cargada
 
-    intensidad_orig = decon.deconvolucionMulti(intensidad_orig, psf=psf, metodo='w', k=1e-3)
-    V_orig = decon.deconvolucionMulti(V_orig, psf=psf, metodo='w', k=1e-3)
+    zernikes = np.array([0,0,0,
+        0.5765,
+        0.5391,
+        -0.1163,
+        0.121,
+        0.1504,
+        -0.1154,
+        0.2591,
+        -0.3103,
+        0.1108,
+        -0.1963,
+        -0.0431,
+        -0.2591,
+        -0.5599,
+        0.0904,
+        0.2754,
+        0.0715,
+        0.0006,
+        0.0862])
+
+    intensidad_orig = decAxis0Multi(intensidad_orig, psf=psf, metodo='w_fran', k=1e-3, zernikes=zernikes)
+    V_orig = decAxis0Multi(V_orig, psf=psf, metodo='w_fran', k=1e-3, zernikes=zernikes)
 
 
 

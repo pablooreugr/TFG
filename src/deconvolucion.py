@@ -5,6 +5,8 @@ import scipy.fft as sp_fft
 from scipy.signal import fftconvolve
 from scipy.special import j1
 import numexpr as ne
+import mod.shift_func
+import mod.zernike
 
 def recogerLosDatos(rutaArchivo):
     with fits.open(rutaArchivo) as hdul:
@@ -195,18 +197,28 @@ def deconvolucionWienerFran(imagen, zernikes):
         sys.path.append(mod_path)
     
     try:
-        import pd_functions_v22 as pdf
+        import mod.pd_functions_v22 as pdf
     except ModuleNotFoundError as e:
         print(f"\\n⚠️ AVISO: No se puede ejecutar el método de Fran. Falta una dependencia de su código personal: {e}")
         print("Asegúrate de pedirle a Fran los archivos 'shift_func.py' y 'zernike.py' y ponlos en la carpeta 'src/mod/'.")
         print("Devolviendo imagen en blanco (ceros) para no interrumpir el resto de procesos...")
         return np.zeros_like(imagen)
     
-    # La función devuelve la imagen restaurada y el filtro de ruido empleado.
-    # Solo necesitamos la imagen reconstruida.
-    imagen_restaurada, filtro = pdf.restore_ima(imagen, zernikes)
-    
-    return np.real(imagen_restaurada)
+    try:
+        # La función devuelve la imagen restaurada y el filtro de ruido empleado.
+        # Solo necesitamos la imagen reconstruida.
+        imagen_restaurada, filtro = pdf.restore_ima(imagen, zernikes)
+        return np.real(imagen_restaurada)
+    except AttributeError as e:
+        # Caso habitual: se ha importado el paquete pip "zernike" en lugar
+        # del módulo local esperado por el código de Fran (función zernike()).
+        if "module 'zernike' has no attribute 'zernike'" in str(e):
+            print("\n⚠️ AVISO: Incompatibilidad con el módulo 'zernike'.")
+            print("El método de Fran espera un archivo local 'zernike.py' (en src/mod/) con la función 'zernike'.")
+            print("El paquete instalado por pip llamado 'zernike' no expone esa función con ese nombre.")
+            print("Devolviendo imagen en blanco (ceros) para no interrumpir el resto de procesos...")
+            return np.zeros_like(imagen)
+        raise
 
 def deconvolucionWienerScikit(imagen, psf, balance=1e-3):
     """

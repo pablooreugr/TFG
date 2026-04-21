@@ -55,13 +55,13 @@ from scipy.optimize import minimize, minimize_scalar
 from astropy.convolution import convolve
 import numpy as np
 import pandas as pd
-import zernike as zk
-import math_func2 as mf
+from . import zernike as zk
+from . import math_func2 as mf
 import sys
 import os
 import time
 import scipy
-import shift_func as sf
+from . import shift_func as sf
 from astropy.io import fits
 from tqdm import tqdm
 from matplotlib.colors import LogNorm
