@@ -13,41 +13,49 @@ def decWienerAxis0(imagen, psf, k=1e-3):
 
     return imagen
 
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
+
 def decWienerAxis0Multi(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionWienerMulti(imagen[i], psf, k)
-
     return imagen
 
 def decRLAxis0(imagen, psf, iteraciones=500, epsilon=1, k=1e-3):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionRL(imagen[i], psf, iteraciones, k, epsilon)
-
     return imagen
 
 def decRLAxis0Multi(imagen, psf, iteraciones=500, epsilon=1, k=1e-3):
     for i in range(imagen.shape[0]):
         imagen[i] = decon.deconvolucionRLMulti(imagen[i], psf, iteraciones, k, epsilon)
-
     return imagen
 
 def decFourierAxis0(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
-
         imagen[i] = decon.deconvolucionFourier(imagen[i], psf, k)
-
     return imagen
 
 def decFourierAxis0Multi(imagen, psf, k=1e-3):
     for i in range(imagen.shape[0]):
         print(f"Deconvolución Fourier (Multi) - Lambda {i}...")
         imagen[i] = decon.deconvolucionFourierMulti(imagen[i], psf, k)
-
     return imagen
 
+def _procesar_multi_generico(i_img, psf, metodo, iteraciones, epsilon, zernikes, k):
+    i, img = i_img
+    return i, decon.deconvolucionMulti(img, psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes)
+
 def decAxis0Multi(imagen, psf=None, metodo='w', iteraciones=30, epsilon=1, zernikes=None, k=1e-3):
-    for i in range(imagen.shape[0]):
-        imagen[i] = decon.deconvolucionMulti(imagen[i], psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes)
+    if metodo in ['w_fran', 'w_fran_multi']:
+        img_list = list(enumerate(imagen))
+        func = partial(_procesar_multi_generico, psf=psf, metodo=metodo, iteraciones=iteraciones, epsilon=epsilon, zernikes=zernikes, k=k)
+        with ProcessPoolExecutor() as executor:
+            for i, res in executor.map(func, img_list):
+                imagen[i] = res
+    else:
+        for i in range(imagen.shape[0]):
+            imagen[i] = decon.deconvolucionMulti(imagen[i], psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes)
     return imagen
 
 

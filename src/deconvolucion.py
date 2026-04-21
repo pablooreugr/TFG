@@ -220,6 +220,76 @@ def deconvolucionWienerFran(imagen, zernikes):
             return np.zeros_like(imagen)
         raise
 
+def deconvolucionWienerFranMulti(imagen, zernikes):
+    """
+    Deconvolución de Wiener avanzada propuesta por Fran.
+    Versión multinúcleo empleando monkey-patching para forzar workers=-1 en scipy.fft.
+    Llama a restore_ima del módulo pd_functions_v22 usando los coeficientes de Zernike.
+    """
+    import sys
+    import os
+    import scipy.fft as sp_fft
+    import scipy.fftpack as sp_fftpack
+    from functools import partial
+
+    # Aseguramos que el módulo se pueda importar correctamente
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    mod_path = os.path.join(dir_path, 'mod')
+    if mod_path not in sys.path:
+        sys.path.append(mod_path)
+    
+    try:
+        import mod.pd_functions_v22 as pdf
+        import mod.math_func2 as mf
+    except ModuleNotFoundError as e:
+        print(f"\n⚠️ AVISO: No se puede ejecutar el método de Fran. Falta una dependencia de su código personal: {e}")
+        return np.zeros_like(imagen)
+
+    # 1. Guardamos las funciones originales
+    original_np_fft2 = np.fft.fft2
+    original_np_ifft2 = np.fft.ifft2
+    original_sp_fft2 = sp_fftpack.fft2
+    original_sp_ifft2 = sp_fftpack.ifft2
+    original_pdf_fft2 = pdf.fft2
+    original_pdf_ifft2 = pdf.ifft2
+    original_mf_fft2 = mf.fft2
+    original_mf_ifft2 = mf.ifft2
+
+    # 2. Creamos funciones parciales forzando multinúcleo
+    multi_fft2 = partial(sp_fft.fft2, workers=-1)
+    multi_ifft2 = partial(sp_fft.ifft2, workers=-1)
+
+    try:
+        # 3. Aplicamos el Monkey-patch
+        np.fft.fft2 = multi_fft2
+        np.fft.ifft2 = multi_ifft2
+        sp_fftpack.fft2 = multi_fft2
+        sp_fftpack.ifft2 = multi_ifft2
+        pdf.fft2 = multi_fft2
+        pdf.ifft2 = multi_ifft2
+        mf.fft2 = multi_fft2
+        mf.ifft2 = multi_ifft2
+
+        # 4. Ejecutamos la función original de Fran
+        try:
+            imagen_restaurada, filtro = pdf.restore_ima(imagen, zernikes)
+            return np.real(imagen_restaurada)
+        except AttributeError as e:
+            if "module 'zernike' has no attribute 'zernike'" in str(e):
+                print("\n⚠️ AVISO: Incompatibilidad con el módulo 'zernike'.")
+                return np.zeros_like(imagen)
+            raise
+    finally:
+        # 5. Restauramos las funciones originales, incluso si hay error
+        np.fft.fft2 = original_np_fft2
+        np.fft.ifft2 = original_np_ifft2
+        sp_fftpack.fft2 = original_sp_fft2
+        sp_fftpack.ifft2 = original_sp_ifft2
+        pdf.fft2 = original_pdf_fft2
+        pdf.ifft2 = original_pdf_ifft2
+        mf.fft2 = original_mf_fft2
+        mf.ifft2 = original_mf_ifft2
+
 def deconvolucionWienerScikit(imagen, psf, balance=1e-3):
     """
     Implementación nativa oficial de la librería scikit-image del filtro de Wiener,
@@ -363,8 +433,8 @@ def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, ep
             imagenPos = deconvolucionWienerMulti(imagenPos, psf, k)
             imagenNeg = deconvolucionWienerMulti(imagenNeg, psf, k)
         elif metodo == 'w_fran' and zernikes is not None:
-            imagenPos = deconvolucionWienerFran(imagenPos, zernikes)
-            imagenNeg = deconvolucionWienerFran(imagenNeg, zernikes)
+            imagenPos = deconvolucionWienerFranMulti(imagenPos, zernikes)
+            imagenNeg = deconvolucionWienerFranMulti(imagenNeg, zernikes)
         elif metodo == 'w_skimage' and psf is not None:
             imagenPos = deconvolucionWienerScikit(imagenPos, psf, balance=k)
             imagenNeg = deconvolucionWienerScikit(imagenNeg, psf, balance=k)
@@ -380,7 +450,7 @@ def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, ep
         elif metodo == 'w':
             return deconvolucionWienerMulti(imagen, psf, k)
         elif metodo == 'w_fran' and zernikes is not None:
-            return deconvolucionWienerFran(imagen, zernikes)
+            return deconvolucionWienerFranMulti(imagen, zernikes)
         elif metodo == 'w_skimage' and psf is not None:
             return deconvolucionWienerScikit(imagen, psf, balance=k)
         else:
