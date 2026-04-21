@@ -43,8 +43,9 @@ def psfAiry(datos, escala=1.32/3):
     X, Y = np.meshgrid(ejeX, ejeY, indexing='ij')
 
     R = np.sqrt(X**2 + Y**2) * escala
-    
-    termino_interno = np.where(R == 0, 1.0, 2 * j1(R) / R)
+
+    termino_interno = np.ones_like(R, dtype=float)
+    np.divide(2 * j1(R), R, out=termino_interno, where=R != 0)
     
     # 4. Intensidad (al cuadrado)
     psf = termino_interno**2
@@ -322,6 +323,20 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
     return o_ene
 
 def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, epsilon=1, zernikes=None):
+    # Aceptamos alias de nombre largo para evitar incompatibilidades entre módulos.
+    mapa_metodos = {
+        'wiener': 'w',
+        'fourier': 'f',
+        'rl': 'rl',
+        'richardson-lucy': 'rl',
+        'richardson_lucy': 'rl',
+        'w': 'w',
+        'f': 'f',
+        'w_fran': 'w_fran',
+        'w_skimage': 'w_skimage',
+    }
+    metodo = mapa_metodos.get(str(metodo).lower(), metodo)
+
     if (imagen < 0).any():
         imagenPos = np.where(imagen <= 0, 0, imagen)
         imagenNeg = np.abs(np.where(imagen < 0, imagen, 0))
@@ -341,6 +356,8 @@ def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, ep
         elif metodo == 'w_skimage' and psf is not None:
             imagenPos = deconvolucionWienerScikit(imagenPos, psf, balance=k)
             imagenNeg = deconvolucionWienerScikit(imagenNeg, psf, balance=k)
+        else:
+            raise ValueError(f"Método de deconvolución no soportado: {metodo}")
 
         return imagenPos - imagenNeg
     else:
@@ -354,6 +371,8 @@ def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, ep
             return deconvolucionWienerFran(imagen, zernikes)
         elif metodo == 'w_skimage' and psf is not None:
             return deconvolucionWienerScikit(imagen, psf, balance=k)
+        else:
+            raise ValueError(f"Método de deconvolución no soportado: {metodo}")
     
 
 def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/prueba.fits'):

@@ -62,8 +62,8 @@ def magnetismoDirectamente(imagen, psf, lambdas, metDecon='wiener', iteraciones=
         imagenIntensidad = decFourierAxis0(imagenIntensidad, psf, k)
         imagenV = decFourierAxis0(imagenV, psf, k)
     elif metDecon == 'rl':
-        imagenIntensidad = decRLAxis0(imagenIntensidad, psf, iteraciones, k, epsilon)
-        imagenV = decRLAxis0(imagenV, psf, iteraciones, k, epsilon)
+        imagenIntensidad = decRLAxis0(imagenIntensidad, psf, iteraciones=iteraciones, epsilon=epsilon, k=k)
+        imagenV = decRLAxis0(imagenV, psf, iteraciones=iteraciones, epsilon=epsilon, k=k)
 
     lambdas3D = lambdas[:, np.newaxis, np.newaxis]
 
@@ -101,8 +101,8 @@ def magnetismoDirectamenteMulti(imagen, psf, lambdas, metDecon='wiener', iteraci
         imagenIntensidad = decFourierAxis0Multi(imagenIntensidad, psf, k)
         imagenV = decFourierAxis0Multi(imagenV, psf, k)
     elif metDecon == 'rl':
-        imagenIntensidad = decRLAxis0Multi(imagenIntensidad, psf, iteraciones, k, epsilon)
-        imagenV = decRLAxis0Multi(imagenV, psf, iteraciones, k, epsilon)
+        imagenIntensidad = decRLAxis0Multi(imagenIntensidad, psf, iteraciones=iteraciones, epsilon=epsilon, k=k)
+        imagenV = decRLAxis0Multi(imagenV, psf, iteraciones=iteraciones, epsilon=epsilon, k=k)
 
     lambdas3D = lambdas[:, np.newaxis, np.newaxis]
 
@@ -202,7 +202,6 @@ def dibujarComparacionPSF(psf_cargada, psf_airy):
 
 if __name__ == "__main__":
     # Cargar la imagen FITS
-    # 1. Cargamos los datos
     ruta_archivo = 'data/prueba.fits'
     with fits.open(ruta_archivo) as hdul:
         datos = hdul[0].data
@@ -211,75 +210,28 @@ if __name__ == "__main__":
     # Extraemos el eje lambda de la cabecera
     eje_lambda = np.array([cabecera[f'L_{i}'] for i in range(datos.shape[0])])
 
-    psf = np.load("data/PSF_517_1600_x_1600_px.npy")
-    print(f"Tamaño de PSF: {psf.shape}")
+    psf_cargada = np.load("data/PSF_517_1600_x_1600_px.npy")
+    print(f"Tamaño de PSF cargada: {psf_cargada.shape}")
     print(f"Tamaño de imagen original: {datos.shape}")
 
-    psf = psf / np.sum(psf)  # Normalizamos la PSF para que su suma sea 1
+    psf_cargada = psf_cargada / np.sum(psf_cargada)  # Normalizamos la PSF para que su suma sea 1
     
     # Recortar la imagen a 1600x1600 (centrada)
-    target_size = psf.shape[0]  # 1600
+    target_size = psf_cargada.shape[0]  # 1600
     start = (datos.shape[2] - target_size) // 2
     datos = datos[:, :, start:start+target_size, start:start+target_size]
     
     intensidad_orig = datos[:, 0, :, :]
-    
-    print("1. Calculando la PSF de Airy...")
-    psf_airy = decon.psfAiry(intensidad_orig[0])
-    
-    print("2. Deconvolucionando con PSF Cargada (Original) ...")
-    intensidad_dec_orig = decWienerAxis0Multi(np.copy(intensidad_orig), psf, k=1e-3)
-    
-    print("3. Deconvolucionando con PSF de Airy ...")
-    intensidad_dec_airy = decWienerAxis0Multi(np.copy(intensidad_orig), psf_airy, k=1e-3)
+    V_orig = datos[:, 3, :, :]
 
-    print("4. Deconvolucionando Scikit con PSF Cargada ...")
-    intensidad_sk_orig = decAxis0Multi(np.copy(intensidad_orig), psf, metDecon='w_skimage', k=1e-3)
-    
-    print("5. Deconvolucionando Scikit con PSF de Airy ...")
-    intensidad_sk_airy = decAxis0Multi(np.copy(intensidad_orig), psf_airy, metDecon='w_skimage', k=1e-3)
+    #psf = decon.psfAiry(intensidad_orig[0, :, :])
+    psf = psf_cargada
 
-    print("Generando Gráficos...")
-    fig, axs = plt.subplots(2, 3, figsize=(18, 12))
-    fig.canvas.manager.set_window_title('Comparativa Wiener: Básico vs Scikit')
-    
-    idx = 0 # Primer valor de lambda
-    ylim_recorte = (500, 700)
-    xlim_recorte = (600, 800)
-    
-    # --- Fila 0: Wiener Básico ---
-    im0 = axs[0, 0].imshow(intensidad_orig[idx], cmap='hot', origin='lower')
-    axs[0, 0].set_title('Intensidad Original')
-    axs[0, 0].set_ylim(ylim_recorte)
-    axs[0, 0].set_xlim(xlim_recorte)
-    fig.colorbar(im0, ax=axs[0, 0])
-    
-    im1 = axs[0, 1].imshow(intensidad_dec_orig[idx], cmap='hot', origin='lower')
-    axs[0, 1].set_title('Wiener Básico (PSF Orig)')
-    axs[0, 1].set_ylim(ylim_recorte)
-    axs[0, 1].set_xlim(xlim_recorte)
-    fig.colorbar(im1, ax=axs[0, 1])
-    
-    im2 = axs[0, 2].imshow(intensidad_dec_airy[idx], cmap='hot', origin='lower')
-    axs[0, 2].set_title('Wiener Básico (PSF Airy)')
-    axs[0, 2].set_ylim(ylim_recorte)
-    axs[0, 2].set_xlim(xlim_recorte)
-    fig.colorbar(im2, ax=axs[0, 2])
+    intensidad_orig = decon.deconvolucionMulti(intensidad_orig, psf=psf, metodo='w', k=1e-3)
+    V_orig = decon.deconvolucionMulti(V_orig, psf=psf, metodo='w', k=1e-3)
 
-    # --- Fila 1: Wiener Scikit ---
-    axs[1, 0].axis('off')  # No hace falta ver la original otra vez
-    
-    im3 = axs[1, 1].imshow(intensidad_sk_orig[idx], cmap='hot', origin='lower')
-    axs[1, 1].set_title('Wiener Scikit-Image (PSF Orig)')
-    axs[1, 1].set_ylim(ylim_recorte)
-    axs[1, 1].set_xlim(xlim_recorte)
-    fig.colorbar(im3, ax=axs[1, 1])
-    
-    im4 = axs[1, 2].imshow(intensidad_sk_airy[idx], cmap='hot', origin='lower')
-    axs[1, 2].set_title('Wiener Scikit-Image (PSF Airy)')
-    axs[1, 2].set_ylim(ylim_recorte)
-    axs[1, 2].set_xlim(xlim_recorte)
-    fig.colorbar(im4, ax=axs[1, 2])
-    
-    plt.tight_layout()
-    plt.show()
+
+
+    campoMagnetico, mapa_r_cuadrado = calcularMagnetismo(intensidad_orig, V_orig, eje_lambda)
+
+    dibujarMagYR(campoMagnetico, mapa_r_cuadrado)
