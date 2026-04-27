@@ -5,6 +5,10 @@ import scipy.fft as sp_fft
 from scipy.signal import fftconvolve
 from scipy.special import j1
 import numexpr as ne
+import mod.shift_func
+import mod.zernike
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 
 def recogerLosDatos(rutaArchivo):
     with fits.open(rutaArchivo) as hdul:
@@ -43,8 +47,9 @@ def psfAiry(datos, escala=1.32/3):
     X, Y = np.meshgrid(ejeX, ejeY, indexing='ij')
 
     R = np.sqrt(X**2 + Y**2) * escala
-    
-    termino_interno = np.where(R == 0, 1.0, 2 * j1(R) / R)
+
+    termino_interno = np.ones_like(R, dtype=float)
+    np.divide(2 * j1(R), R, out=termino_interno, where=R != 0)
     
     # 4. Intensidad (al cuadrado)
     psf = termino_interno**2
@@ -112,11 +117,11 @@ def prepararFourier(imagen, psf):
 
     return imagenFourier, psf_Fourier
 
-def prepararFourierMulti(imagen, psf):
+def prepararFourierMulti(imagen, psf, workers=-1):
     psf_preparada = np.fft.ifftshift(psf)
-    psf_furier = sp_fft.fft2(psf_preparada, workers=-1)
+    psf_furier = sp_fft.fft2(psf_preparada, workers=workers)
 
-    imagenFourier = sp_fft.fft2(imagen, workers=-1)
+    imagenFourier = sp_fft.fft2(imagen, workers=workers)
 
     return imagenFourier, psf_furier
 
@@ -134,16 +139,16 @@ def deconvolucionFourier(imagen, psf, k=1e-3):
 
     return np.real(resultado_complejo)
 
-def deconvolucionFourierMulti(imagen, psf, k=1e-3):
+def deconvolucionFourierMulti(imagen, psf, k=1e-3, workers=-1):
     # Hay que preparar la psf porque resulta que aunque la PSF esta centrada en cero
     # el algoritmo de fft no lo toma como en cero, sino que tiene que tomarlo a la izquierda del todo
-    imagenFourier, psfFurier = prepararFourierMulti(imagen, psf)
+    imagenFourier, psfFurier = prepararFourierMulti(imagen, psf, workers=workers)
 
     epsilon = k
     #epsilon = 0.05
     X_fourier = ne.evaluate("imagenFourier / (psfFurier + epsilon)")
 
-    resultado_complejo = sp_fft.ifft2(X_fourier, workers=-1)
+    resultado_complejo = sp_fft.ifft2(X_fourier, workers=workers)
 
     return np.real(resultado_complejo)
 
@@ -164,8 +169,8 @@ def deconvolucionWiener(imagen, psf, k=1e-3):
 
     return np.real(resultado_complejo)
 
-def deconvolucionWienerMulti(imagen, psf, k=1e-3):
-    imagenFourier, psfFourier = prepararFourierMulti(imagen, psf)
+def deconvolucionWienerMulti(imagen, psf, k=1e-3, workers=-1):
+    imagenFourier, psfFourier = prepararFourierMulti(imagen, psf, workers=workers)
 
     # A partir de ahora construyo el filtro de Weiner
     numerador = np.conjugate(psfFourier)
@@ -176,9 +181,139 @@ def deconvolucionWienerMulti(imagen, psf, k=1e-3):
 
     X_fourier = ne.evaluate('imagenFourier * filtro')
 
-    resultado_complejo = sp_fft.ifft2(X_fourier, workers=-1)
-
+    resultado_complejo = sp_fft.ifft2(X_fourier, workers=workers)
+    
     return np.real(resultado_complejo)
+
+def deconvolucionWienerFran(imagen, zernikes):
+    """
+    Deconvolución de Wiener avanzada propuesta por Fran.
+    Llama a restore_ima del módulo pd_functions_v22 usando los coeficientes de Zernike.
+    """
+    import sys
+    import os
+    # Aseguramos que el módulo se pueda importar correctamente
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    mod_path = os.path.join(dir_path, 'mod')
+    if mod_path not in sys.path:
+        sys.path.append(mod_path)
+    
+    try:
+        import mod.pd_functions_v22 as pdf
+    except ModuleNotFoundError as e:
+        print(f"\\n⚠️ AVISO: No se puede ejecutar el método de Fran. Falta una dependencia de su código personal: {e}")
+        print("Asegúrate de pedirle a Fran los archivos 'shift_func.py' y 'zernike.py' y ponlos en la carpeta 'src/mod/'.")
+        print("Devolviendo imagen en blanco (ceros) para no interrumpir el resto de procesos...")
+        return np.zeros_like(imagen)
+    
+    try:
+        # La función devuelve la imagen restaurada y el filtro de ruido empleado.
+        # Solo necesitamos la imagen reconstruida.
+        imagen_restaurada, filtro = pdf.restore_ima(imagen, zernikes)
+        return np.real(imagen_restaurada)
+    except AttributeError as e:
+        # Caso habitual: se ha importado el paquete pip "zernike" en lugar
+        # del módulo local esperado por el código de Fran (función zernike()).
+        if "module 'zernike' has no attribute 'zernike'" in str(e):
+            print("\n⚠️ AVISO: Incompatibilidad con el módulo 'zernike'.")
+            print("El método de Fran espera un archivo local 'zernike.py' (en src/mod/) con la función 'zernike'.")
+            print("El paquete instalado por pip llamado 'zernike' no expone esa función con ese nombre.")
+            print("Devolviendo imagen en blanco (ceros) para no interrumpir el resto de procesos...")
+            return np.zeros_like(imagen)
+        raise
+
+def deconvolucionWienerFranMulti(imagen, zernikes, workers=-1):
+    """
+    Deconvolución de Wiener avanzada propuesta por Fran.
+    Versión multinúcleo empleando monkey-patching para forzar workers.
+    Llama a restore_ima del módulo pd_functions_v22 usando los coeficientes de Zernike.
+    """
+    import sys
+    import os
+    import scipy.fft as sp_fft
+    import scipy.fftpack as sp_fftpack
+    from functools import partial
+
+    # Aseguramos que el módulo se pueda importar correctamente
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    mod_path = os.path.join(dir_path, 'mod')
+    if mod_path not in sys.path:
+        sys.path.append(mod_path)
+    
+    try:
+        import mod.pd_functions_v22 as pdf
+        import mod.math_func2 as mf
+    except ModuleNotFoundError as e:
+        print(f"\n⚠️ AVISO: No se puede ejecutar el método de Fran. Falta una dependencia de su código personal: {e}")
+        return np.zeros_like(imagen)
+
+    # 1. Guardamos las funciones originales
+    original_np_fft2 = np.fft.fft2
+    original_np_ifft2 = np.fft.ifft2
+    original_sp_fft2 = sp_fftpack.fft2
+    original_sp_ifft2 = sp_fftpack.ifft2
+    original_pdf_fft2 = pdf.fft2
+    original_pdf_ifft2 = pdf.ifft2
+    original_mf_fft2 = mf.fft2
+    original_mf_ifft2 = mf.ifft2
+
+    # 2. Creamos funciones parciales forzando multinúcleo o número específico de hilos
+    multi_fft2 = partial(sp_fft.fft2, workers=workers)
+    multi_ifft2 = partial(sp_fft.ifft2, workers=workers)
+
+    try:
+        # 3. Aplicamos el Monkey-patch
+        np.fft.fft2 = multi_fft2
+        np.fft.ifft2 = multi_ifft2
+        sp_fftpack.fft2 = multi_fft2
+        sp_fftpack.ifft2 = multi_ifft2
+        pdf.fft2 = multi_fft2
+        pdf.ifft2 = multi_ifft2
+        mf.fft2 = multi_fft2
+        mf.ifft2 = multi_ifft2
+
+        # 4. Ejecutamos la función original de Fran
+        try:
+            imagen_restaurada, filtro = pdf.restore_ima(imagen, zernikes)
+            return np.real(imagen_restaurada)
+        except AttributeError as e:
+            if "module 'zernike' has no attribute 'zernike'" in str(e):
+                print("\n⚠️ AVISO: Incompatibilidad con el módulo 'zernike'.")
+                return np.zeros_like(imagen)
+            raise
+    finally:
+        # 5. Restauramos las funciones originales, incluso si hay error
+        np.fft.fft2 = original_np_fft2
+        np.fft.ifft2 = original_np_ifft2
+        sp_fftpack.fft2 = original_sp_fft2
+        sp_fftpack.ifft2 = original_sp_ifft2
+        pdf.fft2 = original_pdf_fft2
+        pdf.ifft2 = original_pdf_ifft2
+        mf.fft2 = original_mf_fft2
+        mf.ifft2 = original_mf_ifft2
+
+def deconvolucionWienerScikit(imagen, psf, balance=1e-3):
+    """
+    Implementación nativa oficial de la librería scikit-image del filtro de Wiener,
+    utilizando el módulo recién instalado por el usuario.
+    """
+    from skimage import restoration
+    
+    # 1. NORMALIZACIÓN DE ENERGÍA (Por qué se dispara a 35000):
+    # scikit-image evalúa la frecuencia DC (frecuencia 0, intensidad media) del filtro. 
+    # Por defecto, skimage asume que la integral de luz de la PSF es exactamente 1.0. 
+    # Si nuestra tu PSF suma un valor muy pequeño (ej. 0.025), la librería asume que 
+    # la óptica cortó ese diferencial de luz y multiplica toda la foto final por casi x40!
+    # Solución: Normalizamos la suma ponderada del núcleo a 1.0:
+    psf_norm = psf / np.sum(psf)
+    
+    # IMPORTANTE: skimage usa un filtro Laplaciano (corte agresivo de altas frecuencias) 
+    # como regularizador por defecto, no una constante K plana como tu método Básico. 
+    # Un balance de 1e-3 en el Laplaciano emborrona la imagen muchísimo más porque ataca más rápido las siluetas.
+    # Le pasamos la PSF limpia y normalizada:
+    imagen_restaurada = restoration.wiener(imagen, psf_norm, balance=balance, clip=False)
+    
+    return imagen_restaurada
 
 
 def deconvolucionRL(imagen, psf, pasos = 1000, k=1e-3, epsilon=1):
@@ -218,13 +353,13 @@ def deconvolucionRL(imagen, psf, pasos = 1000, k=1e-3, epsilon=1):
     
     return o_ene
 
-def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
+def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1, workers=-1):
     # Usamos sp_fft para las preparaciones iniciales
     psf_preparada = sp_fft.ifftshift(psf)
-    psfFourier = sp_fft.fft2(psf_preparada, workers=-1)
+    psfFourier = sp_fft.fft2(psf_preparada, workers=workers)
 
     psfInvertido = np.flip(psf_preparada)
-    psfInvFurier = sp_fft.fft2(psfInvertido, workers=-1)
+    psfInvFurier = sp_fft.fft2(psfInvertido, workers=workers)
     
     # Hacemos una copia para no alterar la imagen original por referencia
     o_ene = np.copy(imagen)
@@ -233,20 +368,20 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
         #print(f'Paso {i}')
         
         # 1. Transformamos o_ene sin sobrescribir la variable original espacial
-        o_ene_fourier = sp_fft.fft2(o_ene, workers=-1)
+        o_ene_fourier = sp_fft.fft2(o_ene, workers=workers)
         
         # 2. Calculamos el denominador en frecuencia y volvemos al dominio espacial
         denominador_fourier = ne.evaluate('o_ene_fourier * psfFourier')
-        denominador = np.real(sp_fft.ifft2(denominador_fourier, workers=-1))
+        denominador = np.real(sp_fft.ifft2(denominador_fourier, workers=workers))
 
         # 3. Calculamos la fracción usando numexpr
         fraccion = ne.evaluate('imagen / (denominador + k)')
         del denominador
 
         # 4. Pasamos la fracción a frecuencia, multiplicamos y volvemos al espacio
-        fraccion_fourier = sp_fft.fft2(fraccion, workers=-1)
+        fraccion_fourier = sp_fft.fft2(fraccion, workers=workers)
         fraccion_fourier = ne.evaluate('fraccion_fourier * psfInvFurier')
-        fraccion = np.real(sp_fft.ifft2(fraccion_fourier, workers=-1))
+        fraccion = np.real(sp_fft.ifft2(fraccion_fourier, workers=workers))
 
         # 5. Calculamos la nueva estimación de la imagen
         o_ene1 = ne.evaluate('o_ene * fraccion')
@@ -270,6 +405,97 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
     print(f'Finalizado a los {pasos} pasos')
     
     return o_ene
+
+def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, epsilon=1, zernikes=None, workers=-1):
+    # Aceptamos alias de nombre largo para evitar incompatibilidades entre módulos.
+    mapa_metodos = {
+        'wiener': 'w',
+        'fourier': 'f',
+        'rl': 'rl',
+        'richardson-lucy': 'rl',
+        'richardson_lucy': 'rl',
+        'w': 'w',
+        'f': 'f',
+        'w_fran': 'w_fran',
+        'w_skimage': 'w_skimage',
+    }
+    metodo = mapa_metodos.get(str(metodo).lower(), metodo)
+
+    if (imagen < 0).any():
+        imagenPos = np.where(imagen <= 0, 0, imagen)
+        imagenNeg = np.abs(np.where(imagen < 0, imagen, 0))
+
+        if metodo == 'rl':
+            imagenPos = deconvolucionRLMulti(imagenPos, psf, iteraciones, k, epsilon, workers=workers)
+            imagenNeg = deconvolucionRLMulti(imagenNeg, psf, iteraciones, k, epsilon, workers=workers)
+        elif metodo == 'f':
+            imagenPos = deconvolucionFourierMulti(imagenPos, psf, k, workers=workers)
+            imagenNeg = deconvolucionFourierMulti(imagenNeg, psf, k, workers=workers)
+        elif metodo == 'w':
+            imagenPos = deconvolucionWienerMulti(imagenPos, psf, k, workers=workers)
+            imagenNeg = deconvolucionWienerMulti(imagenNeg, psf, k, workers=workers)
+        elif metodo == 'w_fran' and zernikes is not None:
+            imagenPos = deconvolucionWienerFranMulti(imagenPos, zernikes, workers=workers)
+            imagenNeg = deconvolucionWienerFranMulti(imagenNeg, zernikes, workers=workers)
+        elif metodo == 'w_skimage' and psf is not None:
+            imagenPos = deconvolucionWienerScikit(imagenPos, psf, balance=k)
+            imagenNeg = deconvolucionWienerScikit(imagenNeg, psf, balance=k)
+        else:
+            raise ValueError(f"Método de deconvolución no soportado: {metodo}")
+
+        return imagenPos - imagenNeg
+    else:
+        if metodo == 'rl':
+            return deconvolucionRLMulti(imagen, psf, iteraciones, k, epsilon, workers=workers)
+        elif metodo == 'f':
+            return deconvolucionFourierMulti(imagen, psf, k, workers=workers)
+        elif metodo == 'w':
+            return deconvolucionWienerMulti(imagen, psf, k, workers=workers)
+        elif metodo == 'w_fran' and zernikes is not None:
+            return deconvolucionWienerFranMulti(imagen, zernikes, workers=workers)
+        elif metodo == 'w_skimage' and psf is not None:
+            return deconvolucionWienerScikit(imagen, psf, balance=k)
+        else:
+            raise ValueError(f"Método de deconvolución no soportado: {metodo}")
+    
+def _procesar_multi_generico(i_img, psf, metodo, iteraciones, epsilon, zernikes, k, workers):
+    i, img = i_img
+    return i, deconvolucionMulti(img, psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes, workers=workers)
+
+def aplicar_deconvolucion_3d(imagen_3d, psf=None, metodo='w', iteraciones=30, epsilon=1, zernikes = np.array([0,0,0,
+        0.5765,
+        0.5391,
+        -0.1163,
+        0.121,
+        0.1504,
+        -0.1154,
+        0.2591,
+        -0.3103,
+        0.1108,
+        -0.1963,
+        -0.0431,
+        -0.2591,
+        -0.5599,
+        0.0904,
+        0.2754,
+        0.0715,
+        0.0006,
+        0.0862]), k=1e-3, workers=-1):
+    """
+    Aplica deconvolución a lo largo del eje lambda (eje 0) de un cubo 3D.
+    """
+    executor_workers = None if workers == -1 else workers
+
+    if metodo in ['w_fran', 'w_fran_multi']:
+        img_list = list(enumerate(imagen_3d))
+        func = partial(_procesar_multi_generico, psf=psf, metodo=metodo, iteraciones=iteraciones, epsilon=epsilon, zernikes=zernikes, k=k, workers=workers)
+        with ProcessPoolExecutor(max_workers=executor_workers) as executor:
+            for i, res in executor.map(func, img_list):
+                imagen_3d[i] = res
+    else:
+        for i in range(imagen_3d.shape[0]):
+            imagen_3d[i] = deconvolucionMulti(imagen_3d[i], psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes, workers=workers)
+    return imagen_3d
 
 
 def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/prueba.fits'):
@@ -421,6 +647,3 @@ if __name__ == "__main__":
     
     plt.tight_layout()
     plt.show()
-    
-    
-    
