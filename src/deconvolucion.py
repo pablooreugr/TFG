@@ -7,6 +7,8 @@ from scipy.special import j1
 import numexpr as ne
 import mod.shift_func
 import mod.zernike
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 
 def recogerLosDatos(rutaArchivo):
     with fits.open(rutaArchivo) as hdul:
@@ -115,11 +117,11 @@ def prepararFourier(imagen, psf):
 
     return imagenFourier, psf_Fourier
 
-def prepararFourierMulti(imagen, psf):
+def prepararFourierMulti(imagen, psf, workers=-1):
     psf_preparada = np.fft.ifftshift(psf)
-    psf_furier = sp_fft.fft2(psf_preparada, workers=-1)
+    psf_furier = sp_fft.fft2(psf_preparada, workers=workers)
 
-    imagenFourier = sp_fft.fft2(imagen, workers=-1)
+    imagenFourier = sp_fft.fft2(imagen, workers=workers)
 
     return imagenFourier, psf_furier
 
@@ -137,16 +139,16 @@ def deconvolucionFourier(imagen, psf, k=1e-3):
 
     return np.real(resultado_complejo)
 
-def deconvolucionFourierMulti(imagen, psf, k=1e-3):
+def deconvolucionFourierMulti(imagen, psf, k=1e-3, workers=-1):
     # Hay que preparar la psf porque resulta que aunque la PSF esta centrada en cero
     # el algoritmo de fft no lo toma como en cero, sino que tiene que tomarlo a la izquierda del todo
-    imagenFourier, psfFurier = prepararFourierMulti(imagen, psf)
+    imagenFourier, psfFurier = prepararFourierMulti(imagen, psf, workers=workers)
 
     epsilon = k
     #epsilon = 0.05
     X_fourier = ne.evaluate("imagenFourier / (psfFurier + epsilon)")
 
-    resultado_complejo = sp_fft.ifft2(X_fourier, workers=-1)
+    resultado_complejo = sp_fft.ifft2(X_fourier, workers=workers)
 
     return np.real(resultado_complejo)
 
@@ -167,8 +169,8 @@ def deconvolucionWiener(imagen, psf, k=1e-3):
 
     return np.real(resultado_complejo)
 
-def deconvolucionWienerMulti(imagen, psf, k=1e-3):
-    imagenFourier, psfFourier = prepararFourierMulti(imagen, psf)
+def deconvolucionWienerMulti(imagen, psf, k=1e-3, workers=-1):
+    imagenFourier, psfFourier = prepararFourierMulti(imagen, psf, workers=workers)
 
     # A partir de ahora construyo el filtro de Weiner
     numerador = np.conjugate(psfFourier)
@@ -179,7 +181,7 @@ def deconvolucionWienerMulti(imagen, psf, k=1e-3):
 
     X_fourier = ne.evaluate('imagenFourier * filtro')
 
-    resultado_complejo = sp_fft.ifft2(X_fourier, workers=-1)
+    resultado_complejo = sp_fft.ifft2(X_fourier, workers=workers)
     
     return np.real(resultado_complejo)
 
@@ -220,10 +222,10 @@ def deconvolucionWienerFran(imagen, zernikes):
             return np.zeros_like(imagen)
         raise
 
-def deconvolucionWienerFranMulti(imagen, zernikes):
+def deconvolucionWienerFranMulti(imagen, zernikes, workers=-1):
     """
     Deconvolución de Wiener avanzada propuesta por Fran.
-    Versión multinúcleo empleando monkey-patching para forzar workers=-1 en scipy.fft.
+    Versión multinúcleo empleando monkey-patching para forzar workers.
     Llama a restore_ima del módulo pd_functions_v22 usando los coeficientes de Zernike.
     """
     import sys
@@ -255,9 +257,9 @@ def deconvolucionWienerFranMulti(imagen, zernikes):
     original_mf_fft2 = mf.fft2
     original_mf_ifft2 = mf.ifft2
 
-    # 2. Creamos funciones parciales forzando multinúcleo
-    multi_fft2 = partial(sp_fft.fft2, workers=-1)
-    multi_ifft2 = partial(sp_fft.ifft2, workers=-1)
+    # 2. Creamos funciones parciales forzando multinúcleo o número específico de hilos
+    multi_fft2 = partial(sp_fft.fft2, workers=workers)
+    multi_ifft2 = partial(sp_fft.ifft2, workers=workers)
 
     try:
         # 3. Aplicamos el Monkey-patch
@@ -351,13 +353,13 @@ def deconvolucionRL(imagen, psf, pasos = 1000, k=1e-3, epsilon=1):
     
     return o_ene
 
-def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
+def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1, workers=-1):
     # Usamos sp_fft para las preparaciones iniciales
     psf_preparada = sp_fft.ifftshift(psf)
-    psfFourier = sp_fft.fft2(psf_preparada, workers=-1)
+    psfFourier = sp_fft.fft2(psf_preparada, workers=workers)
 
     psfInvertido = np.flip(psf_preparada)
-    psfInvFurier = sp_fft.fft2(psfInvertido, workers=-1)
+    psfInvFurier = sp_fft.fft2(psfInvertido, workers=workers)
     
     # Hacemos una copia para no alterar la imagen original por referencia
     o_ene = np.copy(imagen)
@@ -366,20 +368,20 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
         #print(f'Paso {i}')
         
         # 1. Transformamos o_ene sin sobrescribir la variable original espacial
-        o_ene_fourier = sp_fft.fft2(o_ene, workers=-1)
+        o_ene_fourier = sp_fft.fft2(o_ene, workers=workers)
         
         # 2. Calculamos el denominador en frecuencia y volvemos al dominio espacial
         denominador_fourier = ne.evaluate('o_ene_fourier * psfFourier')
-        denominador = np.real(sp_fft.ifft2(denominador_fourier, workers=-1))
+        denominador = np.real(sp_fft.ifft2(denominador_fourier, workers=workers))
 
         # 3. Calculamos la fracción usando numexpr
         fraccion = ne.evaluate('imagen / (denominador + k)')
         del denominador
 
         # 4. Pasamos la fracción a frecuencia, multiplicamos y volvemos al espacio
-        fraccion_fourier = sp_fft.fft2(fraccion, workers=-1)
+        fraccion_fourier = sp_fft.fft2(fraccion, workers=workers)
         fraccion_fourier = ne.evaluate('fraccion_fourier * psfInvFurier')
-        fraccion = np.real(sp_fft.ifft2(fraccion_fourier, workers=-1))
+        fraccion = np.real(sp_fft.ifft2(fraccion_fourier, workers=workers))
 
         # 5. Calculamos la nueva estimación de la imagen
         o_ene1 = ne.evaluate('o_ene * fraccion')
@@ -404,7 +406,7 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1):
     
     return o_ene
 
-def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, epsilon=1, zernikes=None):
+def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, epsilon=1, zernikes=None, workers=-1):
     # Aceptamos alias de nombre largo para evitar incompatibilidades entre módulos.
     mapa_metodos = {
         'wiener': 'w',
@@ -424,17 +426,17 @@ def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, ep
         imagenNeg = np.abs(np.where(imagen < 0, imagen, 0))
 
         if metodo == 'rl':
-            imagenPos = deconvolucionRLMulti(imagenPos, psf, iteraciones, k, epsilon)
-            imagenNeg = deconvolucionRLMulti(imagenNeg, psf, iteraciones, k, epsilon)
+            imagenPos = deconvolucionRLMulti(imagenPos, psf, iteraciones, k, epsilon, workers=workers)
+            imagenNeg = deconvolucionRLMulti(imagenNeg, psf, iteraciones, k, epsilon, workers=workers)
         elif metodo == 'f':
-            imagenPos = deconvolucionFourierMulti(imagenPos, psf, k)
-            imagenNeg = deconvolucionFourierMulti(imagenNeg, psf, k)
+            imagenPos = deconvolucionFourierMulti(imagenPos, psf, k, workers=workers)
+            imagenNeg = deconvolucionFourierMulti(imagenNeg, psf, k, workers=workers)
         elif metodo == 'w':
-            imagenPos = deconvolucionWienerMulti(imagenPos, psf, k)
-            imagenNeg = deconvolucionWienerMulti(imagenNeg, psf, k)
+            imagenPos = deconvolucionWienerMulti(imagenPos, psf, k, workers=workers)
+            imagenNeg = deconvolucionWienerMulti(imagenNeg, psf, k, workers=workers)
         elif metodo == 'w_fran' and zernikes is not None:
-            imagenPos = deconvolucionWienerFranMulti(imagenPos, zernikes)
-            imagenNeg = deconvolucionWienerFranMulti(imagenNeg, zernikes)
+            imagenPos = deconvolucionWienerFranMulti(imagenPos, zernikes, workers=workers)
+            imagenNeg = deconvolucionWienerFranMulti(imagenNeg, zernikes, workers=workers)
         elif metodo == 'w_skimage' and psf is not None:
             imagenPos = deconvolucionWienerScikit(imagenPos, psf, balance=k)
             imagenNeg = deconvolucionWienerScikit(imagenNeg, psf, balance=k)
@@ -444,18 +446,57 @@ def deconvolucionMulti(imagen, psf=None, metodo='rl', k=1e-3, iteraciones=30, ep
         return imagenPos - imagenNeg
     else:
         if metodo == 'rl':
-            return deconvolucionRLMulti(imagen, psf, iteraciones, k, epsilon)
+            return deconvolucionRLMulti(imagen, psf, iteraciones, k, epsilon, workers=workers)
         elif metodo == 'f':
-            return deconvolucionFourierMulti(imagen, psf, k)
+            return deconvolucionFourierMulti(imagen, psf, k, workers=workers)
         elif metodo == 'w':
-            return deconvolucionWienerMulti(imagen, psf, k)
+            return deconvolucionWienerMulti(imagen, psf, k, workers=workers)
         elif metodo == 'w_fran' and zernikes is not None:
-            return deconvolucionWienerFranMulti(imagen, zernikes)
+            return deconvolucionWienerFranMulti(imagen, zernikes, workers=workers)
         elif metodo == 'w_skimage' and psf is not None:
             return deconvolucionWienerScikit(imagen, psf, balance=k)
         else:
             raise ValueError(f"Método de deconvolución no soportado: {metodo}")
     
+def _procesar_multi_generico(i_img, psf, metodo, iteraciones, epsilon, zernikes, k, workers):
+    i, img = i_img
+    return i, deconvolucionMulti(img, psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes, workers=workers)
+
+def aplicar_deconvolucion_3d(imagen_3d, psf=None, metodo='w', iteraciones=30, epsilon=1, zernikes = np.array([0,0,0,
+        0.5765,
+        0.5391,
+        -0.1163,
+        0.121,
+        0.1504,
+        -0.1154,
+        0.2591,
+        -0.3103,
+        0.1108,
+        -0.1963,
+        -0.0431,
+        -0.2591,
+        -0.5599,
+        0.0904,
+        0.2754,
+        0.0715,
+        0.0006,
+        0.0862]), k=1e-3, workers=-1):
+    """
+    Aplica deconvolución a lo largo del eje lambda (eje 0) de un cubo 3D.
+    """
+    executor_workers = None if workers == -1 else workers
+
+    if metodo in ['w_fran', 'w_fran_multi']:
+        img_list = list(enumerate(imagen_3d))
+        func = partial(_procesar_multi_generico, psf=psf, metodo=metodo, iteraciones=iteraciones, epsilon=epsilon, zernikes=zernikes, k=k, workers=workers)
+        with ProcessPoolExecutor(max_workers=executor_workers) as executor:
+            for i, res in executor.map(func, img_list):
+                imagen_3d[i] = res
+    else:
+        for i in range(imagen_3d.shape[0]):
+            imagen_3d[i] = deconvolucionMulti(imagen_3d[i], psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes, workers=workers)
+    return imagen_3d
+
 
 def probar_deconvolucion(sigma, k, tipo_psf='airy', metodo='wiener', ruta='data/prueba.fits'):
     """
@@ -606,6 +647,3 @@ if __name__ == "__main__":
     
     plt.tight_layout()
     plt.show()
-    
-    
-    
