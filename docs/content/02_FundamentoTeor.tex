@@ -1,3 +1,82 @@
 % !TeX root = ../main.tex
 
 \section{Fundamento Teórico}
+
+\subsection{La aproximación de campo débil}
+
+\begin{equation}
+    \label{eq:campoDebil}
+    V = -C g_{eff} \lambda^2 B_{\| \|} \frac{d I_0}{d \lambda}
+\end{equation}
+
+
+\subsection{La deconvolución de una imagen}
+
+Un telescopio real afecta a una imagen mediante una operación llamada convolución. En esta operación, la imagen que se obtiene es el resultado de la convolución de la imagen real con una función que se llama función de punto extendido (PSF, por sus siglas en inglés). La PSF describe cómo un punto de luz se extiende en la imagen debido a las limitaciones del telescopio.
+
+Matemáticamente se describe de esta manera:
+
+\begin{equation}
+    \label{eq:convolucion}
+    d_{observado} = d_{real} * p
+\end{equation}
+
+Donde $d_{observado}$ es la imagen que observamos en el telescopio, $d_{real}$ es el objeto extenso, y $p$ es la PSF del propio telescopio.
+
+Normalmente la forma de tratar este problema es usando las propiedades de la transformada de Fourier pasando al dominio de frecuencias. Al hacer una transformada de Fourier, existen ciertas propiedades con las operaciones. La convolución se transforma en una multiplicación, y la multiplicación se transforma en una convolución.
+
+\begin{equation}
+    \label{eq:propFurier}
+    \begin{split}
+        \cdot &\Longrightarrow * \\
+        * &\Longrightarrow \cdot
+    \end{split}
+\end{equation}
+
+De esta forma, si se realiza una transformada de fourier a la expresión \ref{eq:convolucion}, esta pasaría al dominio de frecuencias de la siguiente manera:
+
+\begin{equation}
+    \label{eq:convolucionFourier}
+    D_{observado} = D_{real} \cdot P
+\end{equation}
+
+Donde la notación se indica de manera que si está en minuscula está en el dominio de las posiciones, y mayuscula estando en el dominio de las frecuencias.
+
+Donde en un caso ideal una deconvolución sería obtener el $d_{real}$ de la siguiente manera. Se realizada la transformada de Fourier del $d_{real}$ y de la PSF, y se obtiene el $D_{real}$ de la siguiente manera:
+
+\begin{equation}
+    \label{eq:deconvolucionIdeal}
+    D_{real} = \frac{D_{observado}}{P}
+\end{equation}
+
+Por último se realiza la transformada de Fourier inversa para obtener el $d_{real}$.
+
+Pero este caso resulta ser ideal, 
+pero este caso resulta ser ideal. En la práctica, la imagen observada también contiene ruido, por lo que el modelo real se expresa como:
+
+\begin{equation}
+    \label{eq:convolucionRuido}
+    d_{observado} = d_{real} * p + n
+\end{equation}
+
+donde $n$ representa el ruido añadido por el detector, la atmósfera u otras fuentes instrumentales. Al pasar al dominio de Fourier, la expresión queda:
+
+\begin{equation}
+    \label{eq:convolucionFourierRuido}
+    D_{observado} = D_{real} \cdot P + N
+\end{equation}
+
+En este caso, una deconvolución directa no es estable, ya que al dividir por $P$ el ruido también se amplifica:
+
+\begin{equation}
+    \label{eq:deconvolucionRuido}
+    D_{real} = \frac{D_{observado} - N}{P}
+\end{equation}
+
+Por tanto, la calidad de la deconvolución depende fuertemente de la relación señal-ruido.
+
+
+\subsection{Métodos de deconvolución}
+\textit{Escribir aqui los distintos métodos de deconvolución.}
+
+

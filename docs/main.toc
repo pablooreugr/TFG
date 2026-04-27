@@ -1,7 +1,10 @@
 \babel@toc {spanish}{}\relax 
 \contentsline {section}{\numberline {1}Introducción}{3}{section.1}%
 \contentsline {section}{\numberline {2}Fundamento Teórico}{3}{section.2}%
-\contentsline {section}{\numberline {3}Metodología}{3}{section.3}%
-\contentsline {section}{\numberline {4}Resultados}{3}{section.4}%
-\contentsline {section}{\numberline {5}Conclusiones}{3}{section.5}%
-\contentsline {section}{Referencias}{3}{section.5}%
+\contentsline {subsection}{\numberline {2.1}La aproximación de campo débil}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}La deconvolución de una imagen}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Métodos de deconvolución}{4}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Metodología}{4}{section.3}%
+\contentsline {section}{\numberline {4}Resultados}{4}{section.4}%
+\contentsline {section}{\numberline {5}Conclusiones}{4}{section.5}%
+\contentsline {section}{Referencias}{4}{section.5}%
