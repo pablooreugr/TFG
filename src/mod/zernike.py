@@ -1,7 +1,9 @@
 import numpy as np
 from scipy import special as sc
+import os
 
-zernike_equiv=np.loadtxt('j_to_Noll.txt',dtype='int')
+_noll_path = os.path.join(os.path.dirname(__file__), 'j_to_Noll.txt')
+zernike_equiv=np.loadtxt(_noll_path, dtype='int')
 
 
 def radialpol(m,n,rho):

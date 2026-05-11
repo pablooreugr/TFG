@@ -462,7 +462,9 @@ def _procesar_multi_generico(i_img, psf, metodo, iteraciones, epsilon, zernikes,
     i, img = i_img
     return i, deconvolucionMulti(img, psf=psf, metodo=metodo, iteraciones=iteraciones, k=k, epsilon=epsilon, zernikes=zernikes, workers=workers)
 
-def aplicar_deconvolucion_3d(imagen_3d, psf=None, metodo='w', iteraciones=30, epsilon=1, zernikes = np.array([0,0,0,
+def aplicar_deconvolucion_3d(imagen_3d, psf=None, metodo='w', iteraciones=30, epsilon=1, zernikes=None, k=1e-3, workers=-1):
+    if zernikes is None:
+        zernikes = np.array([0,0,0,
         0.5765,
         0.5391,
         -0.1163,
@@ -480,7 +482,7 @@ def aplicar_deconvolucion_3d(imagen_3d, psf=None, metodo='w', iteraciones=30, ep
         0.2754,
         0.0715,
         0.0006,
-        0.0862]), k=1e-3, workers=-1):
+        0.0862])
     """
     Aplica deconvolución a lo largo del eje lambda (eje 0) de un cubo 3D.
     """

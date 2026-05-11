@@ -76,6 +76,8 @@ def cargar_datos_y_psf(ruta_fits='data/prueba.fits', ruta_psf='data/PSF_517_1600
 if __name__ == "__main__":
 
     datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = cargar_datos_y_psf()
-    
 
+    campoMagneticoSD, mapa_r_cuadradoSD = calcularMagnetismo(intensidad_orig, V_orig, eje_lambda)
+    campoMagneticoDec, mapa_r_cuadradoDec = calcularMagnetismoConDeconvolucion(datos, psf_fran, eje_lambda, metDecon='w_fran', workers=-1)
     
+    vis.compararMagnetogramas(campoMagneticoSD, campoMagneticoDec)
