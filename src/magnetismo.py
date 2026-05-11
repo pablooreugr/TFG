@@ -50,39 +50,32 @@ def calcularMagnetismoConDeconvolucion(imagen, psf, lambdas, metDecon='w', itera
 
     return campoMagnetico, mapa_r_cuadrado
 
-if __name__ == "__main__":
-    # Cargar la imagen FITS
-    ruta_archivo = 'data/prueba.fits'
-    with fits.open(ruta_archivo) as hdul:
+
+def cargar_datos_y_psf(ruta_fits='data/prueba.fits', ruta_psf='data/PSF_517_1600_x_1600_px.npy'):
+    """Carga datos desde un FITS y la PSF, recorta la imagen para ajustar al tamaño de la PSF y devuelve elementos útiles."""
+    with fits.open(ruta_fits) as hdul:
         datos = hdul[0].data
         cabecera = hdul[0].header
 
-    # Extraemos el eje lambda de la cabecera
     eje_lambda = np.array([cabecera[f'L_{i}'] for i in range(datos.shape[0])])
+    psf_cargada = np.load(ruta_psf)
+    print(f"Tamaño de PSF cargada: {psf_cargada.shape}")
+    print(f"Tamaño de imagen original: {datos.shape}")
 
-    try:
-        psf_cargada = np.load("data/PSF_517_1600_x_1600_px.npy")
-        print(f"Tamaño de PSF cargada: {psf_cargada.shape}")
-        print(f"Tamaño de imagen original: {datos.shape}")
+    psf_cargada = psf_cargada / np.sum(psf_cargada)
+    target_size = psf_cargada.shape[0]
+    start = (datos.shape[2] - target_size) // 2
+    datos_recortados = datos[:, :, start:start+target_size, start:start+target_size]
 
-        psf_cargada = psf_cargada / np.sum(psf_cargada)  # Normalizamos la PSF para que su suma sea 1
-        
-        # Recortar la imagen a 1600x1600 (centrada)
-        target_size = psf_cargada.shape[0]  # 1600
-        start = (datos.shape[2] - target_size) // 2
-        datos = datos[:, :, start:start+target_size, start:start+target_size]
-        
-        intensidad_orig = datos[:, 0, :, :]
-        V_orig = datos[:, 3, :, :]
+    intensidad_orig = datos_recortados[:, 0, :, :]
+    V_orig = datos_recortados[:, 3, :, :]
+    psf_fran = psf_cargada
 
-        psf = psf_cargada
+    return datos_recortados, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran
 
-        # Aplicamos deconvolución
-        intensidad_dec = decon.aplicar_deconvolucion_3d(intensidad_orig, psf=psf, metodo='rl', iteraciones=30, workers=-1, k=1e-7)
-        V_dec = decon.aplicar_deconvolucion_3d(V_orig, psf=psf, metodo='rl', iteraciones=30, workers=-1, k=1e-7)
+if __name__ == "__main__":
 
-        campoMagnetico, mapa_r_cuadrado = calcularMagnetismo(intensidad_dec, V_dec, eje_lambda)
+    datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = cargar_datos_y_psf()
+    
 
-        vis.dibujarMagYR(campoMagnetico, mapa_r_cuadrado)
-    except FileNotFoundError:
-        print("Aviso: No se encontró 'data/PSF_517_1600_x_1600_px.npy'. La prueba no se puede ejecutar por completo.")
+    

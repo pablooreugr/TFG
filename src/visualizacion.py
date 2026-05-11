@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RadioButtons, Slider
 import matplotlib.image as mpimg
+import matplotlib.colors as colors
 
 def explorar_resultados():
     # ==========================================
@@ -117,7 +118,8 @@ def dibujarMagYR(campoMagnetico, mapa_r_cuadrado):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
     # --- PRIMER RECUADRO (ax1): El Magnetograma ---
-    im1 = ax1.imshow(campoMagnetico, cmap='RdBu_r') 
+    #im1 = ax1.imshow(campoMagnetico, cmap='RdBu_r') 
+    im1 = ax1.imshow(campoMagnetico, cmap='RdBu_r', vmin=-500, vmax=500) 
     fig.colorbar(im1, ax=ax1, label='Valor del campo magnético paralelo G (Gauss)') 
 
     # --- SEGUNDO RECUADRO (ax2): El mapa de R^2 ---
@@ -138,17 +140,17 @@ def dibujarComparacionPSF(psf_cargada, psf_airy):
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 5))
 
     # --- PSF cargada ---
-    im1 = ax1.imshow(psf_cargada, cmap='viridis')
+    im1 = ax1.imshow(psf_cargada, cmap='viridis', norm=colors.LogNorm(vmin=1e-10))
     ax1.set_title('PSF Cargada')
     fig.colorbar(im1, ax=ax1, label='Intensidad')
 
     # --- PSF de Airy ---
-    im2 = ax2.imshow(psf_airy, cmap='viridis')
+    im2 = ax2.imshow(psf_airy, cmap='viridis', norm=colors.LogNorm(vmin=1e-10))
     ax2.set_title('PSF de Airy')
     fig.colorbar(im2, ax=ax2, label='Intensidad')
 
     # --- Diferencia ---
-    im3 = ax3.imshow(psf_cargada - psf_airy, cmap='RdBu_r')
+    im3 = ax3.imshow(psf_cargada - psf_airy, cmap='RdBu_r', norm=colors.LogNorm(vmin=1e-10))
     ax3.set_title('Diferencia (Cargada - Airy)')
     fig.colorbar(im3, ax=ax3, label='Diferencia')
 
