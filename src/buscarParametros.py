@@ -220,6 +220,44 @@ def ajustar_todos_los_pixeles_apply(eje_lambda, intensidad_orig):
     
     return resultado_final
 
+def visualizar_mapas_parametros(parametros_ajuste, mapa_r2):
+    """
+    Crea una figura con 5 subgráficos mostrando los mapas 2D de los
+    parámetros ajustados (C, A, lambda0, sigma) y el R^2 del campo magnético.
+    """
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    axes = axes.flatten()
+    
+    # Ocultamos el último gráfico (el 6º) porque solo tenemos 5 mapas
+    axes[-1].axis('off')
+    
+    titulos = ['Continuo (C)', 'Amplitud (A)', r'Centro ($\lambda_0$)', r'Ancho ($\sigma$)', r'Fiabilidad ($R^2$)']
+    cmaps = ['viridis', 'plasma', 'coolwarm', 'magma', 'inferno']
+    mapas = [parametros_ajuste[0], parametros_ajuste[1], parametros_ajuste[2], parametros_ajuste[3], mapa_r2]
+    
+    for i in range(5):
+        ax = axes[i]
+        mapa = mapas[i]
+        
+        validos = mapa[~np.isnan(mapa)]
+        if validos.size > 0:
+            if i == 4:
+                # Para el R^2, el rango ideal es [0, 1]
+                vmin, vmax = 0, 1
+            else:
+                # Usamos percentiles para evitar que valores anómalos estropeen la escala de color
+                vmin, vmax = np.percentile(validos, 2), np.percentile(validos, 98)
+        else:
+            vmin, vmax = 0, 1
+            
+        im = ax.imshow(mapa, cmap=cmaps[i], origin='lower', vmin=vmin, vmax=vmax)
+        ax.set_title(titulos[i])
+        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+        
+    fig.suptitle("Mapas de Parámetros de Ajuste Gaussiano y Fiabilidad", fontsize=16)
+    plt.tight_layout()
+    plt.show()
+
 if __name__ == "__main__":
     datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = mag.cargar_datos_y_psf()
 
@@ -251,6 +289,9 @@ if __name__ == "__main__":
         np.save(archivo_parametros, parametros_ajuste)
         
     print("Ajustes listos. Abriendo visualización...")
+
+    # Mostrar los mapas de parámetros y el mapa de R^2
+    visualizar_mapas_parametros(parametros_ajuste, r2)
 
     # Llamamos a la visualización interactiva solo con intensidad
     visualizar_interactivo_intensidad(campoMagnetico, intensidad_orig, eje_lambda, parametros_ajuste)
