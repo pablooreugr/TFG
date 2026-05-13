@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import magnetismo as mag
 import deconvolucion as decon
+import scipy.optimize as opt
+from joblib import Parallel, delayed
+from pathlib import Path
 
 def visualizar_interactivo(campoMagnetico, intensidad_orig, V_orig, gradIntensidad, eje_lambda):
     """
@@ -108,6 +111,115 @@ def visualizar_interactivo(campoMagnetico, intensidad_orig, V_orig, gradIntensid
     plt.tight_layout()
     plt.show()
 
+def visualizar_interactivo_intensidad(campoMagnetico, intensidad_orig, eje_lambda, parametros_ajuste):
+    """
+    Muestra una interfaz interactiva donde al hacer click en el campo magnético
+    se muestra el perfil de Intensidad con sus valores reales y el ajuste precalculado.
+    """
+    # Configuración de la figura interactiva
+    fig, (ax_img, ax_profile) = plt.subplots(1, 2, figsize=(14, 6))
+
+    # Visualización del campo magnético
+    # Usando el mapa de colores de visualizacion.py ('RdBu_r' de -500 a 500)
+    img_plot = ax_img.imshow(campoMagnetico, cmap='RdBu_r', vmin=-500, vmax=500, origin='lower')
+    ax_img.set_title("Campo Magnético Calculado\n(Haz click en un píxel)")
+    fig.colorbar(img_plot, ax=ax_img, shrink=0.8, label='Campo Magnético paralelo (Gauss)')
+    
+    # Marcador para el pixel seleccionado
+    punto_click, = ax_img.plot([], [], 'ko', markeredgecolor='white', markersize=8)
+
+    # Gráfica del perfil de intensidad
+    line_i, = ax_profile.plot([], [], label='Intensidad', color='green', linewidth=2, marker='o', markersize=4)
+    line_fit, = ax_profile.plot([], [], label='Ajuste Gaussiano', color='red', linestyle='--', linewidth=2)
+    ax_profile.set_title("Perfil de Intensidad en función de λ")
+    ax_profile.set_xlabel("λ")
+    ax_profile.set_ylabel("Intensidad (valores reales)")
+    ax_profile.legend()
+    ax_profile.grid(True, alpha=0.3)
+
+    def onclick(event):
+        if event.inaxes == ax_img:
+            x = int(round(event.xdata))
+            y = int(round(event.ydata))
+            
+            if 0 <= x < campoMagnetico.shape[1] and 0 <= y < campoMagnetico.shape[0]:
+                # Actualizar el marcador en la imagen
+                punto_click.set_data([x], [y])
+                
+                # Extraer perfil del píxel
+                i_pix = intensidad_orig[:, y, x]
+                
+                # Actualizar datos en la gráfica de perfiles (valores reales)
+                line_i.set_data(eje_lambda, i_pix)
+                
+                # Obtener el ajuste gaussiano precalculado
+                popt = parametros_ajuste[:, y, x]
+                if not np.isnan(popt[0]):
+                    # Crear un eje X más denso para que la curva se vea suave
+                    eje_lambda_denso = np.linspace(eje_lambda[0], eje_lambda[-1], 200)
+                    fit_y = gaussiana(eje_lambda_denso, *popt)
+                    line_fit.set_data(eje_lambda_denso, fit_y)
+                else:
+                    line_fit.set_data([], [])
+                
+                ax_profile.relim()
+                ax_profile.autoscale_view()
+                
+                # Refrescar la figura
+                fig.canvas.draw_idle()
+
+    cid = fig.canvas.mpl_connect('button_press_event', onclick)
+    plt.tight_layout()
+    plt.show()
+
+# A partir de aqui voy a programar la parte de buscar la gaussiana de cada punto
+
+def gaussiana(x, C, A, lambda0, sigma):
+    return C - A * np.exp(-0.5 * ((x - lambda0) / sigma)**2)
+
+def ajustar_gaussiana(eje_lambda, intensidad_pix):
+    # Estimación inicial de parámetros
+    C_init = np.max(intensidad_pix)
+    A_init = C_init - np.min(intensidad_pix)
+    lambda0_init = eje_lambda[np.argmin(intensidad_pix)]
+    sigma_init = 0.1  # Valor inicial para el ancho de la gaussiana
+
+    p0 = [C_init, A_init, lambda0_init, sigma_init]
+
+    try:
+        popt, _ = opt.curve_fit(gaussiana, eje_lambda, intensidad_pix, p0=p0)
+        return popt  # Devuelve los parámetros ajustados
+    except RuntimeError:
+        return np.array([np.nan, np.nan, np.nan, np.nan])
+
+def ajustar_todos_los_pixeles_apply(eje_lambda, intensidad_orig):
+    forma_orig = intensidad_orig.shape
+    n_lambda = forma_orig[0]
+    
+    # 1. Aplanamos las dimensiones espaciales para iterar de forma lineal.
+    # Si tu array es (lambda, x, y), pasará a ser (lambda, x*y).
+    # Esto facilita muchísimo la distribución del trabajo entre los núcleos.
+    intensidad_plana = intensidad_orig.reshape(n_lambda, -1)
+    num_pixeles = intensidad_plana.shape[1]
+    
+    # 2. Ejecutamos en paralelo. 
+    # n_jobs=-1 le dice a joblib que use TODOS los hilos disponibles.
+    resultados_planos = Parallel(n_jobs=-1)(
+        delayed(ajustar_gaussiana)(eje_lambda, intensidad_plana[:, i]) 
+        for i in range(num_pixeles)
+    )
+    
+    # 3. resultados_planos es una lista. La convertimos a array de NumPy.
+    # Usamos .T (transpuesta) para alinear las dimensiones correctamente.
+    resultados_array = np.array(resultados_planos).T 
+    
+    # 4. Reconstruimos la forma espacial original.
+    # Si ajustar_gaussiana devuelve N parámetros, la salida final será (N, x, y)
+    n_params = resultados_array.shape[0]
+    resultado_final = resultados_array.reshape((n_params,) + forma_orig[1:])
+    
+    return resultado_final
+
 if __name__ == "__main__":
     datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = mag.cargar_datos_y_psf()
 
@@ -122,5 +234,23 @@ if __name__ == "__main__":
     lambdas3D = eje_lambda[:, np.newaxis, np.newaxis]
     gradIntensidad = np.gradient(intensidad_orig, eje_lambda, axis=0) * (lambdas3D**2)
 
-    # Llamamos a la visualización interactiva
-    visualizar_interactivo(campoMagnetico, intensidad_orig, V_orig, gradIntensidad, eje_lambda)
+    # Para usar la original, puedes usar esta llamada:
+    # visualizar_interactivo(campoMagnetico, intensidad_orig, V_orig, gradIntensidad, eje_lambda)
+
+    # Nos aseguramos de que la carpeta output exista y guardamos ahí
+    output_dir = Path("output")
+    output_dir.mkdir(exist_ok=True)
+    archivo_parametros = output_dir / "parametros_ajuste.npy"
+    if archivo_parametros.exists():
+        print(f"Cargando ajustes gaussianos desde {archivo_parametros}...")
+        parametros_ajuste = np.load(archivo_parametros)
+    else:
+        print("Calculando ajustes gaussianos para todos los píxeles...")
+        parametros_ajuste = ajustar_todos_los_pixeles_apply(eje_lambda, intensidad_orig)
+        print(f"Guardando ajustes calculados en {archivo_parametros}...")
+        np.save(archivo_parametros, parametros_ajuste)
+        
+    print("Ajustes listos. Abriendo visualización...")
+
+    # Llamamos a la visualización interactiva solo con intensidad
+    visualizar_interactivo_intensidad(campoMagnetico, intensidad_orig, eje_lambda, parametros_ajuste)

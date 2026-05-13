@@ -17,6 +17,7 @@ fsspec==2026.2.0
 h5py==3.16.0
 idna==3.11
 ImageIO==2.37.3
+joblib==1.5.3
 kiwisolver==1.4.9
 lazy-loader==0.5
 matplotlib==3.10.8
