@@ -73,6 +73,9 @@ def cargar_datos_y_psf(ruta_fits='data/prueba.fits', ruta_psf='data/PSF_517_1600
 
     return datos_recortados, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran
 
+def metodoForw():
+    print('hola')
+
 if __name__ == "__main__":
 
     datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = cargar_datos_y_psf()
