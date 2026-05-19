@@ -293,5 +293,7 @@ if __name__ == "__main__":
     # Mostrar los mapas de parámetros y el mapa de R^2
     visualizar_mapas_parametros(parametros_ajuste, r2)
 
+    visualizar_interactivo(campoMagnetico, intensidad_orig, V_orig, gradIntensidad, eje_lambda)
+
     # Llamamos a la visualización interactiva solo con intensidad
     visualizar_interactivo_intensidad(campoMagnetico, intensidad_orig, eje_lambda, parametros_ajuste)

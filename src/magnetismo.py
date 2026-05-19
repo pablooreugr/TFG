@@ -77,7 +77,11 @@ if __name__ == "__main__":
 
     datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = cargar_datos_y_psf()
 
-    campoMagneticoSD, mapa_r_cuadradoSD = calcularMagnetismo(intensidad_orig, V_orig, eje_lambda)
-    campoMagneticoDec, mapa_r_cuadradoDec = calcularMagnetismoConDeconvolucion(datos, psf_fran, eje_lambda, metDecon='w_fran', workers=-1)
+    #campoMagneticoSD, mapa_r_cuadradoSD = calcularMagnetismo(intensidad_orig, V_orig, eje_lambda)
+    #campoMagneticoDec, mapa_r_cuadradoDec = calcularMagnetismoConDeconvolucion(datos, psf_fran, eje_lambda, metDecon='rl', workers=-1, iteraciones=50)
+
+    intesidadDecon = decon.deconvolucionMulti(intensidad_orig[1, :, :], psf_fran, metodo='rl', iteraciones=100, workers=-1)
+
+
     
-    vis.compararMagnetogramas(campoMagneticoSD, campoMagneticoDec)
+    vis.compararMagnetogramas(intensidad_orig[1, :, :], intesidadDecon)

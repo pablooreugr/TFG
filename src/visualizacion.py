@@ -139,12 +139,12 @@ def compararMagnetogramas(campoSD, campoDec):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
     # --- Campo sin deconvolución ---
-    im1 = ax1.imshow(campoSD, cmap='RdBu_r', vmin=-500, vmax=500) 
+    im1 = ax1.imshow(campoSD, cmap='RdBu_r') 
     ax1.set_title('Magnético Sin Deconvolución')
     fig.colorbar(im1, ax=ax1, label='Campo Magnético paralelo (Gauss)') 
 
     # --- Campo con deconvolución ---
-    im2 = ax2.imshow(campoDec, cmap='RdBu_r', vmin=-200, vmax=200)
+    im2 = ax2.imshow(campoDec, cmap='RdBu_r')
     ax2.set_title('Magnético Con Deconvolución')
     fig.colorbar(im2, ax=ax2, label='Campo Magnético paralelo (Gauss)')
 
