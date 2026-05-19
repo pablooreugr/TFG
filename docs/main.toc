@@ -4,7 +4,8 @@
 \contentsline {subsection}{\numberline {2.1}La aproximación de campo débil}{3}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}La deconvolución de una imagen}{3}{subsection.2.2}%
 \contentsline {subsection}{\numberline {2.3}Métodos de deconvolución}{4}{subsection.2.3}%
-\contentsline {section}{\numberline {3}Metodología}{4}{section.3}%
-\contentsline {section}{\numberline {4}Resultados}{4}{section.4}%
-\contentsline {section}{\numberline {5}Conclusiones}{4}{section.5}%
-\contentsline {section}{Referencias}{4}{section.5}%
+\contentsline {subsection}{\numberline {2.4}El problema de la deconvolución}{4}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Metodología}{5}{section.3}%
+\contentsline {section}{\numberline {4}Resultados}{5}{section.4}%
+\contentsline {section}{\numberline {5}Conclusiones}{5}{section.5}%
+\contentsline {section}{Referencias}{5}{section.5}%
