@@ -138,17 +138,40 @@ def compararMagnetogramas(campoSD, campoDec):
     """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
+    # Valores iniciales
+    vmin_init = -200
+    vmax_init = 200
+
     # --- Campo sin deconvolución ---
-    im1 = ax1.imshow(campoSD, cmap='RdBu_r', vmin=-500, vmax=500) 
+    im1 = ax1.imshow(campoSD, cmap='RdBu_r', vmin=vmin_init, vmax=vmax_init) 
     ax1.set_title('Magnético Sin Deconvolución')
     fig.colorbar(im1, ax=ax1, label='Campo Magnético paralelo (Gauss)') 
 
     # --- Campo con deconvolución ---
-    im2 = ax2.imshow(campoDec, cmap='RdBu_r', vmin=-200, vmax=200)
+    im2 = ax2.imshow(campoDec, cmap='RdBu_r', vmin=vmin_init, vmax=vmax_init)
     ax2.set_title('Magnético Con Deconvolución')
     fig.colorbar(im2, ax=ax2, label='Campo Magnético paralelo (Gauss)')
 
-    plt.tight_layout()
+    # Ajustamos el layout dejando espacio abajo para los sliders
+    fig.tight_layout(rect=[0, 0.2, 1, 1])
+
+    # --- Sliders ---
+    ax_vmin = plt.axes([0.2, 0.1, 0.6, 0.03], facecolor='lightgoldenrodyellow')
+    ax_vmax = plt.axes([0.2, 0.05, 0.6, 0.03], facecolor='lightgoldenrodyellow')
+
+    slider_vmin = Slider(ax_vmin, 'v_min', -1000.0, 0.0, valinit=vmin_init)
+    slider_vmax = Slider(ax_vmax, 'v_max', 0.0, 1000.0, valinit=vmax_init)
+
+    def update(val):
+        vmin = slider_vmin.val
+        vmax = slider_vmax.val
+        im1.set_clim(vmin=vmin, vmax=vmax)
+        im2.set_clim(vmin=vmin, vmax=vmax)
+        fig.canvas.draw_idle()
+
+    slider_vmin.on_changed(update)
+    slider_vmax.on_changed(update)
+
     plt.show()
 
 

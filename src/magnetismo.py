@@ -6,16 +6,30 @@ from mod.pd_functions_v22 import PSF
 import visualizacion as vis
 from scipy.sparse.linalg import LinearOperator, cg
 import time
+import scipy.fft as sp_fft
+import scipy.signal as sp_signal
 
 g_eff = 1.75 # Linea del magnesio I
 constanteFormula = 4.67e-13 
 
 class MonitorKrylov:
-    def __init__(self):
+    def __init__(self, plot_live=True):
         self.iteracion = 0
         self.t_inicio = time.time()
         self.x_anterior = None
         self.historial_pasos = [] # Por si luego quieres graficarlo
+        self.plot_live = plot_live
+        
+        if self.plot_live:
+            plt.ion()
+            self.fig, self.ax = plt.subplots(figsize=(8, 5))
+            self.line, = self.ax.plot([], [], 'b.-')
+            self.ax.set_title("Convergencia de Gradiente Conjugado")
+            self.ax.set_xlabel("Iteración")
+            self.ax.set_ylabel("Magnitud del paso ($||x_k - x_{k-1}||$)")
+            self.ax.set_yscale('log')
+            self.ax.grid(True)
+            self.fig.show()
 
     def __call__(self, xk):
         self.iteracion += 1
@@ -27,12 +41,27 @@ class MonitorKrylov:
             self.historial_pasos.append(cambio)
             
             # Imprimimos en la terminal sobrescribiendo la misma línea
-            print(f"Iteración {self.iteracion:03d} | Tiempo: {t_actual:.1f} s | Magnitud del paso: {cambio:.2e}", end='\r')
+            print(f"Iteración {self.iteracion:03d} | Tiempo: {t_actual:.1f} s | Magnitud del paso: {cambio:.2e}      ", end='\r')
+            
+            # Actualizamos la gráfica
+            if self.plot_live and len(self.historial_pasos) > 0:
+                self.line.set_data(range(1, len(self.historial_pasos) + 1), self.historial_pasos)
+                self.ax.relim()
+                self.ax.autoscale_view()
+                self.fig.canvas.draw()
+                self.fig.canvas.flush_events()
+                
         else:
-            print(f"Iteración {self.iteracion:03d} | Tiempo: {t_actual:.1f} s | Magnitud del paso: Calculando...", end='\r')
+            print(f"Iteración {self.iteracion:03d} | Tiempo: {t_actual:.1f} s | Magnitud del paso: Calculando...      ", end='\r')
             
         # Guardamos el estado actual para la siguiente iteración
         self.x_anterior = xk.copy()
+        
+    def finalizar_grafica(self):
+        if self.plot_live:
+            plt.ioff()
+            # Mostramos la gráfica final y bloqueamos hasta que se cierre (opcional)
+            # plt.show()
 
 def calcularMagnetismo(imagenIntensidad, imagenV, lambdas):
     """
@@ -100,9 +129,7 @@ def cargar_datos_y_psf(ruta_fits='data/prueba.fits', ruta_psf='data/PSF_517_1600
 
     return datos_recortados, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran
 
-
-# Este método es el metodo del que me basar en el paper de Van noot
-def metodoForw(intensidad, V, lambdas, psf, trabajadores=-1):
+def metodoForw(intensidad, V, lambdas, psf, recorte=100, trabajadores=-1):
     nx = intensidad.shape[2]
     ny = intensidad.shape[1]
     n_lambda = intensidad.shape[0]
@@ -112,16 +139,25 @@ def metodoForw(intensidad, V, lambdas, psf, trabajadores=-1):
     # Primero vamos a intentar preparar los datos antes del método
     campoMagneticoInicial = calcularMagnetismo(intensidad, V, lambdas)[0]
 
+    # 1. Deconvolución de I usando la PSF GRANDE completa
     intensidad_decon = decon.aplicar_deconvolucion_3d(intensidad, psf=psf, metodo='rl', workers=-1)
+
+    # --- 2. RECORTAR Y NORMALIZAR LA PSF PARA LOS OPERADORES LINEALES ---
+    cy, cx = psf.shape[0] // 2, psf.shape[1] // 2
+    mitad = recorte // 2
+    
+    # Extraemos el parche central
+    psf_recortada = psf[cy - mitad : cy + mitad + 1, cx - mitad : cx + mitad + 1]
+    
+    # OBLIGATORIO: El parche central recortado debe normalizarse (suma = 1.0) 
+    psf_pequena = psf_recortada / np.sum(psf_recortada)
+    
+    # Simetría del Adjunto: Usamos la PSF pequeña invertida espacialmente 
+    psf_espejo = psf_pequena[::-1, ::-1]
+    # --------------------------------------------------------------------
 
     derivadaI = np.gradient(intensidad_decon, lambdas, axis=0)
     K_cubo = -constanteFormula * g_eff * derivadaI * (lambdas[:, np.newaxis, np.newaxis]**2)
-
-    psf_tilde = psf[::-1, ::-1]
-
-    # Calculo la V inicial
-    V_inicial = K_cubo * campoMagneticoInicial[np.newaxis, :, :]
-    deltaV = V - V_inicial
 
     # Definimos los operadores lineales que usaremos.
     def J(dB_2D):
@@ -129,30 +165,45 @@ def metodoForw(intensidad, V, lambdas, psf, trabajadores=-1):
         # Creamos una matriz vacía nueva para no pisar la anterior
         v_degradado = np.zeros_like(v_ideal)
 
-        for i in range(n_lambda):
-            v_degradado[i, :, :] = decon.convolucion(v_ideal[i, :, :], psf, trabajadores=trabajadores)
-        
+        with sp_fft.set_workers(trabajadores):
+            for i in range(n_lambda):
+                # APLICAMOS LA PSF PEQUEÑA
+                v_degradado[i, :, :] = sp_signal.fftconvolve(v_ideal[i, :, :], psf_pequena, mode='same')
         return v_degradado
-    
+
+    # Calculo la V inicial (usando el operador forward correctamente)
+    V_inicial = J(campoMagneticoInicial)
+    deltaV = V - V_inicial
+
     # Operador adjunto
     def JT(residuos3d):
-        for i in range(n_lambda):
-            residuos3d[i, :, :] = decon.convolucion(residuos3d[i, :, :], psf_tilde, trabajadores=trabajadores)
+        # Evitamos modificar 'residuos3d' in-place creando una matriz nueva
+        residuos_conv = np.zeros_like(residuos3d)
+        with sp_fft.set_workers(trabajadores):
+            for i in range(n_lambda):
+                # APLICAMOS LA PSF PEQUEÑA INVERTIDA (ESPEJO)
+                residuos_conv[i, :, :] = sp_signal.fftconvolve(residuos3d[i, :, :], psf_espejo, mode='same')
 
-        residuos3d = residuos3d * K_cubo
+        residuos_multi = residuos_conv * K_cubo
 
-        dB_2D = np.sum(residuos3d, axis=0)
+        dB_2D = np.sum(residuos_multi, axis=0)
 
         return dB_2D
     
+    # Parámetro de regularización Tikhonov
+    lambda_reg = 5e-2
+
     def funcionA(x_1D):
         x_2D = x_1D.reshape((nx, ny))
 
-        #Aplicamos la cadena de operadores J^T(J(X))
+        # Aplicamos la cadena de operadores J^T(J(X))
         efecto_telescopio = J(x_2D)
         correccion_estimada = JT(efecto_telescopio)
 
-        return correccion_estimada.flatten()
+        # Añadimos regularización Tikhonov
+        resultado = correccion_estimada + lambda_reg * x_2D
+
+        return resultado.flatten()
     
     # Ahora preparamos el sistema para que aparezca el A*x = b
     b_2D = JT(deltaV)
@@ -166,9 +217,10 @@ def metodoForw(intensidad, V, lambdas, psf, trabajadores=-1):
 
     print('Iniciando sistema de inversion')
 
-    monitor = MonitorKrylov()
+    monitor = MonitorKrylov(plot_live=True)
 
-    dB_1d_solucion, info = cg(matrizA, b_1D, rtol=1e-5, callback=monitor)
+    dB_1d_solucion, info = cg(matrizA, b_1D, rtol=1e-3, maxiter=50, callback=monitor)
+    print() # Para no sobreescribir la última línea en la terminal
 
     if info == 0:
         print("¡Convergencia exitosa!")
@@ -176,6 +228,9 @@ def metodoForw(intensidad, V, lambdas, psf, trabajadores=-1):
         print(f"Alcanzado límite de iteraciones ({info}) sin converger totalmente.")
     else:
         print("Error numérico durante la iteración.")
+        
+    # Dejamos de actualizar en tiempo real
+    monitor.finalizar_grafica()
 
     deltaB_final = dB_1d_solucion.reshape((nx, ny))
 
