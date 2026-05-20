@@ -17,6 +17,12 @@ def recogerLosDatos(rutaArchivo):
     
     return datos, cabecera
 
+def convolucion(imagen1, imagen2, trabajadores=-1):
+    IMAGEN1 = sp_fft.fft2(imagen1, workers=trabajadores)
+    IMAGEN2 = sp_fft.fft2(imagen2, workers=trabajadores)
+    return np.real(sp_fft.ifft2(IMAGEN1 * IMAGEN2, workers=trabajadores))
+
+
 def psfGaussiana(datos, sigma=3.0):
     # 1. Obtenemos las dimensiones espaciales correctas (x e y)
     nx = datos.shape[3]
@@ -399,10 +405,10 @@ def deconvolucionRLMulti(imagen, psf, pasos=1000, k=1e-3, epsilon=1, workers=-1)
         del o_ene1
 
         if valor <= epsilon:
-            print(f'Finalizado prematuramente, i={i}, valor = {valor}')
+            #print(f'Finalizado prematuramente, i={i}, valor = {valor}')
             break
 
-    print(f'Finalizado a los {pasos} pasos')
+    #print(f'Finalizado a los {pasos} pasos')
     
     return o_ene
 

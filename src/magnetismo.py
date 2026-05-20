@@ -2,7 +2,9 @@ import numpy as np
 from astropy.io import fits
 import matplotlib.pyplot as plt
 import deconvolucion as decon
+from mod.pd_functions_v22 import PSF
 import visualizacion as vis
+from scipy.sparse.linalg import LinearOperator, cg
 
 g_eff = 1.75 # Linea del magnesio I
 constanteFormula = 4.67e-13 
@@ -73,14 +75,88 @@ def cargar_datos_y_psf(ruta_fits='data/prueba.fits', ruta_psf='data/PSF_517_1600
 
     return datos_recortados, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran
 
-def metodoForw():
-    print('hola')
+
+# Este método es el metodo del que me basar en el paper de Van noot
+def metodoForw(intensidad, V, lambdas, psf, trabajadores=-1):
+    nx = intensidad.shape[2]
+    ny = intensidad.shape[1]
+    n_lambda = intensidad.shape[0]
+
+    n_total = nx * ny
+
+    # Primero vamos a intentar preparar los datos antes del método
+    campoMagneticoInicial = calcularMagnetismo(intensidad, V, lambdas)[0]
+
+    intensidad_decon = decon.aplicar_deconvolucion_3d(intensidad, psf=psf, metodo='rl', workers=-1)
+
+    derivadaI = np.gradient(intensidad_decon, lambdas, axis=0)
+    K_cubo = -constanteFormula * g_eff * derivadaI * (lambdas[:, np.newaxis, np.newaxis]**2)
+
+    psf_tilde = psf[::-1, ::-1]
+
+    # Calculo la V inicial
+    V_inicial = K_cubo * campoMagneticoInicial[np.newaxis, :, :]
+    deltaV = V - V_inicial
+
+    # Definimos los operadores lineales que usaremos.
+    def J(dB_2D):
+        v_ideal = K_cubo * dB_2D[np.newaxis, :, :]
+
+        for i in range(n_lambda):
+            v_ideal[i, :, :] = decon.convolucion(v_ideal[i, :, :], psf, trabajadores=trabajadores)
+        
+        return v_ideal
+    
+    # Operador adjunto
+    def JT(residuos3d):
+        for i in range(n_lambda):
+            residuos3d[i, :, :] = decon.convolucion(residuos3d[i, :, :], psf, trabajadores=trabajadores)
+
+        residuos3d = residuos3d * K_cubo
+
+        dB_2D = np.sum(residuos3d, axis=0)
+
+        return dB_2D
+    
+    def funcionA(x_1D):
+        x_2D = x_1D.reshape((nx, ny))
+
+        #Aplicamos la cadena de operadores J^T(J(X))
+        efecto_telescopio = J(x_2D)
+        correccion_estimada = JT(efecto_telescopio)
+
+        return correccion_estimada.flatten()
+    
+    # Ahora preparamos el sistema para que aparezca el A*x = b
+    b_2D = JT(deltaV)
+
+    b_1D = b_2D.flatten()
+
+    #Y creamos la matriz con el operador
+    matrizA = LinearOperator((n_total, n_total), matvec=funcionA)
+
+    # A partir de aqui es donde ocurre la solucion del sistema
+
+    print('Iniciando sistema de inversion')
+    dB_1d_solucion, info = cg(matrizA, b_1D, rtol=1e-5)
+
+    if info == 0:
+        print("¡Convergencia exitosa!")
+    elif info > 0:
+        print(f"Alcanzado límite de iteraciones ({info}) sin converger totalmente.")
+    else:
+        print("Error numérico durante la iteración.")
+
+    deltaB_final = dB_1d_solucion.reshape((nx, ny))
+
+    return campoMagneticoInicial + deltaB_final
 
 if __name__ == "__main__":
 
     datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = cargar_datos_y_psf()
 
     campoMagneticoSD, mapa_r_cuadradoSD = calcularMagnetismo(intensidad_orig, V_orig, eje_lambda)
-    campoMagneticoDec, mapa_r_cuadradoDec = calcularMagnetismoConDeconvolucion(datos, psf_fran, eje_lambda, metDecon='w_fran', workers=-1)
+    #campoMagneticoDec, mapa_r_cuadradoDec = calcularMagnetismoConDeconvolucion(datos, psf_fran, eje_lambda, metDecon='w_fran', workers=-1)
+    campoMagneticoFM = metodoForw(intensidad_orig, V_orig, eje_lambda, psf_fran)
     
-    vis.compararMagnetogramas(campoMagneticoSD, campoMagneticoDec)
+    vis.compararMagnetogramas(campoMagneticoSD, campoMagneticoFM)
