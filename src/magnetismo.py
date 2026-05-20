@@ -5,9 +5,34 @@ import deconvolucion as decon
 from mod.pd_functions_v22 import PSF
 import visualizacion as vis
 from scipy.sparse.linalg import LinearOperator, cg
+import time
 
 g_eff = 1.75 # Linea del magnesio I
 constanteFormula = 4.67e-13 
+
+class MonitorKrylov:
+    def __init__(self):
+        self.iteracion = 0
+        self.t_inicio = time.time()
+        self.x_anterior = None
+        self.historial_pasos = [] # Por si luego quieres graficarlo
+
+    def __call__(self, xk):
+        self.iteracion += 1
+        t_actual = time.time() - self.t_inicio
+        
+        # Calculamos cuánto ha cambiado el mapa respecto a la iteración anterior
+        if self.x_anterior is not None:
+            cambio = np.linalg.norm(xk - self.x_anterior)
+            self.historial_pasos.append(cambio)
+            
+            # Imprimimos en la terminal sobrescribiendo la misma línea
+            print(f"Iteración {self.iteracion:03d} | Tiempo: {t_actual:.1f} s | Magnitud del paso: {cambio:.2e}", end='\r')
+        else:
+            print(f"Iteración {self.iteracion:03d} | Tiempo: {t_actual:.1f} s | Magnitud del paso: Calculando...", end='\r')
+            
+        # Guardamos el estado actual para la siguiente iteración
+        self.x_anterior = xk.copy()
 
 def calcularMagnetismo(imagenIntensidad, imagenV, lambdas):
     """
@@ -101,16 +126,18 @@ def metodoForw(intensidad, V, lambdas, psf, trabajadores=-1):
     # Definimos los operadores lineales que usaremos.
     def J(dB_2D):
         v_ideal = K_cubo * dB_2D[np.newaxis, :, :]
+        # Creamos una matriz vacía nueva para no pisar la anterior
+        v_degradado = np.zeros_like(v_ideal)
 
         for i in range(n_lambda):
-            v_ideal[i, :, :] = decon.convolucion(v_ideal[i, :, :], psf, trabajadores=trabajadores)
+            v_degradado[i, :, :] = decon.convolucion(v_ideal[i, :, :], psf, trabajadores=trabajadores)
         
-        return v_ideal
+        return v_degradado
     
     # Operador adjunto
     def JT(residuos3d):
         for i in range(n_lambda):
-            residuos3d[i, :, :] = decon.convolucion(residuos3d[i, :, :], psf, trabajadores=trabajadores)
+            residuos3d[i, :, :] = decon.convolucion(residuos3d[i, :, :], psf_tilde, trabajadores=trabajadores)
 
         residuos3d = residuos3d * K_cubo
 
@@ -138,7 +165,10 @@ def metodoForw(intensidad, V, lambdas, psf, trabajadores=-1):
     # A partir de aqui es donde ocurre la solucion del sistema
 
     print('Iniciando sistema de inversion')
-    dB_1d_solucion, info = cg(matrizA, b_1D, rtol=1e-5)
+
+    monitor = MonitorKrylov()
+
+    dB_1d_solucion, info = cg(matrizA, b_1D, rtol=1e-5, callback=monitor)
 
     if info == 0:
         print("¡Convergencia exitosa!")
