@@ -7,7 +7,8 @@
 \contentsline {subsection}{\numberline {2.4}El problema de la deconvolución}{4}{subsection.2.4}%
 \contentsline {section}{\numberline {3}Metodología}{5}{section.3}%
 \contentsline {subsection}{\numberline {3.1}El método de Van Noort}{5}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Adaptarlo a nuestro caso}{5}{subsection.3.2}%
-\contentsline {section}{\numberline {4}Resultados}{6}{section.4}%
-\contentsline {section}{\numberline {5}Conclusiones}{6}{section.5}%
-\contentsline {section}{Referencias}{6}{section.5}%
+\contentsline {subsection}{\numberline {3.2}Adaptarlo a nuestro caso}{6}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Resolución numérica: Subespacios de Krylov y Gradiente Conjugado}{7}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Resultados}{7}{section.4}%
+\contentsline {section}{\numberline {5}Conclusiones}{7}{section.5}%
+\contentsline {section}{Referencias}{7}{section.5}%
