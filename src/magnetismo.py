@@ -8,6 +8,7 @@ from scipy.sparse.linalg import LinearOperator, cg
 import time
 import scipy.fft as sp_fft
 import scipy.signal as sp_signal
+from matplotlib.colors import LogNorm
 
 g_eff = 1.75 # Linea del magnesio I
 constanteFormula = 4.67e-13 
@@ -62,6 +63,37 @@ class MonitorKrylov:
             plt.ioff()
             # Mostramos la gráfica final y bloqueamos hasta que se cierre (opcional)
             # plt.show()
+
+def visualizar_psf_log(psf, titulo="PSF"):
+    """
+    Visualiza una PSF en 2D y su corte transversal en 1D usando escala logarítmica.
+    """
+    # Recortamos los valores minúsculos o ceros absolutos para que LogNorm no lance errores
+    psf_segura = np.clip(psf, a_min=1e-12, a_max=None)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+    # --- 1. Imagen 2D Logarítmica ---
+    # Usamos cmap='magma' o 'inferno' porque resaltan de maravilla las variaciones tenues en el fondo
+    im = ax1.imshow(psf_segura, norm=LogNorm(vmin=1e-6, vmax=psf_segura.max()), cmap='magma')
+    ax1.set_title(f"Vista 2D Log - {titulo}")
+    fig.colorbar(im, ax=ax1, label='Intensidad (Log)')
+
+    # --- 2. Perfil 1D (Corte transversal por el centro) ---
+    centro_y = psf.shape[0] // 2
+    ax2.plot(psf_segura[centro_y, :], color='red', lw=2)
+    ax2.set_yscale('log')
+    ax2.set_title("Corte Transversal 1D (Centro)")
+    ax2.set_xlabel("Píxel X")
+    ax2.set_ylabel("Intensidad (Log)")
+    
+    # Añadimos una cuadrícula densa para leer bien las caídas de órdenes de magnitud
+    ax2.grid(True, which="major", color='black', alpha=0.3)
+    ax2.grid(True, which="minor", linestyle="--", alpha=0.2)
+
+    plt.tight_layout()
+    plt.show()
+
 
 def calcularMagnetismo(imagenIntensidad, imagenV, lambdas):
     """
@@ -142,20 +174,33 @@ def metodoForw(intensidad, V, lambdas, psf, recorte=100, trabajadores=-1):
     # 1. Deconvolución de I usando la PSF GRANDE completa
     intensidad_decon = decon.aplicar_deconvolucion_3d(intensidad, psf=psf, metodo='rl', workers=-1)
 
-    # --- 2. RECORTAR Y NORMALIZAR LA PSF PARA LOS OPERADORES LINEALES ---
+    # --- 2. RECORTAR, APODIZAR Y NORMALIZAR LA PSF ---
     cy, cx = psf.shape[0] // 2, psf.shape[1] // 2
     mitad = recorte // 2
     
-    # Extraemos el parche central
+    # 2.1 Extraemos el parche central bruto
     psf_recortada = psf[cy - mitad : cy + mitad + 1, cx - mitad : cx + mitad + 1]
     
-    # OBLIGATORIO: El parche central recortado debe normalizarse (suma = 1.0) 
-    psf_pequena = psf_recortada / np.sum(psf_recortada)
+    visualizar_psf_log(psf_recortada, titulo="PSF Apodizada (Filtro Gaussiano)")
+    # 2.2 Creamos el filtro Gaussiano 2D (Apodización)
+    # Generamos los ejes de coordenadas centrados en cero
+    y, x = np.ogrid[-mitad:mitad+1, -mitad:mitad+1]
+    
+    # Definimos la anchura de la campana (sigma). 
+    # Un divisor de 2.5 o 3 asegura que la función caiga a casi cero en los bordes del recorte.
+    sigma = mitad / 2.5 
+    ventana_gaussiana = np.exp(-(x**2 + y**2) / (2 * sigma**2))
+    
+    # Aplicamos el filtro al parche original
+    psf_suavizada = psf_recortada * ventana_gaussiana
+    
+    # 2.3 OBLIGATORIO: Normalizamos el resultado final (suma = 1.0) 
+    psf_pequena = psf_suavizada / np.sum(psf_suavizada)
     
     # Simetría del Adjunto: Usamos la PSF pequeña invertida espacialmente 
     psf_espejo = psf_pequena[::-1, ::-1]
     # --------------------------------------------------------------------
-
+    visualizar_psf_log(psf_pequena, titulo="PSF Apodizada (Filtro Gaussiano)")
     derivadaI = np.gradient(intensidad_decon, lambdas, axis=0)
     K_cubo = -constanteFormula * g_eff * derivadaI * (lambdas[:, np.newaxis, np.newaxis]**2)
 
