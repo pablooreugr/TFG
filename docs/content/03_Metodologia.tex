@@ -1,3 +1,47 @@
 % !TeX root = ../main.tex
 
 \section{Metodología}
+
+\subsection{El método de Van Noort}
+El método original planteado por Van Noort plantea lo siguiente. Imagina que tenemos unos datos observados $d$ y un modelo teórico $F(x)$ que depende de unos parametros $x$, que en nuestro caso ese modelo sería la aproximación de campo débil y el parámetro el campo magnético paralelo. SI partimos de una estimación inicial de los parámetros $x_0$ el error sería:
+
+\begin{equation}
+    \label{eq:beta}
+    \beta = d -F(x_0)
+\end{equation}
+
+Para mejorar nuestra estimación queremos dar una correción $\nu$, de modo que nuestra nueva estimación sea $x_0 + \nu$
+
+Dado que, según el paper, $F(x)$ suele ser una función dificil y no lineal, se aproxima a una serie de Taylor:
+
+\begin{equation}
+    F(x_o + \nu) \simeq F(x_0) + J \nu
+\end{equation}
+
+Donde $J$ es la matriz Jacobiana del sistema. \\
+
+El objetivo ideal es que la nueva estimación encaje perfectamente con los datos observados, siendo el error cero:
+
+\begin{equation}
+    \begin{split}
+        d - F(x_o + \nu) &= 0\\
+        d - (F(x_0) + J \nu) &= 0\\
+        J \nu = \beta
+    \end{split}
+\end{equation}
+
+Donde $\beta = d - F(x_0)$. El problema con los datos experimentales que tenemos muchos mas puntos que parametros a ajustar. Eso significa que $J$ es una matriz rectangular. Esto significa que es una matriz sobredeterminada. \\
+
+Para resolverlo usamos el enfoque de minimos cuadrados. Tal como lo proponen en el paper, al realizar este enfoque nos sale el siguiente sistema de ecuaciones:
+
+\begin{equation}
+    \label{eq:sistemaResolver}
+    J^T J \nu = J^T \beta
+\end{equation}
+
+Gracias a esto podemos resolver esta matriz porque $J^T J$ si que es cuadrada y resoluble.
+
+\subsection{Adaptarlo a nuestro caso}
+La matriz $J$ es la matriz jacobiana del sistema físico que estamos representando. En nuestro caso implicaría dos transformaciones. Tanto el cálculo del campo magnético a partir de la aproximación débil cómo la convolución con la PSF. Eso implicaría que cada parámetro de $x_i$ sería el enlace pixel a pixel de la imagen original. Si tenemos una imagen de 1400x1400 entonces tendríamos una matriz Jacobiana tan grande que ocuparía terabytes de memoria ram.\\
+
+Aquí es cuando podremos aprovechar nuestro sistema. Si definimos nuestro J para nuestro sistema como un operador en vez de una matriz y descubrimos que es lineal, entonces el sistema estaría perfectamente definido y podríamos resolver la ecuación (\ref{eq:sistemaResolver}).

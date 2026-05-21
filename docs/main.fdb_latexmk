@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1779205872.2731 "main.aux" "main.bbl" "main" 1779211419.01307 0
-  "./referencias.bib" 1779211030.31118 9747 c2a062b4e1e955356dc79804131c12c4 ""
+["bibtex main"] 1779364671.443 "main.aux" "main.bbl" "main" 1779364733.20616 0
+  "./referencias.bib" 1779269840.66105 9361 e1c45f0b62d30c16d370c929b151da2d ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/unsrt.bst" 1775001600 18030 1376b4b231b50c66211e47e42eda2875 ""
-  "main.aux" 1779211418.83743 2858 44b7319719e493de9c37e5d9e1762a10 "pdflatex"
+  "main.aux" 1779364732.71075 3270 370f3f25782294a2ee82994454ee275f "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1779211418.27636 "/home/pabloore/conjuntoV/universidad/TFG/docs/main.tex" "main.pdf" "main" 1779211419.01327 0
+["pdflatex"] 1779364730.97174 "/home/pabloore/conjuntoV/universidad/TFG/docs/main.tex" "main.pdf" "main" 1779364733.20652 0
   "/home/pabloore/conjuntoV/universidad/TFG/docs/main.tex" 1777312038.74313 3935 793ba48b831f65782f3c536d4ac782e6 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1775001600 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -144,19 +144,19 @@
   "/usr/share/texlive/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texlive/texmf-dist/tex/latex/xtab/xtab.sty" 1312313272 20106 cec6cadeaa62ca1707a316e38d65a9eb ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1775001600 40900 887e0dc8cac988a9e9c574af364cf837 ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775812161.42409 4602601 5d02a5c5d52d7237566d144856366042 ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775811963 7753793 1f6d0f0b5bc080514da88cddc7037b02 ""
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775811965.95823 4602615 ac1019cb4c4ba39710c2cf7f752b378d ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775811404 7753793 de9360a086970e0a1fe81d8f8b736103 ""
   "content/01_Introduccion.tex" 1779203406.54052 154 e93c8b9ad4ee8aa55981d66f05d40ae8 ""
   "content/02_FundamentoTeor.tex" 1779211418.10569 4731 9bfc1c94efa779df05c8eb6d41770254 ""
-  "content/03_Metodologia.tex" 1777312038.73908 49 72ed9db5abf54f1da7afa4fc3c9b21ef ""
+  "content/03_Metodologia.tex" 1779364730.5667 2531 df93e9387c4433cd7883be5364029608 ""
   "content/04_Resultados.tex" 1777312038.73914 47 e0d9da4de3c39496bb5b697a4c02588a ""
   "content/05_Conclusion.tex" 1777312038.7392 49 d58aaa31f76df2e959b2b6172ae82c4d ""
   "img/escudoUGRmonocromo.png" 1777312038.73985 160809 de7617aa95455ecd794fe6065fc4748a ""
-  "main.aux" 1779211418.83743 2858 44b7319719e493de9c37e5d9e1762a10 "pdflatex"
-  "main.bbl" 1779205872.3205 49 0eba253fc001332e731e8aba3f23127b "bibtex main"
-  "main.out" 1779211418.83843 1504 d30f98407df47c4774207bcfa72b373d "pdflatex"
+  "main.aux" 1779364732.71075 3270 370f3f25782294a2ee82994454ee275f "pdflatex"
+  "main.bbl" 1779364671.61346 49 0eba253fc001332e731e8aba3f23127b "bibtex main"
+  "main.out" 1779364732.71375 1874 5b5286c777cc6f7172f39c6bdac811b0 "pdflatex"
   "main.tex" 1777312038.74313 3935 793ba48b831f65782f3c536d4ac782e6 ""
-  "main.toc" 1779211418.83942 813 96b7d19619accf83d1fda97175ee83d7 "pdflatex"
+  "main.toc" 1779364732.71401 992 d1e59e6467ac099081799c1b695f8de7 "pdflatex"
   (generated)
   "main.aux"
   "main.log"
