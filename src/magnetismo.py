@@ -161,7 +161,7 @@ def cargar_datos_y_psf(ruta_fits='data/prueba.fits', ruta_psf='data/PSF_517_1600
 
     return datos_recortados, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran
 
-def metodoForw(intensidad, V, lambdas, psf, recorte=100, trabajadores=-1):
+def metodoForw(intensidad, V, lambdas, psf, recorte=100, trabajadores=-1, relLim=1e-3, pasos=1000):
     nx = intensidad.shape[2]
     ny = intensidad.shape[1]
     n_lambda = intensidad.shape[0]
@@ -264,7 +264,7 @@ def metodoForw(intensidad, V, lambdas, psf, recorte=100, trabajadores=-1):
 
     monitor = MonitorKrylov(plot_live=True)
 
-    dB_1d_solucion, info = cg(matrizA, b_1D, rtol=1e-3, maxiter=50, callback=monitor)
+    dB_1d_solucion, info = cg(matrizA, b_1D, rtol=relLim, maxiter=pasos, callback=monitor)
     print() # Para no sobreescribir la última línea en la terminal
 
     if info == 0:
@@ -283,7 +283,7 @@ def metodoForw(intensidad, V, lambdas, psf, recorte=100, trabajadores=-1):
 
 if __name__ == "__main__":
 
-    datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = cargar_datos_y_psf()
+    datos, cabecera, eje_lambda, intensidad_orig, V_orig, psf_fran = cargar_datos_y_psf(ruta_fits='data/prueba.fits')
 
     campoMagneticoSD, mapa_r_cuadradoSD = calcularMagnetismo(intensidad_orig, V_orig, eje_lambda)
     #campoMagneticoDec, mapa_r_cuadradoDec = calcularMagnetismoConDeconvolucion(datos, psf_fran, eje_lambda, metDecon='w_fran', workers=-1)
