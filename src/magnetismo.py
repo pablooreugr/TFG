@@ -10,7 +10,7 @@ import scipy.fft as sp_fft
 import scipy.signal as sp_signal
 from matplotlib.colors import LogNorm
 
-g_eff = 1.75 # Linea del magnesio I
+g_eff = 3 # Linea del magnesio I
 constanteFormula = 4.67e-13 
 
 class MonitorKrylov:

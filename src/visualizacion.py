@@ -119,7 +119,8 @@ def dibujarMagYR(campoMagnetico, mapa_r_cuadrado):
 
     # --- PRIMER RECUADRO (ax1): El Magnetograma ---
     #im1 = ax1.imshow(campoMagnetico, cmap='RdBu_r') 
-    im1 = ax1.imshow(campoMagnetico, cmap='RdBu_r', vmin=-500, vmax=500) 
+    #im1 = ax1.imshow(campoMagnetico, cmap='RdBu_r', vmin=-500, vmax=500)
+    im1 = ax1.imshow(campoMagnetico, cmap='RdBu_r')
     fig.colorbar(im1, ax=ax1, label='Valor del campo magnético paralelo G (Gauss)') 
 
     # --- SEGUNDO RECUADRO (ax2): El mapa de R^2 ---
