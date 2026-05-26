@@ -201,5 +201,78 @@ def dibujarComparacionPSF(psf_cargada, psf_airy):
     plt.show()
 
 
+def dibujarIntensidadYCompV(intensidad, compV, titulo_int='Intensidad', titulo_v='Componente V'):
+    """
+    Muestra dos mapas lado a lado: uno para la intensidad y otro para la componente V (estático).
+    """
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+    # --- Intensidad ---
+    im1 = ax1.imshow(intensidad, cmap='gray')
+    ax1.set_title(titulo_int)
+    fig.colorbar(im1, ax=ax1, label='Intensidad')
+
+    # --- Componente V ---
+    vmax = np.max(np.abs(compV))
+    if vmax == 0: vmax = 1e-10
+    im2 = ax2.imshow(compV, cmap='RdBu_r', vmin=-vmax, vmax=vmax)
+    ax2.set_title(titulo_v)
+    fig.colorbar(im2, ax=ax2, label='Stokes V')
+
+    plt.tight_layout()
+    plt.show()
+
+
+def visualizarIntensidadYCompVSlider(intensidades, compVs, lambdas):
+    """
+    Muestra mapas interactivos de la intensidad y la componente V convolucionada 
+    para diferentes longitudes de onda usando un slider.
+    """
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    
+    # Ajustamos el layout dejando espacio abajo para el slider
+    fig.subplots_adjust(bottom=0.25)
+    
+    # Valores iniciales (índice medio)
+    idx_init = len(lambdas) // 2
+    
+    # --- Intensidad ---
+    im1 = ax1.imshow(intensidades[idx_init], cmap='gray')
+    ax1.set_title(f'Intensidad ($\\lambda$ = {lambdas[idx_init]:.3f} Å)')
+    fig.colorbar(im1, ax=ax1, label='Intensidad')
+    
+    # --- Componente V ---
+    # Para Stokes V usamos un mapa divergente centrado en 0
+    vmax = np.max(np.abs(compVs[idx_init]))
+    if vmax == 0: vmax = 1e-10
+    im2 = ax2.imshow(compVs[idx_init], cmap='RdBu_r', vmin=-vmax, vmax=vmax)
+    ax2.set_title(f'Componente V ($\\lambda$ = {lambdas[idx_init]:.3f} Å)')
+    fig.colorbar(im2, ax=ax2, label='Stokes V')
+    
+    # --- Slider ---
+    ax_lam = plt.axes([0.2, 0.1, 0.6, 0.03], facecolor='lightgoldenrodyellow')
+    slider_lam = Slider(ax_lam, 'Índice $\\lambda$', 0, len(lambdas)-1, valinit=idx_init, valstep=1, valfmt='%0.0f')
+    
+    def update(val):
+        idx = int(slider_lam.val)
+        
+        # Actualizar intensidad
+        im1.set_data(intensidades[idx])
+        im1.set_clim(vmin=np.min(intensidades[idx]), vmax=np.max(intensidades[idx]))
+        ax1.set_title(f'Intensidad ($\\lambda$ = {lambdas[idx]:.3f} Å)')
+        
+        # Actualizar componente V
+        im2.set_data(compVs[idx])
+        vmax_actual = np.max(np.abs(compVs[idx]))
+        if vmax_actual == 0: vmax_actual = 1e-10
+        im2.set_clim(vmin=-vmax_actual, vmax=vmax_actual)
+        ax2.set_title(f'Componente V ($\\lambda$ = {lambdas[idx]:.3f} Å)')
+        
+        fig.canvas.draw_idle()
+
+    slider_lam.on_changed(update)
+    plt.show()
+
+
 if __name__ == '__main__':
     explorar_resultados()
