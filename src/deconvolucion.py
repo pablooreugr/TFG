@@ -83,9 +83,15 @@ def lucyRichason(imagen, psf, pasos=30, trabajadores=-1, eps=1e-12):
     u = u_padded[pad_size:-pad_size, pad_size:-pad_size]
     return np.clip(u, 0, None)
 
+def alinear_psf_fft(psf, shape):
+    psf_padded = np.zeros(shape)
+    psf_padded[:psf.shape[0], :psf.shape[1]] = psf
+    return np.roll(psf_padded, shift=(-psf.shape[0]//2, -psf.shape[1]//2), axis=(0, 1))
+
 def decoFourier(imagen, psf, eps=1e-12, trabajadores=-1):
     imagen_fft = fft.fft2(imagen, workers=trabajadores)
-    psf_fft = fft.fft2(psf, s=imagen.shape, workers=trabajadores)
+    psf_alineada = alinear_psf_fft(psf, imagen.shape)
+    psf_fft = fft.fft2(psf_alineada, workers=trabajadores)
 
     imagen_deco_fft = imagen_fft / (psf_fft + eps)
     imagen_deco = np.real(fft.ifft2(imagen_deco_fft, workers=trabajadores))
@@ -96,7 +102,8 @@ def decoWiener(imagen, psf, snr, eps=1e-12, trabajadores=-1):
     imagen_padded, _ = hacerPadding(imagen, psf)
 
     imagen_fft = fft.fft2(imagen_padded, workers=trabajadores)
-    psf_fft = fft.fft2(psf, s=imagen_padded.shape, workers=trabajadores)
+    psf_alineada = alinear_psf_fft(psf, imagen_padded.shape)
+    psf_fft = fft.fft2(psf_alineada, workers=trabajadores)
 
     psf_conj = np.conj(psf_fft)
     wiener_filter = psf_conj / (np.abs(psf_fft)**2 + (1 / (snr**2)) + eps)

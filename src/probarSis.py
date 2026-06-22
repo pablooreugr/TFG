@@ -144,28 +144,100 @@ def experimento_comparacion_intensidad():
         print(f"{nombre} -> RMSE: {rmse_val:.4f}, SSIM: {ssim_val:.4f}")
         
     # 6. Visualización de Resultados
+    import os
+    import matplotlib.colors as mcolors
+    
+    os.makedirs('output', exist_ok=True)
+    
     idx_z = intensidad.shape[0] // 2  # Usamos un slice central para visualizar
     
-    # 6.1 Mostrar Imágenes
-    imagenes_vis = [intensidad[idx_z], intenBorrosaRuido[idx_z], 
-                    inten_rl[idx_z], inten_fourier[idx_z], inten_wiener[idx_z]]
-    titulos_vis = ['Original', 'Borroso + Ruido', 'Richardson-Lucy', 'Fourier', 'Wiener']
+    print("\nGenerando visualizaciones y guardando en 'output/'...")
     
-    print("\nGenerando visualizaciones...")
-    vis.mostrar_n_arrays(imagenes_vis, titulos_vis, cmap=sns.color_palette("rocket", as_cmap=True), cols=3, 
-                         figsize=(15, 8))
+    # 6.1 Gráfica 1: Original y Borrosa
+    fig1, axes1 = plt.subplots(1, 2, figsize=(10, 5))
+    im1 = axes1[0].imshow(intensidad[idx_z], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes1[0].axis('off')
+    fig1.colorbar(im1, ax=axes1[0], fraction=0.046, pad=0.04)
     
-    # 6.2 Gráfica de parámetros (SSIM)
-    fig, ax = plt.subplots(figsize=(8, 6))
+    im2 = axes1[1].imshow(intenBorrosaRuido[idx_z], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes1[1].axis('off')
+    fig1.colorbar(im2, ax=axes1[1], fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.savefig('output/comparacion_intensidad_1_original_borrosa.png')
 
-    sns.barplot(x=metodos, y=ssims, ax=ax, hue=metodos, palette="viridis", legend=False)
-    ax.set_xlabel('Método de Deconvolución', fontweight='bold')
-    ax.set_ylabel('SSIM', fontweight='bold')
+    # 6.2 Gráfica 2: 3 Deconvoluciones
+    fig2, axes2 = plt.subplots(1, 3, figsize=(15, 5))
     
-    fig.suptitle('Comparación de SSIM para la Intensidad', fontsize=14, fontweight='bold')
+    im3 = axes2[0].imshow(inten_rl[idx_z], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes2[0].axis('off')
+    fig2.colorbar(im3, ax=axes2[0], fraction=0.046, pad=0.04)
+    
+    im4 = axes2[1].imshow(inten_fourier[idx_z], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes2[1].axis('off')
+    fig2.colorbar(im4, ax=axes2[1], fraction=0.046, pad=0.04)
+    
+    im5 = axes2[2].imshow(inten_wiener[idx_z], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes2[2].axis('off')
+    fig2.colorbar(im5, ax=axes2[2], fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.savefig('output/comparacion_intensidad_2_deconvoluciones.png')
+    
+    # 6.3 Gráfica 3: Barras
+    fig3, ax3 = plt.subplots(figsize=(8, 6))
+    sns.barplot(x=metodos, y=ssims, ax=ax3, hue=metodos, palette="viridis", legend=False)
+    ax3.set_xlabel('Método de Deconvolución', fontweight='bold')
+    ax3.set_ylabel('SSIM', fontweight='bold')
+    plt.tight_layout()
+    plt.savefig('output/comparacion_intensidad_3_barras.png')
+
+    # 6.4 Gráfica 4: PSF (sin logaritmo)
+    fig4, ax4 = plt.subplots(figsize=(6, 5))
+    im6 = ax4.imshow(psf, cmap=sns.color_palette("mako", as_cmap=True))
+    ax4.axis('off')
+    fig4.colorbar(im6, ax=ax4, fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.savefig('output/comparacion_intensidad_4_psf.png')
+    
+    # 6.5 Gráfica 5: Original y Borrosa (Zoom)
+    print("Generando visualizaciones con zoom y guardando en 'output/'...")
+    y_ini, y_fin = 140, 235
+    x_ini, x_fin = 163, 255
+    
+    fig5, axes5 = plt.subplots(1, 2, figsize=(10, 5))
+    im1_z = axes5[0].imshow(intensidad[idx_z, y_ini:y_fin, x_ini:x_fin], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes5[0].axis('off')
+    fig5.colorbar(im1_z, ax=axes5[0], fraction=0.046, pad=0.04)
+    
+    im2_z = axes5[1].imshow(intenBorrosaRuido[idx_z, y_ini:y_fin, x_ini:x_fin], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes5[1].axis('off')
+    fig5.colorbar(im2_z, ax=axes5[1], fraction=0.046, pad=0.04)
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig('output/comparacion_intensidad_5_original_borrosa_zoom.png')
+    
+    # 6.6 Gráfica 6: 3 Deconvoluciones (Zoom)
+    fig6, axes6 = plt.subplots(1, 3, figsize=(15, 5))
+    
+    im3_z = axes6[0].imshow(inten_rl[idx_z, y_ini:y_fin, x_ini:x_fin], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes6[0].axis('off')
+    fig6.colorbar(im3_z, ax=axes6[0], fraction=0.046, pad=0.04)
+    
+    im4_z = axes6[1].imshow(inten_fourier[idx_z, y_ini:y_fin, x_ini:x_fin], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes6[1].axis('off')
+    fig6.colorbar(im4_z, ax=axes6[1], fraction=0.046, pad=0.04)
+    
+    im5_z = axes6[2].imshow(inten_wiener[idx_z, y_ini:y_fin, x_ini:x_fin], cmap=sns.color_palette("rocket", as_cmap=True))
+    axes6[2].axis('off')
+    fig6.colorbar(im5_z, ax=axes6[2], fraction=0.046, pad=0.04)
+
+    plt.tight_layout()
+    plt.savefig('output/comparacion_intensidad_6_deconvoluciones_zoom.png')
+
+    # Mostrar todas las gráficas generadas
+    plt.show(block=True)
 
 if __name__ == "__main__":
     # Puedes descomentar la siguiente línea si quieres ejecutar el experimento del Algoritmo de Noor
