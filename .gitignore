@@ -1,26 +1,16 @@
-# --- Python ---
-__pycache__/
-*.py[cod]
-*$py.class
-venv/
-.env
-.ipynb_checkpoints/
-
-# --- Fortran ---
-*.o
-*.mod
-*.smod
-*.a
-*.so
-*.out
-*.exe
-
-# --- Sistema (Fedora/Linux) ---
-.DS_Store
-.directory
-*~
-
-# --- Datos ----  (esto es porque los datos ocupan mucho)
 data/
+venv/
+__pycache__/
 output/
 
+*.aux
+*.bbl
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.pdf
+*.blg
+__pycache__/
