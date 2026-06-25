@@ -1,0 +1,25 @@
+% !TeX root = ../main.tex
+
+\section{Métodos de deconvolución: Fourier, Wiener y Richardson-Lucy}
+
+\textit{Escribir aquí los distintos métodos de deconvolución.}
+
+\subsection{Problemas con la deconvolución de V}
+
+El problema central de este trabajo surge al analizar la ecuación de aproximación de campo débil (\ref{eq:campoDebil}). Experimentalmente, lo que se miden son los parámetros de Stokes $V$ e $I$. 
+
+Al expresar matemáticamente la señal observada afectada por la degradación instrumental (modelada mediante la convolución con la PSF), obtenemos:
+
+\begin{equation}
+    \label{eq:expresionConvolucionada}
+    V_{\mathrm{obs}} = V \ast \mathrm{PSF} = \left(-C g_{\mathrm{eff}} \lambda^2 B_{\parallel} \frac{d I_0}{d \lambda} \right) \ast \mathrm{PSF}
+\end{equation}
+
+Como se puede observar al expandir la expresión, el campo magnético longitudinal $B_{\parallel}$ que intentamos extraer multiplica a la derivada de la intensidad antes de que se aplique la convolución espacial. Recordando las propiedades presentadas en (\ref{eq:propFurier}), el problema fundamental radica en la siguiente desigualdad:
+
+\begin{equation}
+    \label{eq:imposibilidadDecon}
+    \left(-C g_{\mathrm{eff}} \lambda^2 B_{\parallel}(x, y) \frac{d I_0}{d \lambda}(x, y) \right) \ast \mathrm{PSF} \neq -C g_{\mathrm{eff}} \lambda^2 \left(B_{\parallel}(x, y) \ast \mathrm{PSF} \right) \left(\frac{d I_0}{d \lambda}(x, y) \ast \mathrm{PSF} \right)
+\end{equation}
+
+Esto se debe a que el operador de convolución no es distributivo respecto al producto de funciones, lo que imposibilita la deconvolución trivial y el aislamiento directo del término del campo magnético.
