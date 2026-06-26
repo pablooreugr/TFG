@@ -1,8 +1,98 @@
 % !TeX root = ../main.tex
 
 \section{Fundamentos Teóricos}
-
 \subsection{Datos espectrales, parámetros de Stokes}
+Primero, para situarnos dentro del tema, vamos a definir exactamente qué estamos midiendo. Toda la información que extraemos del Sol proviene de las propiedades de la luz, o lo que es lo mismo, de las ondas electromagnéticas. Cuando medimos el Sol, el rango de longitudes de onda que se usará en este proyecto entra en el de la luz visible (entre $4000 - 7000$ \AA). La principal limitación de trabajar con luz visible radica en que medir directamente las propiedades de su campo electromagnético (como la amplitud o la fase) es tecnológicamente inviable debido a sus altísimas frecuencias. \\
+
+Por lo tanto, los telescopios no miden el campo eléctrico directamente, sino que su respuesta es proporcional a la energía electromagnética promediada en el tiempo (la intensidad). Para poder medir el flujo de la energía además de las propiedades electromagnéticas, se usa el tensor de polarización. 
+
+Para entender el tensor primero hay que entender cómo se entiende matemáticamente la polarización de una onda electromagnética. Podemos entender una onda polarizada como suma de dos ondas una en cada eje de coordenadas, los dos transversales a la dirección de propagación, con la misma frecuencia pero distinto desfase. En la siguiente figura (\ref{fig:componentes_em}) se muestra cómo la onda final es la suma de distintas ondas.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth, % Tipo de flecha elegante y matemática
+        thick,
+        scale=1.2 % Permite escalar el gráfico fácilmente
+    ]
+
+        % --- CONFIGURACIÓN DE COLORES ---
+        % Colores elegantes basados en tu boceto
+        \definecolor{vectorblue}{RGB}{41, 121, 255}
+        \definecolor{compgreen}{RGB}{46, 125, 50}
+        \definecolor{axesgray}{RGB}{100, 110, 120}
+
+        % --- EJES DE COORDENADAS ---
+        % Dibujamos las líneas de los ejes cruzando el origen
+        \draw[->, color=axesgray, line width=0.8pt] (-3,0) -- (3,0);
+        \draw[->, color=axesgray, line width=0.8pt] (0,-3) -- (0,3);
+
+        % --- CÍRCULO DE REFERENCIA ---
+        % Círculo con una línea fina y gris para no restar protagonismo
+        \draw[color=axesgray!40, line width=0.8pt] (0,0) circle (2.2cm);
+
+        % --- PARÁMETROS DEL VECTOR ---
+        % Definimos el ángulo (ej. 43 grados) y el radio (2.2 cm)
+        \def\angulo{43}
+        \def\radio{2.2}
+
+        % Calculamos los puntos clave automáticamente usando coordenadas polares
+        \coordinate (Origen) at (0,0);
+        \coordinate (E) at (\angulo:\radio); % Extremo del vector azul
+        \coordinate (Ex) at ({\radio*cos(\angulo)}, 0); % Extremo componente X
+        \coordinate (Ey) at (0, {\radio*sin(\angulo)}); % Extremo componente Y
+
+        % --- LÍNEAS DE PROYECCIÓN ---
+        % Líneas discontinuas desde la punta del vector a los ejes
+        \draw[dashed, color=compgreen, line width=0.7pt] (E) -- (Ex);
+        \draw[dashed, color=compgreen, line width=0.7pt] (E) -- (Ey);
+
+        % --- VECTORES COMPONENTES (VERDES) ---
+        \draw[->, color=compgreen, line width=1.5pt] (Origen) -- (Ex) 
+            node[below, yshift=-2pt] {$E_x$};
+        \draw[->, color=compgreen, line width=1.5pt] (Origen) -- (Ey) 
+            node[below right, xshift=2pt, yshift=-2pt] {$E_y$};
+
+        % --- VECTOR RESULTANTE (AZUL) ---
+        \draw[->, color=vectorblue, line width=1.8pt] (Origen) -- (E);
+
+    \end{tikzpicture}
+    \caption{Componente de una onda electromagnética polarizada como suma de dos ondas en los ejes $x$ y $y$, con la misma frecuencia pero distinto desfase.}
+    \label{fig:componentes_em}
+\end{figure}
+
+Por lo tanto, el tensor que usamos para medir tanto la intensidad como el desfase de la onda tiene la forma (\ref{eq: tensorDePolarizacion}), donde $\langle \cdot \rangle$ denota el promedio en el tiempo. \cite[cap. 2.3]{toroiniestaIntroductionSpectropolarimetry2003}
+
+\begin{equation}
+    \label{eq: tensorDePolarizacion}
+    C \equiv \begin{pmatrix} \langle E_x E_x^* \rangle & \langle E_x E_y^* \rangle \\ \langle E_y E_x^* \rangle & \langle E_y E_y^* \rangle \end{pmatrix}
+\end{equation}
+
+Esta matriz usa números complejos, números que tienen el problema de que no son medibles realmente. Por lo tanto se utiliza una combinación lineal de los elementos de la matriz llamados parámetros de Stokes. Estos son números reales con unidades de energía, por lo que realmente podemos usarlos como medidas del telescopio. Las expresiones de los parámetros de Stokes se muestran en las expresiones (\ref{eq:stokes}). \cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}
+\begin{equation}
+    \label{eq:stokes}
+    \begin{aligned}
+        I &\equiv \kappa (C_{11} + C_{22}) \\
+        Q &\equiv \kappa (C_{11} - C_{22}) \\
+        U &\equiv \kappa (C_{12} + C_{21}) \\
+        V &\equiv i\kappa (C_{21} - C_{12})
+    \end{aligned}
+\end{equation}
+
+Donde $\kappa$ es un factor de proporcionalidad que depende de la luz y del telescopio. 
+
+Desde un punto de vista físico, cada uno de los parámetros de Stokes tiene un significado.
+
+\begin{itemize}
+    \item $I$ es la intensidad total de la luz, es decir, la energía electromagnética que llega al detector por unidad de tiempo y superficie. Representa el brillo global de la señal.
+    \item $Q$ mide la diferencia entre la polarización lineal horizontal y la vertical, es decir, entre 0\,deg y 90\,deg.
+    \item $U$ mide la diferencia entre dos orientaciones diagonales de la polarización lineal, a 45\,deg y 135\,deg.
+    \item $V$ cuantifica la polarización circular y permite distinguir si domina la componente derecha o la izquierda.
+\end{itemize}
+
+Donde medir $V$ es especialmente importante, ya que nos permitirá poder medir el campo magnético del Sol, como explicaremos más adelante.
+
+
 
 \subsubsection{Qué significa la gaussiana}
 
