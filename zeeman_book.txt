@@ -1,0 +1,2109 @@
+Egidio Landi Degldnnocenti
+
+82
+
+Figure 4- Scheme of a Babinet compensator.
+
+Ammonium - Dihydrogen - Phosphate); such crystals are coated with transpar¬
+ent electrodes to which a variable potential (of the order of some kV) is applied.
+A last possibility is offered by the so-called piezo-optical birefringence mod¬
+ulators.
+
+In these devices, the birefringence is induced by compressing or dis¬
+
+tending a material (otherwise isotropic and uniform) along a given direction.
+According to Kemp (1969), a relatively weak force, like the one that can be
+simply applied by finger pressure, is enough to produce a quarter-wave plate by
+stressing a block of normal glass having the size of a match-box.
+
+4
+
+GENERALITIES ON POLARIZATION PHENOMENA IN SPEC¬
+TRAL LINES
+
+To describe the phenomena of absorption, emission, and scattering in a spectral
+line and, consequently, the associated polarimetric phenomena, it is possible to
+adopt either a simple, more intuitive, classical model or a more refined (and
+physically more correct), quantum-mechanical model (see fig. 5). The classical
+model has a more restricted range of validity (indeed it provides a satisfactory
+model only for a spectral line having a lower level J = 0 and an upper level J' —
+1) but it has the advantage of requiring a simpler formalism and of providing
+an intuitive grasp of polarization phenomena. According to this model an atom
+is schematized as an electric charge, the electron, which is bound to oscillate
+around the nucleus under the action of a harmonic force. The frequency vQ of
+
+Magnetic Field Measurements
+
+Classical model
+
+83
+
+Quantum model
+
+Figure 5: Classical and quantum mechanical models of a radiating atom.
+
+the oscillation corresponds to the frequency of the line that can be absorbed or
+emitted by the atom. In this model, the phenomenon of absorption is due to the
+fact that the atomic oscillator can be excited by the electric field of the incident
+radiation beam. In this process, some energy is transferred from the radiation
+beam to the oscillator which results in a process of absorption.
+
+Conversely,
+
+an excited oscillator is nothing but an oscillating dipole which is capable of
+.
+
+2
+
+2
+
+radiating energy according to the well known expression W = -3c°- , where a is
+the acceleration of the electric charge, e the charge itself, c the speed of light
+and W the power radiated. This is nothing but the phenomenon of emission.
+The quantum model of the spectral line involves the familiar idea of transi¬
+tions between the lower and upper levels (absorption) or viceversa (emission).
+We start now from the classical model and ask when such a model can give
+rise to polarized radiation in the emission process. To answer this question we
+have first to remind that an oscillating monochromatic dipole p(t) produces in
+the radiation zone an electromagnetic wave whose frequency is the same as that
+of the dipole and whose electric field is given by:
+
+E(r,H,t) = &2— p±(i),
+r
+where k is the wavenumber, r the distance, f1 an arbitrary direction, and p± is
+the component of the dipole in the plane perpendicular to f2:
+p± = p— (H • p)Fl.
+
+Egidio Landi Degl’Innocenti
+
+84
+
+If the dipole is excited at random, like it would be, for instance, when it is
+excited by collisions with an isotropic distribution of particles, it results that
+also the electric field produced by the dipole has an isotropical distribution
+of directions (in the plane perpendicular to 17 ) and the resulting radiation is
+unpolarized.
+On the contrary, polarization can be produced in an emission process by two
+different types of mechanisms, which are described below.
+
+4.1
+
+Zeeman effect
+
+This is the case when there is a physical agent (a magnetic field) which is capable
+of changing the frequency of the oscillation according to the geometry of the
+oscillation itself.
+In the presence of a magnetic field we have, according to the Larmor theorem,
+that the oscillation of the electron can be decomposed into three components,
+each component corresponding to a different frequency (see fig. 6).
+If we observe, for instance, along the direction of the magnetic field we find
+clockwise circular polarization at the frequency v0—vl , counterclockwise circular
+polarization at the frequency v0 + vl- If, on the contrary, we observe along a
+direction perpendicular to B we find linear polarization parallel to B at v — vQ
+and linear polarization perpendicular to B at v — vQ ± vl .
+This phenomenon is known as the Zeeman effect. The parameter that char¬
+acterizes it in an astrophysical plasma (where the major cause of broadening of
+spectral lines is Doppler broadening) is the radio vl/Avd, where Avp is the
+Doppler broadening in frequency units:
+Avjj — i'0-
+
+(wj= thermal velocity).
+
+c
+
+Typically, for a spectral line at 500QA, expressing B in Gauss and wj in
+km*s-1, we have:
+vl
+
+AvD
+
+~ 7.1 x 1CT4
+
+B
+Wt
+
+85
+
+Magnetic Field Measurements
+
+VL = Larmor
+
+frequency =
+
+e0 B
+
+4rtmc
+
+Figure 6: The component of the oscillation along the direction of the magnetic
+field (it-component) keeps its unperturbed frequency vQ, while the circular
+components in the perpendicular plane (a-components) have their frequency
+shifted by F.vl-
+
+4.2
+
+Impact and resonance polarization
+
+This is the case when there is an intrinsic anisotropy in the mechanism which is
+exciting the oscillator.
+
+a) The oscillator is excited by a collimated beam of fast particles: the direc¬
+tional collisions induce a “preferred” direction in the dipole and the radiation
+resulting in the de-excitation process is polarized. This phenomenon is known
+as impact polarization.
+
+b) The oscillator is excited by a collimated beam of radiation. We have a
+similar process and we obtain, in the de-excitation process, the so-called reso¬
+nance polarization.
+The same phenomena, described here and in 4.1, that are capable of pro¬
+ducing polarization in a spectral line can be understood also in terms of the
+quantum-mechanical description. Each atomic de-excitation process involves a
+transition between the upper level and the lower level. When no physical agent
+capable of introducing a splitting between the magnetic sublevels is present, and
+when the different sublevels M' are evenly populated, the radiation resulting in
+the de-excitation process is unpolarized, irrespectively of the direction £7. On
+the contrary, polarization can be produced either for the presence of a splitting
+(like for instance in the case of the Zeeman effect, as shown in fig. 7) or when the
+levels M' are not evenly populated. In this case the atom is said to be polarized,
+
+86
+
+v
+
+Egidio Landi Degl'Innocenti
+
+\
+
+de-excitation
+
+J
+
+M
+
+Figure 7: In the presence of a magnetic field, each component connecting the
+sublevels M and M' has a different frequency with respect to the unperturbed
+line.
+
+or to show atomic level polarization, and the corresponding radiation is again
+polarized.
+
+4.3
+
+Resonance polarization and the Hanle effect
+
+To illustrate in simple terms the concepts of resonance polarization and the
+Hanle effect we consider a simple scattering event like the one described in the
+top panel of fig. 8. We suppose that the incident radiation is unpolarized and
+that, for the moment, there is no magnetic field. We schematize the scattering
+atom through a collection of three linear oscillators of frequency vQ that we call
+the x, y, and z-oscillator.
+
+The scattering experiment can be described in the
+
+following way:
+a) the electric field of the incident radiation is decomposed in its x- and
+z-components; due to the unpolarized character of the radiation, the two com¬
+ponents are incoherent, in the sense that no phase relationship is present between
+them;
+b) the z-component of the electric field excites the z-oscillator and, analo¬
+gously, the x-component excites the x-oscillator;
+c) the oscillators de-excite with a damped motion and emit radiation. Ob¬
+serving, for instance, along the x-direction, the x-oscillator is ineffective, being
+seen pole-on, while the z-oscillator produces a radiation that is linearly polarized
+along the z-direction. As a result, the radiation scattered along the x-direction
+is 100% linearly polarized perpendicularly to the scattering plane.
+
+Magnetic Field Measurements
+
+87
+
+oscillation in the
+y-z plane
+
+"rosette”
+
+"daffodil1
+
+Figure 8: Qualitative illustration of resonance polarization and the Hanle effect.
+
+Egidio Landi Degllnnocenti
+
+88
+
+To prepare us to the introduction of a magnetic field, let us now describe
+the atom in terms of one linear oscillator, the x-oscillator, and two circular
+oscillators (<j+ and <j_) laying in the y-z plane, as shown in panel b) of fig. 8.
+As the magnetic field is zero, the frequency of the three oscillators is still vQ and,
+obviously, the previous result has to be recovered.
+Repeating the same arguments as before, we see that, at step b), that while
+the x-component of the electric field still excites the x-oscillator, the z-component
+now excites the <j+ and <r_ oscillators with a well defined phase relationship
+between them, in such a way that the motion of the electron takes place along
+the z-direction. For the scattered radiation we obviously have the same result
+-
+
+as before but we have to take into account that, with this new description of the
+atomic system, we are obliged to introduce the concept of phase relationship or
+coherence, between the two circular oscillators.
+If we now introduce a magnetic field directed along the x-axis (fig. 8c) we
+have to take into account that the two circular oscillators are now vibrating
+at different frequencies (vQ -f
+
+and vQ — vjf) so that the phase relationship
+
+introduced by the exciting electric field is little by little lost during the damped
+de-excitation process. The electron now describes in the y-z plane a “rosette”
+with the result that the polarization of the scattered radiation, reflecting the
+weighted average of that pattern, is decreased and rotated with respect to the
+original direction of the non-magnetic regime.
+
+The parameter controlling the
+
+shape of the rosette is the ratio 27tvl/A, where 1/A is the lifetime of the excited
+atom.
+
+When this parameter is very large, the “rosette” degenerates into a
+
+“daffodil” (fig. 8d) and the scattered radiation is totally unpolarized.
+From this example we are led to the conclusion that the effect of the magnetic
+field is the one of inducing a relaxation of coherences between the different
+components of the oscillatory motion of the electron. The Hanle effect is just
+the consequence of this relaxation process in resonance scattering.
+In quantum-mechanical terms, the same experiment is explained like this.
+The incident radiation excites the atom to the upper level and, in general, the
+wave-function will be of the form (for B = 0)
+\4>>=Y,Cm,\ J'M' > e'^e-r.
+M<
+
+In the de-excitation process, the emitted radiation along the unit vector e is
+given by:
+
+89
+
+Magnetic Field Measurements
+
+kJ2 l< 4>\r-e \ JN >|2
+
+I
+
+N
+
+k
+
+Y,
+
+CM’C'M„ < J'M1 \f'-e\JN >< J'M"
+
+r e \ JN >* e~At,
+
+M'M"N
+
+where k is a constant and where r is the dipole operator. The “crossed terms”
+with M'
+
+7^
+
+M" describe the result of the coherences, which appear to be as
+
+important as the diagonal terms (with M' = M).
+For a magnetic field different from zero, the wave-function assumes the form:
+
+|
+
+V> >=Y,CM'e~i9'l'LM't I J'M' > e'^e-r' ,
+M>
+
+so that we have:
+
+I
+M'M"N
+
+• < J'M' I r • e
+
+JN >< J'M"
+
+r • e | JN >*,
+
+and it is the presence of the oscillating factor that produces the relaxation of
+coherences.
+
+4.4
+
+The role of collisions in resonance polarization
+
+Collisions with surrounding particles can be classified into two types with respect
+to their influence on spectral lines and their polarization properties.
+a) Exciting collisions
+These collisions, generally produced by electrons, are capable of exciting
+the atom to its upper level. If the distribution of velocities of the colliders is
+isotropical, these collisions give rise to unpolarized radiation in the de-excitation
+mechanism of the atom (unless a magnetic field is present, capable of introducing
+an appreciable Zeeman splitting). If, on the contrary, the velocity distribution
+of the colliders is anisotropical, these collisions are capable of introducing atomic
+polarization and, as a consequence, polarized radiation in the de-excitation pro¬
+cess (Impact polarization). A phenomenon analogue to the Hanle effect is also
+present (Hanle effect for impact polarization).
+
+Egidio Landi Degl’Innocenti
+
+90
+
+Figure 9: Before the collision the dipole is oscillating along the t axis; the
+phase shift induced during the collision changes the oscillation from linear to
+elliptical.
+
+b) Perturbing collisions
+Perturbing collisions are effective in changing the frecuency of the atomic
+oscillator during a time interval, tfc, that is called the collision time, and that is
+usually very small. These collisions can be considered as instantaneous and can
+be described in the impact approximation; their effect is the one of introducing a
+phase shift in the oscillation of the atomic oscillators, thus resulting in a disrup¬
+tion of coherence of the same oscillator. The influence of perturbing collisions on
+spectral lines is twofold: from one hand we have an effect of broadening of the
+spectral line (collisional, or pressure broadening), and, on the other hand, we
+have a depolarizing effect (which is however connected with the isotropy of the
+velocity distribution of the colliders; for an anisotropical distribution one would
+have, in general, both a polarizing and a depolarizing effect in competition be¬
+tween them). For this reason, perturbing collisions are also called depolarizing
+collisions.
+It is easy to understand how a phase-shift of the oscillation can give rise to a
+depolarizing effect if one supposes, for instance, that the phase-shift takes place
+for that component of the oscillation which is directed along the velocity of the
+collider. Referring to fig. 9, let us suppose that, before the collision, we have an
+oscillation along the axis t at 45° between the x and y axes.
+The oscillation is then described by:
+
+Magnetic Field Measurements
+
+91
+
+{x(t) = A cos cat,
+y(t)
+
+=
+
+A cos cat.
+
+If the velocity of the collider is directed along the x-axis, and if <j> is the
+phase-shift introduced by the collision, we then have, after the collision:
+
+{x(t) = Acos(cat — (p),
+y(i)
+
+—
+
+A cos cat,
+
+with the result that the linear oscillatory motion has been changed into an
+elliptical one.
+Averaging over all the possible velocities of the colliders and over all the
+possible values of the phase-shift </>, the depolarizing role of the phase-shifts is
+easily understood.
+Depolarizing collisions can be characterized by a typical rate, /, given by
+/ = N<jv, where N is the perturbers number density, a the cross section for
+depolarization, and v the average velocity of the colliders. The rate / has to be
+compared with the inverse atomic life-time, A. If /
+
+A the role of depolarizing
+
+collisions is important, while, if / <C A, their role is negligible. A critical density
+Nc can be defined through the equation Ncav — A. Measuring v in kirns-1, a
+in units of a20 (where aQ is the Bohr radius), and A in units of 107s-1, one gets
+Nc = 3.6 x 1018—cm-3.
+(TV
+
+4.5
+
+A classification scheme for polarimetric observations
+
+Taking into account our qualitative discussion presented above, we can classify
+polarimetric observations into five different regimes, according to the intensity
+of the magnetic field, and into three different regimes, according to the density
+of perturbers.
+
+This is done by introducing a bidimensional diagram (see fig.
+
+10) with a magnetic field indicator (the Larmor frequency, for instance) on the
+vertical axis and the density of perturbers on the horizontal axis. In plotting
+the previous diagram we have supposed Aup > A. For an astrophysical plasma
+(like for instance the solar photosphere) we have, for a non-forbidden spectral
+line at visible wavelengths:
+AvD
+
+-
+
+A
+
+~
+
+2 x 109s-1,
+107s-1,
+
+so that we have, in effect, Av&
+
+A .
+
+Egidio Landi Degl ’Innocenti
+
+92
+
+a)
+
+b)
+
+Figure 10: Classification of the physical regimes according to the value of the
+magnetic field (left panel) and to the value of density (right panel).
+
+Moreover, defining Bh as the magnetic field such that vl = A, and Bz as
+the magnetic field such that vl = Avd, we have, as an order of magnitude:
+Bh
+Bz
+
+7 Gauss,
+~
+
+1.4 x 103Gauss.
+
+The various regimes are characterized by:
+la) Weak field regime (<C A): the magnetic field is so small to have negli¬
+gible effects both on Zeeman splitting and on atomic polarization; the magnetic
+field can be simply neglected.
+Ila) Hanle effect regime (~ A, ul <C Auq): the magnetic field is strong
+enough to partially remove coherences; on the other hand the Zeeman splitting
+is still very small and can be generally neglected.
+Ilia) Strong field regime (A <C vl < Avd): the relaxation of coherences is
+now complete, so that the magnetic sublevels can be treated as independent;
+the Zeeman splitting starts to be an appreciable (even if small) fraction of Avn
+and can produce observable polarization signals.
+
+93
+
+Magnetic Field Measurements
+
+IVa) Magnetograph regime (A <C vl ~ Az/d) : the Zeeman splitting is now
+comparable to the Doppler broadening, which results in a strong polarization
+signal; the Zeeman components are however still unresolved. The observations
+performed by solar magnetographs usually fall in this regime.
+Va) Intense field regime (vl > Az/p) :
+well separated and do not mix together.
+
+the Zeeman components are now
+
+In this regime, the intensity of the
+
+magnetic field vector can be simply deduced by measuring the splitting between
+the Zeeman components and polarimetry is not strictly necessary to obtain this
+kind of information.
+Ib)Collision-free regime (N < Nc): depolarizing collisions have a negligible
+influence on the atomic polarization induced by the anisotropy of the radiation
+field. They can be neglected in the interpretation.
+lib) Intermediate regime (N « Nc): depolarizing collisions are important in
+affecting atomic polarization but not so strong to attain a complete relaxation.
+In this regime a detailed knowledge of the relaxation rates is necessary.
+IllblCollisionallv dominated regime (N > Nc): the effect of depolarizing
+collisions is so strong that atomic polarization is totally removed; in this regime
+the populations of the single magnetic sublevels are equal, coherences are not
+present, and polarization can be produced only through the Zeeman effect.
+The two diagrams of fig.
+
+11 show the location on the zq, — N diagram of
+
+the various physical mechanisms (on the left) and of the different observatiosn
+usually performed on solar spectral lines (on the right).
+
+5
+
+RADIATIVE TRANSFER FOR POLARIZED RADIATION
+
+In the previous sections we have described the basic instrumentation that is
+needed to measure the polarization properties of a radiation beam and the fun¬
+damental physical mechanisms capable of introducing polarization in spectral
+lines. Now we want to discuss in a more quantitative way the transfer of polar¬
+ized radiation in a magnetized medium.
+The general theory of the generation and transfer of polarized radiation in
+stellar atmospheres is rather complicated and has ultimately to be based on a
+quantum-mechanical description of the plasma composing the atmosphere, of the
+radiation field that is there propagating and of their mutual interaction. Here
+we will however limit ourselves to give a classical derivation of the radiative
+
+Egidio Landi DeglTnnocenti
+
+94
+n
+
+Infrared lines
+sunspots
+Optical lines
+sunspots
+A. R.
+
+--
+
+Fe XIII,XIV
+lines
+corona
+He I D3
+H< Hp
+"prominenc. prominenc.
+%
+
+Quiet
+disk
+£
+
+N
+
+Figure 11: The left panel shows the location of the different physical
+mechanisms on the diagram of fig. 10; the various polarimetric observations
+performed in solar reserach can also be located on the same diagram (right
+panel).
+
+transfer equations for polarized radiation in the presence of a magnetic field
+without entering into the riddle of quantum theory.
+We consider the propagation of a plane electromagnetic wave in a stellar
+atmosphere.
+
+From the classical point of view the propagation property of a
+
+wave in a medium can be described through the concept of the refractive index
+n. For a homogenous and isotropical medium, the electric field associated with
+a wave of frequency v propagating along the direction
+
+is described by the
+
+equation:
+E{f,t) = E0e2’r,'c("r'3-Ct>)
+where E0 is a constant and c the speed of light.
+In an anisotropical medium, like in a vapour permeated by a magnetic field,
+the index of refraction depends on the direction of oscillation of the electric field
+E; in such a medium it is possible to define three mutually orthogonal unit
+vectors ua(a = 1,2,3), in general complex, such that each component of the
+electric field along the vector ua propagates with a different value na of the
+index of refraction. In such a medium we then have:
+
+95
+
+Magnetic Field Measurements
+
+Figure 12: e\ and e2 are Idle unit vectors defining the polarization properties of
+the light beam. The unit vectors u\, u2, and u3 specify the principal directions
+of the medium.
+
+E(f,t) = '£eauae2^’'°^,
+a
+
+where ea are constants and where the unit vectors ua are such that u*a-up = 8ap
+To define the Stokes parameters we need to consider the components of the
+electric field along two orthogonal unit vectors (e\ and e2) perpendicular to the
+direction of propagation (see fig. 12).
+On this basis, the electric field can be written in the form:
+E(r,t) = Y,ek(r,t)ek,
+k
+so that we have:
+£<* (f,t)ek = £>0uae2^(n“^-cf).
+k
+a
+By considering the scalar product of this equation first by ej and then by u J we
+get:
+
+= '£eaCaje^’'°^-«\
+a
+
+where we have introduced the direction cosine Caj = ua • ej which obeys the
+orthonormality conditions:
+
+Egidio Landi Degl’Innocenti
+
+96
+£ c:,cak =«
+a
+
+We now take the derivative of eq. (1) with respect to the coordinate s = r •
+measured along the ray-path:
+dej(s,t)
+ds
+
+= 2ni-T eanaCaje2lri^n°s-ct'>
+c a
+
+and substituting eq. (2) in the right hand side, we get
+dej(s,t)
+ds
+
+-
+
+^^G
+
+(3)
+
+, t),
+
+where
+Gjk = -27ri-J2n<*CQjC*k
+Q
+
+(4)
+
+(.j,k = 1,2).
+
+The transfer equation for the polarization tensor is easily derived from eq. (3):
+
+Ts1* = Ts<
+¤>k >=< {di)tk
+> + <
+ds
+ds
+
+ds
+
+>_ “
+
++ Guljt),
+
+or, more extensively:
+d_
+ds
+
+ds
+
+In — — [(^ii + Gu)Iu + ^12^21 + ^12^12]
+
+I22
+
+—
+
+“[(^22 “h
+
+d_
+ds
+
+ds
+
+I\2 — —
+
+I21
+
+—
+
+G 22) I22 + G21I\2 + G21I21]
+
+[(Gqi -h G22)I\2 + G\2I22 + G2\I\l\
+
+”[(^22 + ^11)^21 +
+
+G21 Ill
+
+4- G12I22]’
+
+From these equations, the radiative transfer equations for the Stokes param¬
+eters can be derived.
+
+One needs just to remind the relationship between the
+
+components of the polarization tensor and the Stokes parameters. One has (see
+section 1):
+
+'"
+
+=
+
+51
+
+In =
+(/ + «
+
+S<7
+
+- Q)
+
+Magnetic Field Measurements
+
+Iu = h{u ~iV)
+
+97
+
+721 = k(u + iV) *
+
+and substituting, one gets:
+/1\
+
+( VI
+
+VQ
+
+Vu
+
+Vv \
+
+/\
+
+d
+
+Q
+
+Vq
+
+Vi
+
+Pv
+
+~Pu
+
+Q
+
+ds
+
+u
+
+Vu
+
+~Pv
+
+Vi
+
+Pq
+
+u
+
+\W
+
+Pu
+
+-PQ
+
+Vi /
+
+\v)
+
+where the quantities appearing in the matrix are given by:
+
+Vi = Re(Gn + G22)
+VQ — Re(Gn — G22)
+
+Pq — — Im(Gn — G 22)
+
+Vu = Re(Gi2 4- G21)
+
+Pu — — Im(Gi2 4- G2\)
+
+rjv — Im(Gi2 — G21)
+
+Pv — Re(Gi2 — G21)-
+
+If we now introduce the expression for the quantities Gtj (eq. (4)), and write
+the index of refraction na in the form: nQ — 1 4
+
+4- ika, one can write:
+
+Vi = 27r-]Tfca(|Cai|2 4- |Ga212)
+^ O'
+
+Vq = 27T-^fca(|Cal|2 - |Ca2|2)
+
+PQ
+
+= 2^-^Sa(\Cal\2 - \Ca2\2)
+C a
+
+C a
+
+Vu = 2tt- Y ka2Re(CalC*2)
+c
+
+Pu = 2Tr-'£6a2Re(CalC*2)
+
+a
+
+pv = 2tt-
+
+C
+
+ka2lm(CQlC*2)
+
+a
+
+pv = 2x-^5a2Im(CQlC;2) .
+c —
+
+The matrix appearing in eq.
+
+(6)
+
+(5) can be written as the addition of three
+
+matrices:
+0
+
+0
+
+0
+
+Vi
+0
+
+0
+
+V o
+
+0
+
+/ Vi
+0
+
+Vi
+0
+
+0 ^
+0
+0
+Vi /
+
+/ 0
+4
+
+VQ
+Vu
+
+\W
+
+VQ
+0
+
+Vu
+0
+
+w\
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0 )
+
+0
+
++
+
+(0
+0
+
+0
+
+0
+
+0
+
+0
+
+-pv
+
+Pv
+0
+
+Vo
+
+Pu
+
+~PQ
+
+0 \
+-Pu
+pq
+0 /
+
+the first is a diagonal matrix (absorption matrix), the second is a symmetrical
+matrix (dichroism matrix), and the third is an antisymmetrical matrix (disper-
+
+Egidio Landi Degl’Innocenti
+
+98
+
+v
+
+*
+
+\
+
+V
+
+sion matrix).
+
+6
+
+LINE FORMATION IN A MAGNETIC FIELD
+
+We want to apply the equations now derived to the case of an atomic vapour in
+the presence of a magnetic field. What we have to find is the expression for the
+various indeces of refraction na, relative to the proper directions of the medium,
+ua, and for the direction cosines Cat.
+In classical terms, an atom can be schematized, according to the Lorentz
+theory of the electron, as an elementary electric charge ( — e0) that is bound to
+oscillate around a fixed point (the nucleus) by a harmonic force of unperturbed
+frecuency vQ. In the presence of a static magnetic field R, and of an oscillating
+electric field (due to the radiation) of the form Ee~27Tlut , the motion of the
+electron is described by the Newton equation:
+
+dt2
+
+me dt
+
+where the terms in the r.h.s.
+
+dt
+
+m
+
+represent, respectively, the contribution of the
+
+harmonic restoring force, the Lorentz force, the damping force, and the force
+due to the oscillating electric field.
+Looking for a solution of the form: x = ae 2niut
+we obtain for a the following equation:
+[47r2(z/2 — i/2) — 2niuj]a —
+
+x u0 = —-E
+
+,
+
+where we have written B in the form B = Bu0 and where i/£ —
+
+.
+
+
+
+To solve this equation for a, we develop a and E on the basis (fTi,
+where u±\ =
+
+!),
+
+± iuy), ux and uy being two unit vectors in the plane
+
+perpendicular to u0 and such that (ux,uy,u0) form a right handed coordinate
+system:
+
+a “aj
+
+drvU
+
+E — ^ ^ Eaua
+
+a
+
+If we now take into account that:
+
+a
+
+99
+
+Magnetic Field Measurements
+ua X uq = iaua
+
+(a = —1,0,1)
+
+we obtain:
+aQ — Xa-E'a, where:
+
+_ _-e0/(47r2m)_
+(z;2 — v2) — 2ivT -f 2avvL
+and where we have defined: T = 7/47T.
+If we now suppose that there are N oscillators per unit volume, and remember
+that D = E + 47rP = E — 47rNe0a, we obtain, for the components of D and E
+along the basis ua
+
+1
+
+,
+
+_Nej/^rrm)_
+
+(v2 _
+
+2avfv'L ~ 2ivT
+
+Remembering our position for the refractive index (na — 1 4- 8a + ika), and
+supposing that Sa and ka are much smaller than unity, we obtain:
+
+2(8 +ik )=
+a
+
+a
+
+Ne2J(nm)
+w 1
+Ngjgrm)
+(u2 — v2) + 2awi — 2ivT
+2v (ya — v + avi) —
+
+where we have also supposed
+
+’
+
+<< z/; T << z/.
+
+From this equation one finally finds:
+
+k
+
+...
+
+^
+
+_
+a
+
+M
+
+r
+
+Nel
+
+v0 + ocvL - v
+
+Airmu (v0 -f
+
+— v)2 + T2
+
+47tmv (z/0 -f- ctz^L — z/)2 + F2
+
+What we still need to find in order to determine the form of the various coeffi¬
+cients zy/,7yg, etc. (cf. eqs. 6), are the direction cosines CQJ = ua • e3. For this it
+is necessary to specify the geometry, like done in fig. 13.
+If ux lays in the plane containing B and
+
+we have:
+
+ux = cos 0 cos yei -f cos 0 sin x&2 ~ sin ^
+uy — — sin yei + cos ye2
+
+100
+
+Egidio Landi DeglTnnocenti
+
+Figure 13: The direction of the magnetic field vector is specified through the
+angles 0 and x•
+
+and uy are two orthogonal unit vectors in the plane
+—¥
+
+perpendicular to B.
+
+a — —1
+
+a = 0
+
+a = 1
+
+ICa\|2 -f |Ca2|2
+
+|(i + cos2e)
+
+sin2#
+
+|(1 + cos20)
+
+|CalP-|Co2|2
+
+— |sin20cos2x
+
+sin2#cos2x
+
+— |sin2#cos2x
+
+2Re(CaiC*2)
+
+-±sin2<?sin2x
+
+sin2#sin2x
+
+— |sin2#sin2x
+
+2Im(CalC*2)
+
+COS0
+
+0
+
+—cos 0
+
+Table I: Expressions for the direction cosines.
+
+Magnetic Field Measurements
+
+101
+
+Uo = sin 8 cos \e\ + sin $ sin X^2 + cos 8fl
+
+,
+
+from which we get:
+
+u±i = —p[(cos 8 cos x T i sin x)ei + (cos 8 sin \ ± * cos x)e*2 — sin 0$7]
+v2
+
+,
+
+and we obtain, for the various combinations of direction cosines, the results
+contained in Table I.
+Substituting these results and those previously obtained for ka and 8a into
+eq. (6), we finally obtain:
+nel _Ar ,
+.
+o .
+</>6 + 4>r
+(1 + cos2 0)]
+ni = —N^[<t>p sin2 6 +
+me
+2
+2
+7re? _1 r ,
+4>b
+<t>r ^
+2
+] sin2 8 cos 2x
+170 - — N-UpIQ
+me
+2 L^p
+2
+nel
+
+me
+
+VV
+
+..1 r ,
+
+<f>i)
+
+T >r, .
+<f
+
+2
+
+2
+
+Pq =
+
+7re0A71r/
++
+. 2^
+-N— \wD-- sin 8 cos2x
+me
+2[rp
+2
+J
+A
+
+7Te? ..1 r .
+fa + ^rn . 2
+] sin2 0 sin 2y
+Pv = '^N^p-
+
+] sin2 # sin 2\
+
+7re 2
+1
+= -~N-[(j)r ~ <f>b] COS 8
+me
+2
+
+7re 2
+1
+Pv =--N-[fa - fa] COS 8 ,
+me
+2
+
+where we have defined the various absorption profiles, </>p, </>*>, <^>r, and dispersion
+profiles, fa, fa, ipr by:
+1
+4*p
+
+(f)r
+
+7
+
+r (i/G — i/)2 + r2 ’
+
+fa =
+
+,
+
+7T (yQ -VL- v)2 + r2 ’
+
+fa — —
+7T (U0 + VL- V)2 + F2’
+
+xpr —
+
+7T (l/G - t7)2 + r2
+
+1
+
+v0-vL-v
+
+7T (yQ -vL- v)2 + r2
+
+1
+fa =
+
+Z/G - 1/
+
+- V
+
+k (yQ + vL- v)2 + r
+
+The profiles (pp, fa, (pr here derived are Lorentzian profiles centered, respec¬
+tively, at the frequencies v0,is0 — vl,v0 + J'l, and normalized to 1 in frequency:
+oo
+
+J
+
+<5^,6,r
+
+du
+
+1
+
+,
+
+— oo
+
+the indeces r and b are introduced to clarify the fact that the profile (pr(fa) is
+displaced to smaller (larger) frequency or, in other words, to the red (blue) end
+
+102
+
+Egidio Landi DegVInnocenti
+
+y
+
+\
+
+of the spectrum with respect to the <j)p profile.
+
+7
+
+TRANSFER EQUATIONS FOR THE STOKES PARAMETERS
+IN A MAGNETIZED ATMOSPHERE
+
+The equations derived in the former section can be generalized to take into
+account various phenomena that have been previously neglected.
+A first generalization concerns the presence of thermal and macroscopic mo¬
+tions. If the atoms that are absorbing the radiation have a maxwellian distribu¬
+tion of velocities characterized by the r.m.s. thermal velocity wt, superimposed
+to a bulk (or macroscopic) velocity of the medium, wm, along the line of sight,
+the profiles previously introduced have to be substituted by the expressions:
+1
+
+1
+
+y/n AvD
+1
+
+1
+
+1
+
+1
+
+y/E AvD
+1
+
+H{y - vM + vB, a);
+
+y/n Avd
+
+1
+
+1
+
+H(v - %,a);
+
+1
+
+y/E AvD
+
+H(v - vM ~ vB,a);
+
+yfn Avd
+
+L(v - vM,a)
+
+L(v — vm T vb , a)
+
+L(y -vM- vB,a)
+
+where H and L are the Voigt function and the associated dispersion function
+defined by:
+oo
+
+H(v,a) = — /
+
+>-y
+
+7T J
+
+— oo
+
+f
+
+L(v, a) = -
+
+dy
+(v - y)2 + a'
+
+v - y
+
+-y
+
+7T J
+
+(v — y)2 + a2
+
+— oo
+
+dy,
+
+and where:
+Avd = v0
+
+v =
+
+Wt
+
+v0-v
+A vd
+
+AXb — A0
+
+c
+A - A0
+A\b
+
+9
+
+a =
+
+Avb
+
+wt
+c
+
+cAXt)
+
+103
+
+Magnetic Field Measurements
+_
+
+wm _ wm_
+
+Vo
+
+wt
+
+Avb
+
+c
+
+_ wm
+c
+
+A0
+
+_
+
+vL
+
+_
+
+Avd
+
+AA#’
+
+A\e0B
+
+_
+
+47rmc2AA£)
+
+\B
+AXp
+
+In this last formula, the Zeeman splitting in wavelength units A#, has been
+introduced; numerically we have:
+
+Ab(A) = 4.67 x 10~13-B(Gauss)A^(A) .
+Note also that for the line of sight bulk velocity wm the astrophysical convention
+has been used, which implies that wm is positive for a receding source.
+A second generalization of the radiative transfer equation concerns the in¬
+troduction of the emission term. In the hypothesis of Local Thermodynamical
+Equilibrium (LTE), the Kirchhoff principle allows to write the emission coeffi¬
+cient in the four Stokes parameters in the form (viBt, VqBt, VuBt, VvBt)\
+where Bj is the Planck function, so that the radiative transfer equation for
+polarized radiation can be written in the form:
+
+i\
+d
+
+Q
+
+ds
+
+u
+
+( Vi
+VQ
+Vu
+\W
+
+VQ
+Vi
+-pv
+Pu
+
+Vu
+Pv
+VI
+-PQ
+
+Vv \
+-pu
+PQ
+Vi )
+
+(I — Bt ^
+Q
+u
+
+V
+
+/
+
+A further generalization is connected with the results that are obtained
+through the quantum theory. The electric oscillator that we have used to de¬
+scribe our atomic system is a simple classical model that is meant to represent
+quantum transitions between two energy levels. From quantum mechanics we
+know that any such level, characterized by the angular momentum quantum
+number, J, is split by a magnetic field in 2 J -f 1 sublevels specified by the mag¬
+netic quantum number M, which assumes all values from — J to J in integer
+steps (Zeeman effect). The splitting in frequency units of each sublevel is given
+by:
+vM = gMvL
+
+,
+
+where g is the Lande factor that, for a level in L-S coupling, is given by 2:
+
+3
+
+5(5 + 1) — L(L + 1)
+
+9~2+
+
+2J(J + 1)
+
+2Note that the expression for g is valid only for J ± 0. For J = 0 the concept
+of Lande factor loses its meaning.
+
+Egidio Landi Degl’Innocenti
+
+104
+\
+
+Figure 1Allowed transition between Zeeman sublevels for the spectral line
+A5247.05 of Fed.
+
+Fig. 14 illustrates a quantum transition between a lower level 5D2 and an
+upper level 7Ds
+The selection rule for allowed transitions is AM = 0(7r components) or
+AM = =bl(cr components).
+
+Each component results in a given splitting and
+
+strength; splittings are easily calculated:
+VMM' = (gM - g'M')vL ,
+while strengths can be computed through suitable tables (Beckers, 1969) or by
+3 — j coefficients:
+
+5mm' = 3(m
+
+-M'
+
+M'-m)
+
+
+
+where J, M are the quantum numbers of the upper level, while J', M' are those
+of the lower level.
+Fig. 15 illustrates the so-called Zeeman pattern for the same transition as in fig.
+14.
+The generalization of the transfer equations to account for this complication
+
+105
+
+Magnetic Field Measurements
+
+Figure 15: Zeeman pattern for the line A5247.05 of Fed.
+
+introduced by the quantum theory is direct; one has just to substitute the quan¬
+tities </>p,</>5,<fir, and 'ipP')'ipb,ipr with a sum of as many absorption or dispersion
+profiles as the number of components 7r,<r&,crr, respectively, each profile being
+centered at the right shift, vmm1, and being weighted by the right strength Smm'•
+We have for instance, in the case of Lorentzian profiles:
+
+4>b
+
+E
+
+M-M'=1
+
+b
+
+E
+
+M-M’=1
+
+SmM 7r (vQ + vMM, - v)2 +
+
+c
+
+1
+
+Vo
+
+r2 ’
+
+4- VMM1 — V
+
+MM\(vQ + VMM'- v)2 + n
+
+with the sum extended to all the line components having M — M' = 1. The
+expressions for (f)p and il?p are the same, but the sum has to be extended to all
+components having M — M' = 0; analogously, for <j)r and
+
+the sum has to be
+
+extended to all components having M — M' — —1.
+It is also important to observe that, in many cases, the various components
+can be substituted by a single component located at their center of gravity.
+The center of gravity of the 7r-components is alway zero, due to the symmetric
+structure of Zeeman patterns, while the center of gravity of the ^-components
+is located at Fgvi, where g, the so-called effective Lande factor, is given by:
+
+g = Ug + 9’) + \(9 - g')[J(J + 1) - JV + 1)] •
+
+Egidio Landi Degl’Innocenti
+
+\
+
+106
+
+Every line is characterized by its own value of g; the larger g, the more
+sensitive is the line to the magnetic field.
+
+There are some few lines having
+
+g = 0 (magnetic insensitive lines) and few lines having especially large values for
+
+9 (5
+
+2 — 3). These are the lines that are more commonly used for magnetic field
+
+measurements; examples are Fel A5250.2 A (g = 3) and Fel A6302.5 A (g = 2.5).
+A final generalization that results from quantum mechanics is the appearence
+of a factor /, the so-called oscillator strength, in the expression for the various
+coefficients 77/, t]q, rgj, Vv, Pq, pu, Pv• Oscillator strengths are proportional
+to the square modulus of the dipole matrix element between the lower and the
+upper levels involved in the transition (/ oc | < J\\ r \\J' > |2). Values of the
+oscillator strengths can often be found in suitable tabulations.
+Summarizing all the generalizations described in this section, and taking into
+account that in the solar atmosphere we also have an (unpolarized) contribution
+to the absorption coefficient due to continuum opacity, we can write the transfer
+equation for polarized radiation in the following form:
+
+f I\
+
+l Vi
+
+VQ
+
+Vu
+
+vv \
+
+Q
+u
+dr
+\v)
+
+Vq
+
+Vi
+
+Pv
+
+—pu
+
+Vu
+
+~pv
+
+Vi
+
+PQ
+
+\W
+
+Pu
+
+~PQ
+
+Vi /
+
+d
+
+/
+
+I-Bt\
+Q
+u
+v /
+
+where dr = —Kcds, is the optical depth measured in the continuum close to the
+line, and where:
+
+Vo \ 1
+2
+1 (t)bd~4>r/^
+2
+(1 + cos2 0)] = 1 + Vo<t>I
+Vi = 1 + ^[^Psin 0+
+2
+Vo
+•Io r 1,
+
+-| .
+
+2
+
+4>b "b 4*r i _ •
+
+2
+
+4*b “t~
+
+-
+
+Vo r j
+
+w = f[^P-
+
+2
+
+2
+
+] sin2 6 cos 2\ — Vo<t>Q
+
+] sin2 0 sin 2\ = Vo<t>u
+
+Vv — ^[<t>r- <t>b\ cos 0 = T]0<f)v
+Vo r /
+
+”06 d~
+
+t
+
+.
+
+2
+
+pa = ffe-
+
+2
+
+Vo r 1
+
+^b + V’t-t
+
+.
+
+2
+
+Pu = f[1>P ~
+
+2
+
+] sin2 0 cos 2x =
+
+] sin2 0 sin 2* = Vo^u
+
+107
+
+Magnetic Field Measurements
+
+Pv =
+
+Vo r ,
+
+Ipb] COS 0 — Tjo^v
+
+with Vo — ^
+with </>p,
+
+</>*>,
+
+(ratio of line to continumm absorption coefficients) and
+<^r>
+
+Vv the normalized absorption and dispersion pro¬
+
+files generalized for Doppler motions and for the anomalous structure of the
+Zeeman pattern.
+
+These equations are the basis of our further discussion.
+
+In
+
+fig. 16 a graph of the various non-zero coefficients is presented for a particular
+combination of the various parameters.
+
+8
+
+SOLUTIONS OF THE TRANSFER EQUATIONS AND MAG¬
+NETIC FIELD MEASUREMENTS
+
+The equation derived in the former section can be solved with various degrees of
+sophistication to give the values of the emerging Stokes parameters as a function
+of wavelength.
+
+The measurements of solar magnetic fields are based on the
+
+comparison of observations with the results obtained through such solutions;
+it is then important to be aware of the various approximations that underlie
+the different methods of solution (and the radiative transfer equation itself) in
+order to give reliable assesments on solar magnetic fields. In the following we
+will give a presentation of the various methods of solution in increasing order of
+complexity.
+
+8.1
+
+Weak field solution
+
+In the case when we can suppose the magnetic field weak throughout all the
+atmosphere where the line is formed, we can treat the magnetic field as a per¬
+turbation and develop an approximate solution in the following way:
+We suppose that g Xg << A A p (which implies, approximately, B < 500G,
+for a line at optical wavelengths having <7 = 1), and we obtain, for the various
+profiles up to first order in A#:
+</>p(A) = 0O(A - A0)
+
+0r( A) — 0o( A
+
+A0)
+
+g\B
+
+d<t>0(A - A0)
+
+d\
+
+108
+
+Egidio Landi DeglTnnocenti
+
+v
+
+Figure 16: The non-vanishing coefficients appearing in the transfer equation
+for polarized radiation are plotted against the reduced wavelength
+v = (X - X0)/AXd. These graphs have been obtained for a normal Zeeman
+triplet with the following combination of parameters:
+Xb/A\d = 2,6 — 45°,x = 0°,a = 0 (pure Doppler broadening), T]0 = 10. In
+this case rju and pu are zero.
+
+109
+
+Magnetic Field Measurements
+
+<MA) —
+
+4>o(X
+
+d<t>0(A - A0)
+
+— A0) + gXB
+
+aA
+
+and, analogously:
+
+”0p(A) — V,o(A
+
+A0) ,
+
+^V,&(A) = ^o(A - A0) =F gXb
+
+dip0(X - X0)
+dx
+
+where <j>0 and i\)0 are, respectively, the absorption and dispersion profiles relative
+to line center.
+Neglecting higher order terms we then have:
+Vi = 1 + Vo<t>o(x - Xo)
+
+Vq = Vu — Pq — Pu — 0
+Vv — -VogXB COS 0
+
+pv = -g0g Xb cos 6
+
+d<j>Q{X - A0)
+aA
+
+a^0(a - ag)
+aA
+
+The radiative transfer equations for polarized radiation are then partially
+decoupled and assume the form:
+dl_
+dr
+dQ
+dr
+dJJ_
+dr
+
+= Vi(I ~ Bt) + VvV ,
+= ViQ + PvU ,
+= ViU — pvQ ,
+
+dV_
+dr
+
+=
+
+ViV -h Vv(I ~
+
+Bt)
+
+.
+
+The equations for Q and U have no source terms; as at r —> oo the radiation is
+unpolarized, Q and U are identically zero throughout the whole atmosphere.
+We next observe that rjy is a quantity of the order of Ajg, and the same holds
+for the V Stokes parameter, so that the term gyV can be simply neglected in the
+previous equations, being quadratic in A#. We then obtain for 7, the equation:
+
+Egidio Landi Degl’Innocenti
+
+110
+
+E = [l + ri0<t>0(\ - A„)](/ - Bt) ,
+dr
+
+which shows that, up to first order in A#, the intensity of a line formed in
+a magnetic field is the same as the intensity, IQ , that will be formed in the
+same atmosphere with zero magnetic field and with the same run of the various
+thermodynamical parameters.
+On the other hand, we have for V:
+
+^7 = [1 + ?7o</>o(A - XQ)]V - r)0g\B cos 9^0^^-^°\l0 - BT) •
+
+(7)
+
+By taking the derivative with respect to A of the equation for I (which is the
+same as the one for IQ) we obtain (as the wavelength dependence of Bt can be
+neglected):
+
+A0)
+d ^dl0^
+r-i 1 „ 1 (\
+\
+\ 1 ^ c^o(A
+(Io - Bt) .
+Tr{~d\] ~ [1 + n°MX ~ Ao)1( ~d\] + 7,0
+3A
+We now multiply both sides of this equation by (—gXg cos 0)\ supposing that
+Ab cos 0 does not depend on r (which implies that the longitudinal component
+of the magnetic field is r-independent) we obtain:
+d_
+dr
+
+( —g\B cos 6
+
+dl0
+dX
+
+) = [1 + Vo<t>o(X - Xo)](-gXB cos 9
+-\
+
+Q^cfo^X
+
+dl0 >.
+~dX]
+
+Xq)
+
+-Vo9XB cos 9-—-(I0 - Bt) .
+0X
+A direct comparison of this equation with eq. (7) shows that the two quan¬
+tities V and (— gXB cos O^jf) obey exactly the same differential equation.
+
+As,
+
+moreover, these two quantities have the same boundary conditions at large val¬
+ues of t:
+lim V = lim
+
+T—OO
+
+dl0
+dX
+
+we conclude that:
+V = —gXB cos 9
+
+dl0
+dX'
+
+a formula showing that for a weak magnetic field having a r-independent com¬
+ponent along the line of sight, the V Stokes parameter is proportional to the
+spectral derivative of the intensity that will be formed in the same atmosphere
+with zero magnetic field and with the same run of the various thermodynamical
+
+Magnetic Field Measurements
+
+111
+
+parameters.
+From the formula now derived, and remembering the definition of As, we
+have:
+
+*
+
+dl0
+dX ’
+where C is a constant that varies from line to line and is given by (when B is
+measured in Gauss and the wavelengths in A):
+C = 4.67 x 10~13^
+
+.
+
+For two of the lines that are most commonly used in solar observations we
+have, for instance:
+C(A5250.2 A) = 3.86 x 10-5 A/Gauss
+C(A6302.5 A) = 4.64 x 10"5 A/Gauss .
+equation (8) can be inverted to give:
+1 V
+r1 dip
+° dX
+
+which is the most commonly used equation for measuring solar magnetic fields.
+This equation is the basic formula that is used to calibrate longitudinal
+magnetographs, probably the most known and widespread instrument for the
+study of solar magnetism.
+
+These instruments provide a map over the solar
+
+surface (the whole Sun or a more restricted region of it) of the quantity:
+5 =
+
+J
+
+V(\)p(\)d\/
+
+j
+
+I(\)p(\)d\ ,
+
+where p(A) is a profile that is centered over the wing of a magnetically sensitive
+line. It is posible to work either with filter-magnetographs or with spectrographmagnetographs; in filter magnetographs the spectral analysis is performed by
+means of a Lyot-type birefringent filter and in this case p(A) is nothing but
+the filter profile. In the case that a spectrograph is used, p(A) is, nominally, a
+step function that differs from zero in the wavelength interval (Ai, A2) selected
+through a slit in the focal plane of the spectrograph.
+
+The calibration of the
+
+magnetograph is generally performed through the following method (here we
+follow a similar presentation given by Stix, 1989): one assumes that the spectral
+line has, in intensity, a gaussian shape characterized by its central depression r0
+
+112
+
+Egidio Landi DegVInnocenti
+
+\
+
+and by its width AXp
+1(A) = Ic[l - r0e-{^)2} .
+From this equation one gets:
+dl
+dX
+
+2 rQIc
+
+A-A 0
+
+g
+
+'
+
+AX2D
+
+The maximum of this derivative is at the wavelength Ai such that Xi — A0 =
+^AA^; for that point one gets:
+
+0.858
+
+(
+
+T ode
+
+AXd
+
+(7)Ai - (1 - 0.6Q7ro)/c ,
+and supposing that the profile p(A) behaves like a delta- function centered at
+the same point, one obtains:
+
+S = (V/I)Xl=[V/(dI/d\)]Xl-~
+
+0.858 rQ
+
+\
+
+1 - 0.607 rj ’
+
+which, through eq. (9), allows to relate the signal 5 to B|j:
+1 /I - 0.607 rQ\
+C\
+
+0.858 rQ
+
+)
+
+AXpS .
+
+Note that the minus sign appearing in this formula is related to the fact that
+the signal 5 is supposed to be measured in the red wing of the line. In other
+words, a positive value of V in the red wing of an absorption line means that
+the component of the magnetic field along the line of sight is negative.
+As a particular case we can consider the line A6302.5 A which has rQ = 0.67
+and AXp = 50mA. For this line we obtain:
+B\\ = —1.1 x 103S
+
+(with i?|| in Gauss) .
+
+Taking into account all the approximations that are contained in this for¬
+mula, we can conclude that magnetographs cannot give more than a qualitative
+measurement of the longitudinal component of the magnetic field.
+
+In partic¬
+
+ular the linear relationship between 5 and B\\ is valid only in the weak field
+regime and strong fields (like those, for instance, that are found in sunspots)
+are systematically underestimated. This fact is known as the saturation effect of
+
+

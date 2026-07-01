@@ -249,14 +249,233 @@ Para interpretar la ecuación (\ref{eq:transfMatriz}), podemos dividirlo en tres
 \end{pmatrix}
 \end{equation}
 
-Donde la primera matriz es una matriz diagonal que representa la absorción de la luz, la segunda matriz es una matriz simétrica que representa la absorción selectiva dependiendo de la polarización, y la tercera matriz es una matriz antisimétrica que representa la dispersión de la luz.
-
-Todo el desarrollo se puede encontrar en \cite[pag. 93]{sanchezSolarObservationsTechniques1992}.
+Donde la primera matriz es una matriz diagonal que representa la absorción de la luz, la segunda matriz es una matriz simétrica que representa la absorción selectiva dependiendo de la polarización, y la tercera matriz es una matriz antisimétrica que representa la dispersión de la luz. Entonces, la ecuación de transferencia radiativa (\ref{eq:transfMatriz}) es un balance energético que afecta a la polarización de la luz.\cite[pag. 93]{sanchezSolarObservationsTechniques1992}.
 
 \subsection{Efecto Zeeman y polarización}
+El efecto Zeeman ocurre cuando un átomo u oscilador armónico interactúa con un campo magnético. Esta interacción rompe la degeneración espacial de los niveles de energía atómicos (o las frecuencias propias del oscilador en el marco clásico), causando un desdoblamiento de las líneas espectrales. Físicamente, el aspecto más relevante para la espectropolarimetría y el estudio de los campos magnéticos del Sol es que la radiación emitida o absorbida en estas transiciones adquiere un estado de polarización que depende fuertemente de la intensidad y orientación del campo magnético local respecto a la línea de visión del observador \cite[pag. 91]{sanchezSolarObservationsTechniques1992}.
+
+\subsubsection{Enfoque clásico del Efecto Zeeman}
+Para comprender este fenómeno, en \cite[pag. 98]{sanchezSolarObservationsTechniques1992} se presenta primero una aproximación clásica. Se modela los átomos del sol como un sistema nucleo y electrón, el cual puede ser descrito como un oscilador armónico caracterizado por una frecuencia propia $\nu_0$ amortiguado por un factor $\gamma$.
+
+Cuando este sistema se somete a un campo magnético estático $\vec{B}$, el electrón en movimiento experimenta una fuerza de Lorentz adicional. Si además interacciona con un campo eléctrico oscilante $\vec{E}$ propio de la radiación electromagnética ambiental, la segunda ley de Newton que rige el movimiento del electrón se escribe como:
+
+\begin{equation}
+    \label{eq:segLeyNewton}
+    \frac{d^2\vec{x}}{dt^2} = -4\pi^2\nu_o^2\vec{x} - \frac{e_o}{mc}\frac{d\vec{x}}{dt}\times\vec{B} - \gamma\frac{d\vec{x}}{dt} - \frac{e_o}{m}\vec{E}e^{-2\pi i\nu t}
+\end{equation}
+
+Donde $e_o$ es la carga del electrón, $m$ su masa, y $c$ la velocidad de la luz. La resolución detallada de esta ecuación diferencial acoplada es laboriosa, pero la física que subyace es elegante y se comprende directamente mediante el teorema de Larmor. 
+
+El teorema dicta que, al aplicar un campo magnético, el movimiento del electrón oscilante puede descomponerse en la superposición de tres osciladores fundamentales independientes. Para visualizarlo, supongamos que el campo magnético $\vec{B}$ está alineado con el eje $z$. 
+\begin{itemize}
+    \item Un oscilador lineal a lo largo del eje $z$, paralelo al campo magnético, vibrando a la frecuencia original $\nu_0$. Esta componente no se ve afectada por la fuerza de Lorentz.
+    \item Dos osciladores circulares en el plano $xy$ perpendicular al campo magnético. Debido a la fuerza de Lorentz, uno rotará a derechas y su frecuencia se verá aumentada a $\nu_0 + \nu_L$, mientras que el otro rotará a izquierdas y su frecuencia disminuirá a $\nu_0 - \nu_L$. 
+\end{itemize}
+
+Aquí interviene $\nu_L$, la frecuencia de Larmor, que cuantifica la alteración de la frecuencia de resonancia inducida por el campo magnético:
+\begin{equation}
+    \label{eq:larmorFrec}
+    \nu_L = \frac{e_o B}{4\pi m c}
+\end{equation}
+
+La radiación electromagnética producida por cada uno de estos tres osciladores tendrá un estado de polarización distinto dependiente del ángulo bajo el cual lo observemos.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        scale=1.5
+    ]
+        % Colores
+        \definecolor{axesgray}{RGB}{120, 120, 120}
+        \definecolor{Bfield}{RGB}{200, 50, 50}
+        \definecolor{oscpi}{RGB}{50, 150, 50}
+        \definecolor{oscsigmaplus}{RGB}{50, 50, 200}
+        \definecolor{oscsigmaminus}{RGB}{200, 150, 50}
+
+        % Ejes y campo magnético
+        \draw[->, color=axesgray] (0,-1.5) -- (0,2) node[above] {$z \parallel \vec{B}$};
+        \draw[->, color=axesgray] (-2,0) -- (2,0) node[right] {$y$};
+        \draw[->, color=axesgray] (-1.5,-1) -- (1.5,1) node[right] {$x$};
+        
+        \draw[->, color=Bfield, line width=2pt] (0.2,0.2) -- (0.2, 1.8) node[midway, right] {$\vec{B}$};
+
+        % Oscilador paralelo (Pi)
+        \draw[<->, color=oscpi, line width=1.5pt] (0,-1.2) -- (0,1.2) node[left] {$\nu_0$ ($\pi$)};
+        
+        % Osciladores perpendiculares (Sigma)
+        % Sigma +
+        \draw[->, color=oscsigmaplus, line width=1.2pt] (0,0) ellipse (1cm and 0.5cm) [rotate=20];
+        \node[color=oscsigmaplus] at (1.2, -0.4) {$\nu_0 + \nu_L$ ($\sigma_+$)};
+        
+        % Sigma -
+        \draw[<-, color=oscsigmaminus, line width=1.2pt, dashed] (0,0) ellipse (1.2cm and 0.6cm) [rotate=-20];
+        \node[color=oscsigmaminus] at (-1.4, 0.4) {$\nu_0 - \nu_L$ ($\sigma_-$)};
+
+    \end{tikzpicture}
+    \caption{Descomposición clásica del movimiento del electrón sometido a un campo magnético $\vec{B}$. El oscilador a lo largo de $z$ vibra a la frecuencia inalterada $\nu_0$ (componente $\pi$). En el plano ortogonal se crean dos movimientos circulares con frecuencias desplazadas $\nu_0 \pm \nu_L$ (componentes $\sigma$).}
+    \label{fig:larmor_classic}
+\end{figure}
+
+Si observamos el átomo paralelamente a las líneas de campo magnético ($\theta = 0^\circ$), el oscilador lineal de frecuencia $\nu_0$ no irradia energía en nuestra dirección (un dipolo no emite a lo largo de su eje). Solamente observaremos las dos componentes circulares del plano ortogonal: veremos emisión polarizada circularmente a izquierdas y a derechas en frecuencias desplazadas simétricamente $\nu_0 \pm \nu_L$. 
+
+Por otro lado, si observamos en dirección transversal o perpendicular al campo magnético ($\theta = 90^\circ$), los movimientos circulares los observaremos de canto, pareciendo simples oscilaciones lineales ortogonales al campo $\vec{B}$, emitiendo en $\nu_0 \pm \nu_L$. A su vez, sí podremos ver el oscilador central vibrando paralelamente a $\vec{B}$ y emitiendo en su frecuencia natural $\nu_0$. Es decir, veremos tres componentes linealmente polarizadas, el llamado triplete de Lorentz normal.
+
+Esta descripción analítica de los osciladores armónicos puede insertarse de vuelta en la ecuación fundamental de la transferencia radiativa. Resolviendo la parte real y la imaginaria del campo eléctrico, se obtienen analíticamente los coeficientes de absorción selectiva ($\eta$) y de dispersión o retardo de fase ($\rho$) que conforman la matriz de propagación introducida en la ecuación (\ref{eq:transfMatriz}).
+
+Estas soluciones tienen la siguiente forma:
+
+\begin{equation}
+    \label{eq:solEtaRho}
+\begin{aligned}
+\eta_I &= \frac{\pi e_o^2}{m c} N \frac{1}{2} \left[ \phi_p \sin^2 \theta + \frac{\phi_b + \phi_r}{2} (1 + \cos^2 \theta) \right] \\[4pt]
+\eta_Q &= \frac{\pi e_o^2}{m c} N \frac{1}{2} \left[ \phi_p - \frac{\phi_b + \phi_r}{2} \right] \sin^2 \theta \cos 2\chi \\[4pt]
+\eta_U &= \frac{\pi e_o^2}{m c} N \frac{1}{2} \left[ \phi_p - \frac{\phi_b + \phi_r}{2} \right] \sin^2 \theta \sin 2\chi \\[4pt]
+\eta_V &= \frac{\pi e_o^2}{m c} N \frac{1}{2} [\phi_r - \phi_b] \cos \theta \\[12pt]
+\rho_Q &= \frac{\pi e_o^2}{m c} N \frac{1}{2} \left[ \psi_p - \frac{\psi_b + \psi_r}{2} \right] \sin^2 \theta \cos 2\chi \\[4pt]
+\rho_U &= \frac{\pi e_o^2}{m c} N \frac{1}{2} \left[ \psi_p - \frac{\psi_b + \psi_r}{2} \right] \sin^2 \theta \sin 2\chi \\[4pt]
+\rho_V &= \frac{\pi e_o^2}{m c} N \frac{1}{2} [\psi_r - \psi_b] \cos \theta \, .
+\end{aligned}
+\end{equation}
+
+Donde $\phi$ representa los perfiles de absorción (o perfil de linea) de cada componente espectral, y $\psi$ representa los perfiles dispersivos asociados al corrimiento de fase. En ambos casos, el subíndice $p$ corresponde a la componente $\pi$, mientras que $r$ y $b$ corresponden a las componentes $\sigma_+$ y $\sigma_-$, respectivamente. Estas funciones dependen de la distancia entre la frecuencia observada $\nu$ y la frecuencia central de cada componente, además del ancho de línea $\Gamma$ y del desplazamiento de Zeeman $\nu_L$, donde se demuestra que existe un desplazamiento.
+
+
+\begin{equation}
+    \label{eq:solPsi}
+\begin{aligned}
+\phi_p &= \frac{1}{\pi} \frac{\Gamma}{(\nu_o - \nu)^2 + \Gamma^2}; &
+\psi_p &= \frac{1}{\pi} \frac{\nu_o - \nu}{(\nu_o - \nu)^2 + \Gamma^2} \\[6pt]
+\phi_r &= \frac{1}{\pi} \frac{\Gamma}{(\nu_o - \nu_L - \nu)^2 + \Gamma^2}; &
+\psi_r &= \frac{1}{\pi} \frac{\nu_o - \nu_L - \nu}{(\nu_o - \nu_L - \nu)^2 + \Gamma^2} \\[6pt]
+\phi_b &= \frac{1}{\pi} \frac{\Gamma}{(\nu_o + \nu_L - \nu)^2 + \Gamma^2}; &
+\psi_b &= \frac{1}{\pi} \frac{\nu_o + \nu_L - \nu}{(\nu_o + \nu_L - \nu)^2 + \Gamma^2} \, .
+\end{aligned}
+\end{equation}
+
+
+
+\subsubsection{Enfoque Cuántico del Efecto Zeeman}
+Aunque la formulación clásica describe muy bien cómo la polarización de la luz emitida varía con la componente atómica y el ángulo de observación, el espectro solar real presenta líneas que no se dividen únicamente en tres componentes simples, sino en agrupaciones mucho más complejas, conocidas como efecto Zeeman anómalo. Esto se debe a que el efecto Zeeman está estrechamente relacionado con la mecánica cuántica de los átomos multielectrónicos \cite[pag. 104]{sanchezSolarObservationsTechniques1992}.
+
+
+Desde la óptica de la mecánica cuántica, un nivel de energía atómico está caracterizado por su número cuántico de momento angular total, $J$. En ausencia de campo magnético, este nivel está compuesto por $2J+1$ subniveles que tienen la misma energía (están degenerados). Al introducir un campo magnético externo, la degeneración espacial se rompe. Los subniveles que antes tenían la misma energía se veran ligeramente desplazados y se veran como un desdoblamiento de esos $2J + 1$ niveles. Estos se caracterizan con la letra $M$, donde sus valores se recorren desde $-J$ hasta $+J$ en incremento de enteros.
+
+
+El desplazamiento energético que sufren estos subniveles, expresado en unidades de frecuencia, viene dado por:
+\begin{equation}
+    \label{eq:desplazamientoZeemanCuantico}
+    \nu_M = g M \nu_L
+\end{equation}
+
+Aquí entra en juego el factor de Landé ($g$), un parámetro adimensional que caracteriza la sensibilidad magnética de cada nivel de energía.
+
+La luz es emitida (o absorbida) cuando un átomo decae de un subnivel excitado (caracterizado por $J$ y $M$) a un subnivel inferior ($J'$ y $M'$). Sin embargo, la mecánica cuántica impide la mayoría de las transiciones mediante estrictas reglas de selección. Las únicas transiciones radiativas permitidas entre estos estados exigen un cambio de estado magnético dictado por:
+\begin{equation}
+    \Delta M = M_{sup} - M_{inf} = 0, \pm 1
+\end{equation}
+
+De aquí surgen los equivalentes a los osciladores de Larmor clásicos:
+\begin{itemize}
+    \item \textbf{Componentes $\pi$ ($\Delta M = 0$):} Equivalen al oscilador clásico lineal paralelo al campo. Estas transiciones absorben o emiten luz polarizada linealmente.
+    \item \textbf{Componentes $\sigma$ ($\Delta M = \pm 1$):} Equivalen a los osciladores clásicos circulares ortogonales. Estas transiciones se manifiestan como luz con polarización circular.
+\end{itemize}
+
+Esta estructura es denominada patrón de Zeeman o multiplete.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        scale=1.2,
+        level/.style={line width=1.5pt},
+        transpi/.style={->, color=oscpi, line width=1pt, dashed},
+        transsigmaplus/.style={->, color=oscsigmaplus, line width=1pt},
+        transsigmaminus/.style={->, color=oscsigmaminus, line width=1pt}
+    ]
+        % Colores
+        \definecolor{oscpi}{RGB}{50, 150, 50}
+        \definecolor{oscsigmaplus}{RGB}{50, 50, 200}
+        \definecolor{oscsigmaminus}{RGB}{200, 150, 50}
+
+        % Nivel Superior J = 1 (Desdoblamiento en 3 niveles, M = -1, 0, 1)
+        \node at (-3, 3) {Nivel Superior ($J=1$)};
+        \draw[level] (-1, 3.5) -- (1, 3.5) node[right] {$M=1$};
+        \draw[level] (-1, 3) -- (1, 3) node[right] {$M=0$};
+        \draw[level] (-1, 2.5) -- (1, 2.5) node[right] {$M=-1$};
+        
+        % Nivel Inferior J = 0 (No se desdobla, M = 0)
+        \node at (-3, 0) {Nivel Inferior ($J=0$)};
+        \draw[level] (-1, 0) -- (1, 0) node[right] {$M=0$};
+
+        % Transiciones Sigma + (Delta M = 1) -> M_sup=1 a M_inf=0
+        \draw[transsigmaplus] (0.5, 3.5) -- (0.5, 0) node[midway, right] {$\sigma_+$};
+        
+        % Transiciones Pi (Delta M = 0) -> M_sup=0 a M_inf=0
+        \draw[transpi] (0, 3) -- (0, 0) node[midway, right] {$\pi$};
+        
+        % Transiciones Sigma - (Delta M = -1) -> M_sup=-1 a M_inf=0
+        \draw[transsigmaminus] (-0.5, 2.5) -- (-0.5, 0) node[midway, left] {$\sigma_-$};
+        
+    \end{tikzpicture}
+    \caption{Ejemplo de un patrón Zeeman para una transición entre un nivel con momento angular $J=1$ a un nivel $J=0$. El nivel superior se compone de 3 subniveles ($M = -1, 0, 1$). Las reglas de selección permiten tres transiciones radiativas, generando las componentes del triplete clásico. La componente central $\pi$ no varía de frecuencia, mientras que las $\sigma_{\pm}$  cambian su frecuencia de igual manera pero en signo opuesto.}
+    \label{fig:zeeman_quantum}
+\end{figure}
+
+En la práctica observacional astrofísica, este desdoblamiento magnético $\nu_L$ compite con los efectos térmicos de la atmósfera estelar. El ensanchamiento de las líneas espectrales debido al movimiento térmico (ensanchamiento Doppler, denotado por $\Delta\nu_D$).
 
 
 \subsection{Campo magnético y aproximación de campo débil}
+En el caso de la atmosfera solar, la ecuación de transferencia radiativa (\ref{eq:transfMatriz}) solo contempla procesos de absorción y dispersión anómalo debido por ejemplo a un campo magnético. Sin embargo, no tiene en cuenta la emisión de radiación térmica debido a la temperatura del medio. Normalmente, para este caso, se asume la hipótesis del Equilibro Termodinámico Local (ETL). El término fuente no esta polarizado y se modeliza con la función de Planck $B_T$, donde se acopla a la ecuación de la siguiente manera:
+
+\begin{equation}
+    \label{eq:fuenteRadiacion}
+    \frac{d}{d\tau} \begin{pmatrix} I \\ Q \\ U \\ V \end{pmatrix} = \begin{pmatrix} \eta_I & \eta_Q & \eta_U & \eta_V \\ \eta_Q & \eta_I & \rho_V & -\rho_U \\ \eta_U & -\rho_V & \eta_I & \rho_Q \\ \eta_V & \rho_U & -\rho_Q & \eta_I \end{pmatrix} \begin{pmatrix} I - B_T \\ Q \\ U \\ V \end{pmatrix}
+\end{equation}
+
+donde la resta en el vector de la derecha refleja la contribución neta entre la atenuación del medio y la propia emisión térmica no polarizada de la atmósfera.
+
+ Miraremos ahora entonces una posible solución para un caso de campo magnético débil, ya que será la solución en el que se centrará este trabajo. Campo magnético débil significa que la intensidad del campo magnético es lo suficientemente pequeña como para que el desdoblamiento de las líneas espectrales no sea suficiente de sobrepasar al ensanchamiento Doppler de la línea espectral ($\bar{g} \lambda_B \ll \Delta \lambda_D$). Visualmente no se podrá apreciar la línea espectral desdoblada, pero sí se podrá medir la polarización de la luz emitida. \\
+
+Al ser una variación pequeña, podemos aproximar las soluciones de la ecuación de la transferencia radiativa (\ref{eq:solPsi}) hasta primer orden del polinomio de Taylor alrededor de la frecuencia central.
+
+\begin{equation}
+\begin{aligned}
+\phi_p(\lambda) &= \phi_o(\lambda - \lambda_o) \\[6pt]
+\phi_r(\lambda) &= \phi_o(\lambda - \lambda_o) - \bar{g}\lambda_B \frac{\partial \phi_o(\lambda - \lambda_o)}{\partial \lambda} \\[6pt]
+\phi_b(\lambda) &= \phi_o(\lambda - \lambda_o) + \bar{g}\lambda_B \frac{\partial \phi_o(\lambda - \lambda_o)}{\partial \lambda} \\[10pt]
+\psi_p(\lambda) &= \psi_o(\lambda - \lambda_o) \\[6pt]
+\psi_{r,b}(\lambda) &= \psi_o(\lambda - \lambda_o) \mp \bar{g}\lambda_B \frac{\partial \psi_o(\lambda - \lambda_o)}{\partial \lambda}
+\end{aligned}
+\end{equation}
+
+Si los sustituimos en los perfiles de absorción y dispersión de la ecuación (\ref{eq:solEtaRho}):
+\begin{equation}
+    \label{eq:solRho}
+\begin{aligned}
+\eta_I &= 1 + \eta_o \phi_o(\lambda - \lambda_o) \\[6pt]
+\eta_Q &= \eta_U = \rho_Q = \rho_U = 0 \\[6pt]
+\eta_V &= -\eta_o \bar{g} \lambda_B \cos \theta \frac{\partial \phi_o(\lambda - \lambda_o)}{\partial \lambda} \\[6pt]
+\rho_V &= -\eta_o \bar{g} \lambda_B \cos \theta \frac{\partial \psi_o(\lambda - \lambda_o)}{\partial \lambda} \, .
+\end{aligned}
+\end{equation}
+
+Si lo introducimos en la ecuación de transferencia radiativa (\ref{eq:fuenteRadiacion}):
+
+\begin{equation}
+\begin{aligned}
+\frac{dI}{d\tau} &= \eta_I(I - B_T) + \eta_V V \, , \\[6pt]
+\frac{dV}{d\tau} &= \eta_I V + \eta_V(I - B_T) \, .
+\end{aligned}
+\end{equation}
+
+Donde los términos $Q$ y $U$ se anulan al no tener término de fuentes. Si sustuimos los valores de $\eta_I$ y $\eta_V$ de la ecuación (\ref{eq:solRho}), y realizamos cierta álgebra descrita por el libro \cite[pag. 110]{sanchezSolarObservationsTechniques1992}, se llega a la siguiente expresión para la polarización circular de la luz emitida por un medio con campo magnético débil:
+
+\begin{equation}
+V = -\bar{g}\lambda_B \cos \theta \frac{dI_o}{d\lambda} 
+\end{equation}
+
+Que gracias a la defincii
 
 \begin{equation}
     \label{eq:campoDebil}
