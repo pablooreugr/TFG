@@ -92,9 +92,175 @@ Desde un punto de vista físico, cada uno de los parámetros de Stokes tiene un 
 
 Donde medir $V$ es especialmente importante, ya que nos permitirá poder medir el campo magnético del Sol, como explicaremos más adelante.
 
+\subsection{Transferencia radiativa}
+En la física solar queremos poder obtener mediante la luz que nos llega del Sol mediante la radiación electromagnética la física que está ocurriendo en el Sol. Sabemos que la luz puede llegar a ser afectada por el medio que le rodea, lo que se conoce como índice de refracción. Si miramos una onda electromagnética monocromática en un medio con índice de refracción:
+
+\begin{equation}
+    \label{eq:ondaElectro}
+    \vec{E}(\vec{r}, t) = \vec{E_0} e^{2 \pi \frac{\nu}{c}(n \vec{r} \cdot \vec{\Omega} - ct)}
+\end{equation}
+
+Donde $\nu$ es la frecuencia de la onda, $n$ es el índice de refracción, y $\Omega$ es la dirección de propagación de la onda. \\
+
+Ahora consideramos un medio anisótropo, donde cada dirección de propagación de la onda tiene un distinto índice de refracción. Esto puede deberse directamente a la presencia de un campo magnético que va a una sola dirección, o por múltiples otras razones. Si consideramos que ese medio anisótropo tiene tres direcciones ortogonales (los vectores normales de estas direcciones de propagación lo denotaremos como $\vec{u_\alpha}$, donde $\alpha = (1, 2, 3)$), la función de onda se escribiría como:
+
+\begin{equation}
+    \label{eq:ondaAnisotropa}
+    \vec{E} (\vec{r}, t) = \sum_\alpha \epsilon_\alpha \vec{u_\alpha} e^{2 \pi \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)}
+\end{equation}
+
+Donde $\epsilon_\alpha$ es la amplitud de la onda en la dirección $\vec{u_\alpha}$, y $n_\alpha$ es el índice de refracción en esa dirección. \\
+
+Para poder definir los parámetros de Stokes, también necesitamos escribir la onda vectorialmente con vectores normales donde uno de ellos es la dirección de propagación de la onda, y los otros dos son ortogonales a la dirección de propagación ($\vec{e_1}, \vec{e_2}$). En este caso, la onda se escribiría como:
+
+\begin{equation}
+    \label{eq:direccionProp}
+    \vec{E} (\vec{r}, t) = \sum_k \epsilon_k (\vec{r}, t) \vec{e_k} 
+\end{equation}
+
+Donde $k = (1, 2)$, y $\epsilon_k$ es la amplitud de la onda en la dirección $\vec{e_k}$. \\
+
+Como la expresión (\ref{eq:ondaAnisotropa}) y la expresión (\ref{eq:direccionProp}) representan la misma onda, se pueden igualar:
+
+\begin{equation}
+    \label{eq:igualandoOndas}
+    \sum_\alpha \epsilon_\alpha \vec{u_\alpha} e^{2 \pi \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)} = \sum_k \epsilon_k (\vec{r}, t) \vec{e_k}
+\end{equation}
+
+Donde se puede explicar como la parte izquierda es la onda en la base del medio y la parte derecha es la onda en la base del observador.
+
+Para proyectar la descripción de la onda desde la base del medio hacia la base del observador, introducimos los cosenos directores definidos por el producto escalar $C_{\alpha j} = \vec{u}_\alpha \cdot \vec{e}_j$. Multiplicando escalarmente la expresión (\ref{eq:igualandoOndas}) por un vector de la base del observador $\vec{e}_j$ y asumiendo que la onda es transversal a la dirección de propagación en la aproximación del observador ($j=1,2$), se obtiene la componente del campo eléctrico en dicha base:
+
+\begin{equation}
+    \epsilon_j(\vec{r},t) = \sum_\alpha \epsilon_\alpha C_{\alpha j} e^{2\pi i \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)}
+    \label{eq:epsilon_j}
+\end{equation}
+
+Por otro lado, haciendo uso de las relaciones de ortonormalidad de los cosenos directores, $\sum_\alpha C_{\alpha j}^* C_{\alpha k} = \delta_{jk}$ (donde $\delta_{jk}$ es la delta de Kronecker), es posible invertir matemáticamente la relación para expresar la fase exponencial en función de las amplitudes en la base del observador. Esto nos permite escribir la siguiente identidad útil:
+
+\begin{equation}
+    \sum_k C_{\beta k}^* \epsilon_k(\vec{r},t) = \epsilon_\beta e^{2\pi i \frac{\nu}{c}(n_\beta \vec{r} \cdot \vec{\Omega} - ct)}
+    \label{eq:identidad_inversa}
+\end{equation}
+
+El interés de la transferencia radiativa radica en evaluar cómo evoluciona espacialmente el campo electromagnético a medida que viaja a través del medio. Para ello, definimos la coordenada espacial $s = \vec{r} \cdot \vec{\Omega}$, la cual mide la distancia geométrica recorrida a lo largo de la trayectoria del rayo. 
+
+Tomando la derivada de la ecuación (\ref{eq:epsilon_j}) respecto a la coordenada $s$, obtenemos:
+
+\begin{equation}
+    \frac{\text{d}\epsilon_j(s,t)}{\text{d}s} = 2\pi i \frac{\nu}{c} \sum_\alpha \epsilon_\alpha n_\alpha C_{\alpha j} e^{2\pi i \frac{\nu}{c}(n_\alpha s - ct)}
+\end{equation}
+
+Finalmente, sustituyendo la identidad dada por la ecuación (\ref{eq:identidad_inversa}) en el miembro derecho de la derivada anterior para deshacernos de las variables del medio ($\epsilon_\alpha$) y quedarnos únicamente con variables medibles por el observador, se llega al sistema de ecuaciones diferenciales acopladas para las amplitudes del campo:
+
+\begin{equation}
+    \frac{\text{d}\epsilon_j(s,t)}{\text{d}s} = -\sum_k G_{jk} \epsilon_k(s,t) \qquad (j=1,2)
+    \label{eq:transferencia_campo}
+\end{equation}
+
+Donde los coeficientes $G_{jk}$ representan los elementos de la matriz de propagación en la base del campo eléctrico, definidos explícitamente como:
+
+\begin{equation}
+    G_{jk} = -2\pi i \frac{\nu}{c} \sum_\alpha n_\alpha C_{\alpha j} C_{\alpha k}^* \qquad (j,k = 1,2)
+\end{equation}
+
+Esta matriz $G$ condensa las propiedades ópticas del medio anisótropo (como la absorción, la dispersión y los efectos de anisotropía inducidos, por ejemplo, por campos magnéticos a través del efecto Zeeman) y constituye el paso previo fundamental para derivar la ecuación de transferencia radiativa para los parámetros de Stokes. \\
+
+Si recordamos el tensor de polarización definido en la ecuación (\ref{eq: tensorDePolarizacion}), derivamos cada componente con respecto a la coordenada $s$, y aplicamos la ecuación (\ref{eq:transferencia_campo}):
+
+\begin{equation}
+    \label{eq:derivada_polarizacion}
+    \frac{d}{ds} C_{jk} = \frac{d}{ds} \left\langle \epsilon_j \epsilon_k^* \right\rangle = \left\langle \frac{d\epsilon_j}{ds} \epsilon_k^* + \epsilon_j \frac{d\epsilon_k^*}{ds} \right\rangle = -\sum_l G_{jl} C_{lk} - \sum_m C_{jm} G_{km}^*
+\end{equation}
+
+Que extendido quedaría como:
+
+\begin{equation}
+    \begin{split}
+    \frac{d}{ds} C_{11} &= - \left[ (G_{11}^* + G_{11})C_{11} + G_{12}^* C_{21} + G_{12} C_{12} \right] \\
+    \frac{d}{ds} C_{22} &= - \left[ (G_{22}^* + G_{22})C_{22} + G_{21}^* C_{12} + G_{21} C_{21} \right] \\
+    \frac{d}{ds} C_{12} &= - \left[ (G_{11}^* + G_{22})C_{12} + G_{12}^* C_{22} + G_{21} C_{11} \right] \\
+    \frac{d}{ds} C_{21} &= - \left[ (G_{22}^* + G_{11})C_{21} + G_{21}^* C_{11} + G_{12} C_{22} \right].
+    \end{split}
+\end{equation}
+
+Si sustituimos los parámetros de Stokes en la ecuación (\ref{eq:derivada_polarizacion}) y hacemos un poco de álgebra, se obtiene la ecuación de transferencia radiativa para los parámetros de Stokes en forma matricial:
+
+\begin{equation}
+    \label{eq:transfMatriz}
+    \frac{d}{ds}
+    \begin{pmatrix}
+    I \\
+    Q \\
+    U \\
+    V
+    \end{pmatrix}
+    = -
+    \begin{pmatrix}
+    \eta_I & \eta_Q & \eta_U & \eta_V \\
+    \eta_Q & \eta_I & \rho_V & -\rho_U \\
+    \eta_U & -\rho_V & \eta_I & \rho_Q \\
+    \eta_V & \rho_U & -\rho_Q & \eta_I
+    \end{pmatrix}
+    \begin{pmatrix}
+    I \\
+    Q \\
+    U \\
+    V
+    \end{pmatrix}
+\end{equation}
+
+Siendo los coeficientes $\eta$ y $\rho$ los valores:
+
+\begin{equation}
+    \label{eq:definicionDeetaYtho}
+    \begin{aligned}
+    \eta_I &= \text{Re}(G_{11} + G_{22}) \\
+    \eta_Q &= \text{Re}(G_{11} - G_{22}) & \rho_Q &= -\text{Im}(G_{11} - G_{22}) \\
+    \eta_U &= \text{Re}(G_{12} + G_{21}) & \rho_U &= -\text{Im}(G_{12} + G_{21}) \\
+    \eta_V &= \text{Im}(G_{12} - G_{21}) & \rho_V &= \text{Re}(G_{12} - G_{21}).
+    \end{aligned}
+\end{equation}
+
+Se puede interpretar físicamente $\eta$ como coeficiente de absorción del medio, si absorbe más una luz polarizada en una polarización u otra, y $\rho$ como coeficiente de dispersión del medio, que explica el retardo de fase y "mezcla" las polarizaciones.
+
+Para interpretar la ecuación (\ref{eq:transfMatriz}), podemos dividirlo en tres matrices:
+
+\begin{equation}
+\begin{pmatrix}
+\eta_I & 0 & 0 & 0 \\
+0 & \eta_I & 0 & 0 \\
+0 & 0 & \eta_I & 0 \\
+0 & 0 & 0 & \eta_I
+\end{pmatrix}
++
+\begin{pmatrix}
+0 & \eta_Q & \eta_U & \eta_V \\
+\eta_Q & 0 & 0 & 0 \\
+\eta_U & 0 & 0 & 0 \\
+\eta_V & 0 & 0 & 0
+\end{pmatrix}
++
+\begin{pmatrix}
+0 & 0 & 0 & 0 \\
+0 & 0 & \rho_V & -\rho_U \\
+0 & -\rho_V & 0 & \rho_Q \\
+0 & \rho_U & -\rho_Q & 0
+\end{pmatrix}
+\end{equation}
+
+Donde la primera matriz es una matriz diagonal que representa la absorción de la luz, la segunda matriz es una matriz simétrica que representa la absorción selectiva dependiendo de la polarización, y la tercera matriz es una matriz antisimétrica que representa la dispersión de la luz.
+
+Todo el desarrollo se puede encontrar en \cite[pag. 93]{sanchezSolarObservationsTechniques1992}.
+
+\subsection{Efecto Zeeman y polarización}
+
+
 \subsection{Campo magnético y aproximación de campo débil}
 
 \begin{equation}
     \label{eq:campoDebil}
     V = -C g_{eff} \lambda^2 B_{\parallel} \frac{d I_0}{d \lambda}
 \end{equation}
+
+
