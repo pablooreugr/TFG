@@ -435,7 +435,16 @@ En el caso de la atmosfera solar, la ecuación de transferencia radiativa (\ref{
 
 donde la resta en el vector de la derecha refleja la contribución neta entre la atenuación del medio y la propia emisión térmica no polarizada de la atmósfera.
 
- Miraremos ahora entonces una posible solución para un caso de campo magnético débil, ya que será la solución en el que se centrará este trabajo. Campo magnético débil significa que la intensidad del campo magnético es lo suficientemente pequeña como para que el desdoblamiento de las líneas espectrales no sea suficiente de sobrepasar al ensanchamiento Doppler de la línea espectral ($\bar{g} \lambda_B \ll \Delta \lambda_D$). Visualmente no se podrá apreciar la línea espectral desdoblada, pero sí se podrá medir la polarización de la luz emitida. \\
+ Miraremos ahora entonces una posible solución para un caso de campo magnético débil, ya que será la solución en el que se centrará este trabajo. Campo magnético débil significa que la intensidad del campo magnético es lo suficientemente pequeña como para que el desdoblamiento de las líneas espectrales no sea suficiente de sobrepasar al ensanchamiento Doppler de la línea espectral ($\bar{g} \lambda_B \ll \Delta \lambda_D$). Visualmente no se podrá apreciar la línea espectral desdoblada, pero sí se podrá medir la polarización de la luz emitida.
+
+Donde $\lambda_B$ representa el desdoblamiento Zeeman para un triplete normal (también conocido como desplazamiento de Larmor expresado en longitud de onda). Físicamente, corresponde al desplazamiento en longitud de onda que sufriría una línea espectral bajo la influencia de un campo magnético si se tratara de un oscilador clásico (o de una transición atómica con factor de Landé igual a 1). Su valor viene dado por la expresión:
+
+\begin{equation}
+    \label{eq:lambdaB}
+    \lambda_B = \frac{e \lambda_o^2 B}{4 \pi m_e c}
+\end{equation}
+
+donde $e$ es la carga elemental del electrón, $m_e$ es su masa, $c$ es la velocidad de la luz, $\lambda_o$ es la longitud de onda central de la transición en reposo, y $B$ es la intensidad del campo magnético (expresado en el Sistema Internacional). Por tanto, la constante $\bar{g}$, que es el factor de Landé efectivo de la transición atómica, actúa como un factor de corrección cuántico, de manera que el producto $\bar{g} \lambda_B$ nos da el desdoblamiento total y real de la línea debido al efecto Zeeman. \\
 
 Al ser una variación pequeña, podemos aproximar las soluciones de la ecuación de la transferencia radiativa (\ref{eq:solPsi}) hasta primer orden del polinomio de Taylor alrededor de la frecuencia central.
 
@@ -475,11 +484,14 @@ Donde los términos $Q$ y $U$ se anulan al no tener término de fuentes. Si sust
 V = -\bar{g}\lambda_B \cos \theta \frac{dI_o}{d\lambda} 
 \end{equation}
 
-Que gracias a la defincii
+Que gracias a la definción de $\lambda_B$ de la ecuación (\ref{eq:lambdaB}) y a la definición de $B_{\parallel} = B \cos \theta$, podemos expresar la ecuación anterior como:
 
 \begin{equation}
     \label{eq:campoDebil}
-    V = -C g_{eff} \lambda^2 B_{\parallel} \frac{d I_0}{d \lambda}
+    V = -C \bar{g} \lambda_B^2 B_{\parallel} \frac{d I_0}{d \lambda}
 \end{equation}
+
+Donde $C = 4.67 \times 10^{-13} \text{G}^{-1}\text{\AA}^{-1}$ es una constante de proporcionalidad que depende de las unidades empleadas.
+Siendo este la ecuación central del trabajo en la que obtendremos los valores del campo magnético.
 
 
