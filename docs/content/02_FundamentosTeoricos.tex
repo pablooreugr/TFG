@@ -57,7 +57,7 @@ Para entender el tensor primero hay que entender cómo se entiende matemáticame
         \draw[->, color=vectorblue, line width=1.8pt] (Origen) -- (E);
 
     \end{tikzpicture}
-    \caption{Componente de una onda electromagnética polarizada como suma de dos ondas en los ejes $x$ y $y$, con la misma frecuencia pero distinto desfase.}
+    \caption{Componente de una onda electromagnética polarizada como suma de dos ondas en los ejes $x$ e $y$, con la misma frecuencia pero distinto desfase.}
     \label{fig:componentes_em}
 \end{figure}
 
@@ -255,7 +255,7 @@ Donde la primera matriz es una matriz diagonal que representa la absorción de l
 El efecto Zeeman ocurre cuando un átomo u oscilador armónico interactúa con un campo magnético. Esta interacción rompe la degeneración espacial de los niveles de energía atómicos (o las frecuencias propias del oscilador en el marco clásico), causando un desdoblamiento de las líneas espectrales. Físicamente, el aspecto más relevante para la espectropolarimetría y el estudio de los campos magnéticos del Sol es que la radiación emitida o absorbida en estas transiciones adquiere un estado de polarización que depende fuertemente de la intensidad y orientación del campo magnético local respecto a la línea de visión del observador \cite[pag. 91]{sanchezSolarObservationsTechniques1992}.
 
 \subsubsection{Enfoque clásico del Efecto Zeeman}
-Para comprender este fenómeno, en \cite[pag. 98]{sanchezSolarObservationsTechniques1992} se presenta primero una aproximación clásica. Se modela los átomos del sol como un sistema nucleo y electrón, el cual puede ser descrito como un oscilador armónico caracterizado por una frecuencia propia $\nu_0$ amortiguado por un factor $\gamma$.
+Para comprender este fenómeno, en \cite[pag. 98]{sanchezSolarObservationsTechniques1992} se presenta primero una aproximación clásica. Se modelan los átomos del Sol como un sistema núcleo y electrón, el cual puede ser descrito como un oscilador armónico caracterizado por una frecuencia propia $\nu_0$ amortiguado por un factor $\gamma$.
 
 Cuando este sistema se somete a un campo magnético estático $\vec{B}$, el electrón en movimiento experimenta una fuerza de Lorentz adicional. Si además interacciona con un campo eléctrico oscilante $\vec{E}$ propio de la radiación electromagnética ambiental, la segunda ley de Newton que rige el movimiento del electrón se escribe como:
 
@@ -360,7 +360,7 @@ Donde $\phi$ representa los perfiles de absorción (o perfil de linea) de cada c
 Aunque la formulación clásica describe muy bien cómo la polarización de la luz emitida varía con la componente atómica y el ángulo de observación, el espectro solar real presenta líneas que no se dividen únicamente en tres componentes simples, sino en agrupaciones mucho más complejas, conocidas como efecto Zeeman anómalo. Esto se debe a que el efecto Zeeman está estrechamente relacionado con la mecánica cuántica de los átomos multielectrónicos \cite[pag. 104]{sanchezSolarObservationsTechniques1992}.
 
 
-Desde la óptica de la mecánica cuántica, un nivel de energía atómico está caracterizado por su número cuántico de momento angular total, $J$. En ausencia de campo magnético, este nivel está compuesto por $2J+1$ subniveles que tienen la misma energía (están degenerados). Al introducir un campo magnético externo, la degeneración espacial se rompe. Los subniveles que antes tenían la misma energía se veran ligeramente desplazados y se veran como un desdoblamiento de esos $2J + 1$ niveles. Estos se caracterizan con la letra $M$, donde sus valores se recorren desde $-J$ hasta $+J$ en incremento de enteros.
+Desde la óptica de la mecánica cuántica, un nivel de energía atómico está caracterizado por su número cuántico de momento angular total, $J$. En ausencia de campo magnético, este nivel está compuesto por $2J+1$ subniveles que tienen la misma energía (están degenerados). Al introducir un campo magnético externo, la degeneración espacial se rompe. Los subniveles que antes tenían la misma energía se verán ligeramente desplazados y se verán como un desdoblamiento de esos $2J + 1$ niveles. Estos se caracterizan con la letra $M$, donde sus valores se recorren desde $-J$ hasta $+J$ en incremento de enteros.
 
 
 El desplazamiento energético que sufren estos subniveles, expresado en unidades de frecuencia, viene dado por:
@@ -426,7 +426,7 @@ En la práctica observacional astrofísica, este desdoblamiento magnético $\nu_
 
 
 \subsection{Campo magnético y aproximación de campo débil}
-En el caso de la atmosfera solar, la ecuación de transferencia radiativa (\ref{eq:transfMatriz}) solo contempla procesos de absorción y dispersión anómalo debido por ejemplo a un campo magnético. Sin embargo, no tiene en cuenta la emisión de radiación térmica debido a la temperatura del medio. Normalmente, para este caso, se asume la hipótesis del Equilibro Termodinámico Local (ETL). El término fuente no esta polarizado y se modeliza con la función de Planck $B_T$, donde se acopla a la ecuación de la siguiente manera:
+En el caso de la atmósfera solar, la ecuación de transferencia radiativa (\ref{eq:transfMatriz}) solo contempla procesos de absorción y dispersión anómalos debido por ejemplo a un campo magnético. Sin embargo, no tiene en cuenta la emisión de radiación térmica debido a la temperatura del medio. Normalmente, para este caso, se asume la hipótesis del Equilibrio Termodinámico Local (ETL). El término fuente no está polarizado y se modeliza con la función de Planck $B_T$, donde se acopla a la ecuación de la siguiente manera:
 
 \begin{equation}
     \label{eq:fuenteRadiacion}
@@ -435,7 +435,7 @@ En el caso de la atmosfera solar, la ecuación de transferencia radiativa (\ref{
 
 donde la resta en el vector de la derecha refleja la contribución neta entre la atenuación del medio y la propia emisión térmica no polarizada de la atmósfera.
 
- Miraremos ahora entonces una posible solución para un caso de campo magnético débil, ya que será la solución en el que se centrará este trabajo. Campo magnético débil significa que la intensidad del campo magnético es lo suficientemente pequeña como para que el desdoblamiento de las líneas espectrales no sea suficiente de sobrepasar al ensanchamiento Doppler de la línea espectral ($\bar{g} \lambda_B \ll \Delta \lambda_D$). Visualmente no se podrá apreciar la línea espectral desdoblada, pero sí se podrá medir la polarización de la luz emitida.
+ Miraremos ahora entonces una posible solución para un caso de campo magnético débil, ya que será la solución en la que se centrará este trabajo. Campo magnético débil significa que la intensidad del campo magnético es lo suficientemente pequeña como para que el desdoblamiento de las líneas espectrales no sea suficiente de sobrepasar al ensanchamiento Doppler de la línea espectral ($\bar{g} \lambda_B \ll \Delta \lambda_D$). Visualmente no se podrá apreciar la línea espectral desdoblada, pero sí se podrá medir la polarización de la luz emitida.
 
 Donde $\lambda_B$ representa el desdoblamiento Zeeman para un triplete normal (también conocido como desplazamiento de Larmor expresado en longitud de onda). Físicamente, corresponde al desplazamiento en longitud de onda que sufriría una línea espectral bajo la influencia de un campo magnético si se tratara de un oscilador clásico (o de una transición atómica con factor de Landé igual a 1). Su valor viene dado por la expresión:
 
@@ -478,13 +478,13 @@ Si lo introducimos en la ecuación de transferencia radiativa (\ref{eq:fuenteRad
 \end{aligned}
 \end{equation}
 
-Donde los términos $Q$ y $U$ se anulan al no tener término de fuentes. Si sustuimos los valores de $\eta_I$ y $\eta_V$ de la ecuación (\ref{eq:solRho}), y realizamos cierta álgebra descrita por el libro \cite[pag. 110]{sanchezSolarObservationsTechniques1992}, se llega a la siguiente expresión para la polarización circular de la luz emitida por un medio con campo magnético débil:
+Donde los términos $Q$ y $U$ se anulan al no tener término de fuentes. Si sustituimos los valores de $\eta_I$ y $\eta_V$ de la ecuación (\ref{eq:solRho}), y realizamos cierta álgebra descrita por el libro \cite[pag. 110]{sanchezSolarObservationsTechniques1992}, se llega a la siguiente expresión para la polarización circular de la luz emitida por un medio con campo magnético débil:
 
 \begin{equation}
 V = -\bar{g}\lambda_B \cos \theta \frac{dI_o}{d\lambda} 
 \end{equation}
 
-Que gracias a la definción de $\lambda_B$ de la ecuación (\ref{eq:lambdaB}) y a la definición de $B_{\parallel} = B \cos \theta$, podemos expresar la ecuación anterior como:
+Que gracias a la definición de $\lambda_B$ de la ecuación (\ref{eq:lambdaB}) y a la definición de $B_{\parallel} = B \cos \theta$, podemos expresar la ecuación anterior como:
 
 \begin{equation}
     \label{eq:campoDebil}
@@ -492,6 +492,6 @@ Que gracias a la definción de $\lambda_B$ de la ecuación (\ref{eq:lambdaB}) y 
 \end{equation}
 
 Donde $C = 4.67 \times 10^{-13} \text{G}^{-1}\text{\AA}^{-1}$ es una constante de proporcionalidad que depende de las unidades empleadas.
-Siendo este la ecuación central del trabajo en la que obtendremos los valores del campo magnético.
+Siendo esta la ecuación central del trabajo en la que obtendremos los valores del campo magnético.
 
 
