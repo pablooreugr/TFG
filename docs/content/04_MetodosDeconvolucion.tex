@@ -69,7 +69,9 @@ Para implementar esto en el código, el algoritmo hace los siguientes pasos repe
 
 Este proceso se va repitiendo un número determinado de veces, que en el código se controla con la variable \textit{pasos} (por defecto se ha puesto a 30). El mayor problema de usar este método es que no tiene un punto claro donde parar por sí solo. Si se hacen demasiadas iteraciones, el algoritmo intenta ajustar también el ruido de fondo, amplificándolo y creando pequeños artefactos (como puntos o ruido) por la imagen. \\
 
-Otro problema que se ha comentado anteriormente, el algoritmo solo detecta señales positivas. Por lo tanto es inválido para señales que contengan valores tanto positivos como negativos. Es el caso de la señal de Stokes $V$, que es necesario deconvolucionar para poder extraer el campo magnético. Pero aún así, como se indicará mas adelante, este es el método con mejores resultados de los tres, por lo que es el utilizado.
+Otro problema que se ha comentado anteriormente, el algoritmo solo detecta señales positivas. Por lo tanto es inválido para señales que contengan valores tanto positivos como negativos. Es el caso de la señal de Stokes $V$, que es necesario deconvolucionar para poder extraer el campo magnético. Pero aún así, como se indicará mas adelante, este es el método con mejores resultados de los tres, por lo que es el utilizado. \\
+
+Otro detalle a destacar de los dos últimos métodos es el uso del padding. Al realizar la convolución, los píxeles de los bordes de la imagen se ven afectados por el hecho de que no hay información fuera de la imagen. Para evitar esto, se añade un borde del tamaño de la PSF alrededor de la imagen, rellenando ese borde con un espejo de la imagen. De esta forma, al realizar la convolución, los píxeles de los bordes se ven afectados por un reflejo de la imagen y no por ceros, lo que hace que el resultado sea mas estable en los bordes y se obtenga un mejor resultado. Al final, se recorta la imagen para quedarse solo con la parte original y no con el padding.
 
 \subsection{El problema de la deconvolución del campo magnético}
 

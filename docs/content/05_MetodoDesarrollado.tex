@@ -1,3 +1,110 @@
 % !TeX root = ../main.tex
 
 \section{Método de Noor y método desarrollado}
+Vamos a explicar entonces el método que se ha desarrollado en este trabajo para poder obtener el campo magnético a partir de la señal de Stokes $V$ e $I$. Este método se basa en el método planteado por Van Noort en su paper \cite{VanNoort2012} y que se ha adaptado a nuestro caso.
+
+El método original planteado por Van Noort plantea lo siguiente. Imagina que tenemos unos datos observados $d$ y un modelo teórico $F(x)$ que depende de unos parametros $x$, que en nuestro caso ese modelo sería la aproximación de campo débil y el parámetro el campo magnético paralelo. Si partimos de una estimación inicial de los parámetros $x_0$ el error sería:
+
+\begin{equation}
+    \label{eq:beta}
+    \beta = d -F(x_0)
+\end{equation}
+
+Para mejorar nuestra estimación queremos dar una correción $\nu$, de modo que nuestra nueva estimación sea $x_0 + \nu$
+
+Dado que, según el paper, $F(x)$ suele ser una función dificil y no lineal, se aproxima a una serie de Taylor:
+
+\begin{equation}
+    F(x_o + \nu) \simeq F(x_0) + J \nu
+\end{equation}
+
+Donde $J$ es la matriz Jacobiana del sistema. \\
+
+El objetivo ideal es que la nueva estimación encaje perfectamente con los datos observados, siendo el error cero:
+
+\begin{equation}
+    \begin{split}
+        d - F(x_o + \nu) &= 0\\
+        d - (F(x_0) + J \nu) &= 0\\
+        J \nu = \beta
+    \end{split}
+\end{equation}
+
+Donde $\beta = d - F(x_0)$. El problema con los datos experimentales que tenemos muchos mas puntos que parametros a ajustar. Eso significa que $J$ es una matriz rectangular. Esto significa que es una matriz sobredeterminada. \\
+
+Para resolverlo usamos el enfoque de minimos cuadrados. Tal como lo proponen en el paper, al realizar este enfoque nos sale el siguiente sistema de ecuaciones:
+
+\begin{equation}
+    \label{eq:sistemaResolver}
+    J^T J \nu = J^T \beta
+\end{equation}
+
+Gracias a esto podemos resolver esta matriz porque $J^T J$ si que es cuadrada y resoluble.
+
+\subsection{Adaptarlo a nuestro caso}
+La matriz $J$ es la matriz jacobiana del sistema físico que estamos representando. En nuestro caso implicaría dos transformaciones. Tanto el cálculo del campo magnético a partir de la aproximación débil cómo la convolución con la PSF. Eso implicaría que cada parámetro de $x_i$ sería el enlace pixel a pixel de la imagen original. Si tenemos una imagen de 1400x1400 entonces tendríamos una matriz Jacobiana tan grande que ocuparía terabytes de memoria ram.\\
+
+Aquí es cuando podremos aprovechar nuestro sistema. Si definimos nuestro J para nuestro sistema como un operador en vez de una matriz y descubrimos que es lineal, entonces el sistema estaría perfectamente definido y podríamos resolver la ecuación (\ref{eq:sistemaResolver}), ya que si fuese lineal entonces tendría una traspuesta.\\
+
+La comprobacion de si es lineal es la siguiente. Inicialmente partiendo de la expresión (\ref{eq:campoDebil}), podemos definir la constante $K(x, y, \lambda)$.
+
+\begin{equation}
+    V = - C g \lambda^2 \frac{dI_0}{d \lambda} B_{||} = K(x, y, \lambda) B_{||}
+\end{equation}
+
+Partimos de que nuestro jacobiana $J$, donde nuestro cambio será multiplicar por ese $K$ y luego realizar la convolución, con variable independiente $B_{||}$. Usaremos la propiedad de la linealidad de la convolución con respecto a la derivada.
+
+\begin{equation}
+    \label{eq:demosLinealidad}
+    J = \frac{\partial V_{obs}}{\partial B_{||}} = \frac{\partial}{\partial B_{||}} \left[(K \cdot B_{||}) * P \right] = \frac{\partial}{\partial B_{||}} \left[K \cdot B_{||}\right] * P = K * P
+\end{equation}
+
+Como es lineal, confirmamos que tiene transpuesta. Para los operadores, se define una transpuesta de la siguiente manera. Ponemos como notación $(,)$ siendo este el producto escalar entre dos operadores. Entonces la transpuesta de un operador $J$ es otro operador $J^T$ que cumple la siguiente propiedad:
+
+\begin{equation}
+    \label{eq:defTraspuesta}
+    \left( Jx , y \right) = \left( x , J^T y \right)
+\end{equation}
+
+Si miramos nuestro operador J en (\ref{eq:demosLinealidad}), J se puede decir que es una transformación lineal de esta manera, donde $C_p$ es la convolución y $M_k$ es la multiplicación de $K$, que al ser una simple multiplicación es lineal, por lo que su traspuesta es ella misma:
+
+\begin{equation}
+    \label{eq:defTraspuesConjunta}
+    J^T = (C_p M_k)^T = M^T_k C_p^T = M_k C_p^T
+\end{equation}
+
+Donde la transpuesta de una convolución se conoce que es hacer la convolución con del mismo objeto pero rotado $180$ grados, que definiremos como $\tilde{P}$. Por lo tanto la jacobiana transpuesta sería:
+
+\begin{equation}
+    \label{eq:jacobianaTras}
+    J^T B_{||} = K \cdot (\tilde{P} \cdot B_{||})
+\end{equation}
+
+\subsection{Resolución numérica: Subespacios de Krylov y Gradiente Conjugado}
+
+Sustituyendo el operador directo (\ref{eq:demosLinealidad}) y su transpuesta (\ref{eq:jacobianaTras}) en el sistema de ecuaciones normales (\ref{eq:sistemaResolver}), nuestro problema se reduce a un sistema lineal clásico de la forma $Ax = b$. \\
+
+Para repasarlo, tenemos el siguiente método:
+
+\begin{enumerate}
+    \item Partimos de una estimación inicial del campo magnético $B_{||}^0$. Esta estimación inicial puede ser el campo magnético observado sin deconvolucionar (emborronado).
+    \item Calculamos el valor de $V'$ con el valor inicial de $B_{||}^0$ mediante $V' = J B_{||}^0$.
+    \item Calculamos la diferencia entre los datos observados y el valor calculado, $\beta = V_{obs} - V'$.
+    \item Preparamos el lado izquierdo de la ecuación con $J^t J \Delta B_{||}$ y el lado derecho con $J^t \beta$
+\end{enumerate}
+
+Y obtenemos la ecuación:
+
+\begin{equation}
+    \label{eq:sistemaEcReal}
+    J^T J \Delta B_{||} = J^T \beta
+\end{equation}
+
+
+En este caso, la matriz del sistema es $A = J^T J$, el vector de incógnitas es la corrección del campo magnético $x = \Delta B_{||}$, y el término independiente es $b = J^T \beta$.
+
+Entonces al resolverla tendremos la corrección del campo magnético $\Delta B_{||}$, que representa la corrección a ese campo magnético inicial $B_{||}^0$, que nos dará el campo magnético final $B_{||}^f = B_{||}^0 + \Delta B_{||}$.
+
+Como construir la matriz $A$ explícitamente sigue siendo imposible por su tamaño, el haber planteado el problema como un operador lineal nos permite usar los métodos de subespacios de Krylov. La gran ventaja de usar estos algoritmos iterativos es que no necesitamos conocer los elementos de la matriz en sí, sino que simplemente nos basta con poder evaluar el producto de esa matriz por un vector.
+
+Por otro lado, como sabemos de forma teórica que nuestra matriz $J^T J$ es simétrica y definida positiva, el algoritmo ideal para este caso es el método del Gradiente Conjugado (CG). Lo que hace este método es ir construyendo direcciones de búsqueda que son ortogonales (conjugadas), de forma que el error se va minimizando de manera óptima en cada paso. Además, al ser un algoritmo tan conocido, ya existen librerías preparadas para él, por lo que su implementación es bastante sencilla.
