@@ -158,22 +158,22 @@ Finalmente, sustituyendo la identidad dada por la ecuación (\ref{eq:identidad_i
     \label{eq:transferencia_campo}
 \end{equation}
 
-Donde los coeficientes $G_{jk}$ representan los elementos de la matriz de propagación en la base del campo eléctrico, definidos explícitamente como:
+Donde los coeficientes $G_{jk}$ forman la matriz de propagación del campo eléctrico, que se define como:
 
 \begin{equation}
     G_{jk} = -2\pi i \frac{\nu}{c} \sum_\alpha n_\alpha C_{\alpha j} C_{\alpha k}^* \qquad (j,k = 1,2)
 \end{equation}
 
-Esta matriz $G$ condensa las propiedades ópticas del medio anisótropo (como la absorción, la dispersión y los efectos de anisotropía inducidos, por ejemplo, por campos magnéticos a través del efecto Zeeman) y constituye el paso previo fundamental para derivar la ecuación de transferencia radiativa para los parámetros de Stokes. \\
+Esta matriz $G$ guarda las propiedades ópticas del medio (como si absorbe o dispersa la luz, o los efectos del campo magnético). Con esto ya tenemos todo para llegar a la ecuación de los parámetros de Stokes. \\
 
-Si recordamos el tensor de polarización definido en la ecuación (\ref{eq: tensorDePolarizacion}), derivamos cada componente con respecto a la coordenada $s$, y aplicamos la ecuación (\ref{eq:transferencia_campo}):
+Si recuperamos el tensor de polarización de la ecuación (\ref{eq: tensorDePolarizacion}) y derivamos cada parte respecto a la distancia $s$, aplicando la ecuación (\ref{eq:transferencia_campo}) nos queda:
 
 \begin{equation}
     \label{eq:derivada_polarizacion}
     \frac{d}{ds} C_{jk} = \frac{d}{ds} \left\langle \epsilon_j \epsilon_k^* \right\rangle = \left\langle \frac{d\epsilon_j}{ds} \epsilon_k^* + \epsilon_j \frac{d\epsilon_k^*}{ds} \right\rangle = -\sum_l G_{jl} C_{lk} - \sum_m C_{jm} G_{km}^*
 \end{equation}
 
-Que extendido quedaría como:
+Si desarrollamos esto para cada elemento, nos queda un sistema de ecuaciones:
 
 \begin{equation}
     \begin{split}
@@ -184,7 +184,7 @@ Que extendido quedaría como:
     \end{split}
 \end{equation}
 
-Si sustituimos los parámetros de Stokes en la ecuación (\ref{eq:derivada_polarizacion}) y hacemos un poco de álgebra, se obtiene la ecuación de transferencia radiativa para los parámetros de Stokes en forma matricial:
+Ahora, si metemos las definiciones de los parámetros de Stokes en la ecuación (\ref{eq:derivada_polarizacion}) y operamos un poco, llegamos a la ecuación de transferencia radiativa para los parámetros de Stokes escrita en forma de matriz:
 
 \begin{equation}
     \label{eq:transfMatriz}
@@ -210,7 +210,7 @@ Si sustituimos los parámetros de Stokes en la ecuación (\ref{eq:derivada_polar
     \end{pmatrix}
 \end{equation}
 
-Siendo los coeficientes $\eta$ y $\rho$ los valores:
+Donde las variables $\eta$ y $\rho$ se definen de la siguiente manera:
 
 \begin{equation}
     \label{eq:definicionDeetaYtho}
@@ -222,9 +222,9 @@ Siendo los coeficientes $\eta$ y $\rho$ los valores:
     \end{aligned}
 \end{equation}
 
-Se puede interpretar físicamente $\eta$ como coeficiente de absorción del medio, si absorbe más una luz polarizada en una polarización u otra, y $\rho$ como coeficiente de dispersión del medio, que explica el retardo de fase y "mezcla" las polarizaciones.
+Físicamente, $\eta$ representa la absorción del medio (si absorbe más un tipo de polarización que otro), y $\rho$ representa la dispersión, lo que significa que frena la onda cambiando su fase y mezclando las polarizaciones.
 
-Para interpretar la ecuación (\ref{eq:transfMatriz}), podemos dividirlo en tres matrices:
+Para entender mejor la matriz de la ecuación (\ref{eq:transfMatriz}), se puede separar en tres matrices diferentes:
 
 \begin{equation}
 \begin{pmatrix}
@@ -249,7 +249,7 @@ Para interpretar la ecuación (\ref{eq:transfMatriz}), podemos dividirlo en tres
 \end{pmatrix}
 \end{equation}
 
-Donde la primera matriz es una matriz diagonal que representa la absorción de la luz, la segunda matriz es una matriz simétrica que representa la absorción selectiva dependiendo de la polarización, y la tercera matriz es una matriz antisimétrica que representa la dispersión de la luz. Entonces, la ecuación de transferencia radiativa (\ref{eq:transfMatriz}) es un balance energético que afecta a la polarización de la luz.\cite[pag. 93]{sanchezSolarObservationsTechniques1992}.
+La primera es una matriz diagonal que indica simplemente la absorción general de la luz. La segunda es simétrica y marca la absorción selectiva (absorbe distinto dependiendo de cómo venga polarizada la luz). Por último, la tercera es antisimétrica y se encarga de la dispersión de la luz. En resumen, la ecuación de transferencia radiativa (\ref{eq:transfMatriz}) no es más que un balance de energía que nos dice cómo va cambiando la polarización de la luz mientras viaja por el medio \cite[pag. 93]{sanchezSolarObservationsTechniques1992}.
 
 \subsection{Efecto Zeeman y polarización}
 El efecto Zeeman ocurre cuando un átomo u oscilador armónico interactúa con un campo magnético. Esta interacción rompe la degeneración espacial de los niveles de energía atómicos (o las frecuencias propias del oscilador en el marco clásico), causando un desdoblamiento de las líneas espectrales. Físicamente, el aspecto más relevante para la espectropolarimetría y el estudio de los campos magnéticos del Sol es que la radiación emitida o absorbida en estas transiciones adquiere un estado de polarización que depende fuertemente de la intensidad y orientación del campo magnético local respecto a la línea de visión del observador \cite[pag. 91]{sanchezSolarObservationsTechniques1992}.

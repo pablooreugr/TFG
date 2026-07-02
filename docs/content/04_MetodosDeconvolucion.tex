@@ -46,7 +46,7 @@ Para calcular la SNR en el código, se ha desarrollado una función que estima e
 
 Por último, para obtener la SNR final del filtro, solo hay que dividir esa media de la imagen entre el ruido estimado.
 
-\subsubsection{Algoritmo de Richardson-Lucy}
+\subsection{Algoritmo de Richardson-Lucy}
 
 A diferencia de los métodos de Fourier y Wiener, que resuelven el problema de forma directa usando las frecuencias, el algoritmo de Richardson-Lucy funciona mediante iteraciones. Este método asume que el ruido de la imagen sigue una estadística de Poisson, lo cual viene muy bien para imágenes astronómicas que se basan en contar fotones.
 
@@ -63,19 +63,19 @@ Para implementar esto en el código, el algoritmo hace los siguientes pasos repe
 \begin{enumerate}
     \item Primero se convoluciona la estimación que se tiene de la imagen con la PSF normal ($u^{(k)} \ast p$). Con esto se simula cómo se vería esa estimación si pasara de verdad por el telescopio. Al igual que antes, se le suma un número muy pequeño ($\epsilon = 10^{-12}$) para no tener divisiones por cero.
     \item Después se divide la imagen observada ($d_{observado}$) entre la imagen simulada del paso anterior. Si la estimación fuera perfecta, esta división daría exactamente 1 en todos los píxeles.
-    \item Luego se convoluciona ese resultado con la PSF girada (que en el código es la función \textit{girarPSF}, equivalente a $p^*$). Con esto se calcula la corrección que hay que aplicar.
+    \item Luego se convoluciona ese resultado con la PSF girada. Con esto se calcula la corrección que hay que aplicar.
     \item Por último, se multiplica la estimación actual ($u^{(k)}$) por esa corrección que se ha calculado para obtener la nueva estimación ($u^{(k+1)}$) del siguiente paso.
 \end{enumerate}
 
 Este proceso se va repitiendo un número determinado de veces, que en el código se controla con la variable \textit{pasos} (por defecto se ha puesto a 30). El mayor problema de usar este método es que no tiene un punto claro donde parar por sí solo. Si se hacen demasiadas iteraciones, el algoritmo intenta ajustar también el ruido de fondo, amplificándolo y creando pequeños artefactos (como puntos o ruido) por la imagen. \\
 
-Otro problema que se ha comentado anteriormente, el algoritmo solo detecta señales positivas. Por lo tanto es inválido para señales que contengan valores tanto positivos como negativos. Es el caso de la señal de Stokes $V$, que es necesario deconvolucionar para poder extraer el campo magnético. 
+Otro problema que se ha comentado anteriormente, el algoritmo solo detecta señales positivas. Por lo tanto es inválido para señales que contengan valores tanto positivos como negativos. Es el caso de la señal de Stokes $V$, que es necesario deconvolucionar para poder extraer el campo magnético. Pero aún así, como se indicará mas adelante, este es el método con mejores resultados de los tres, por lo que es el utilizado.
 
-\subsection{Problemas con la deconvolución de V}
+\subsection{El problema de la deconvolución del campo magnético}
 
-El problema central de este trabajo surge al analizar la ecuación de aproximación de campo débil (\ref{eq:campoDebil}). Experimentalmente, lo que se miden son los parámetros de Stokes $V$ e $I$. 
+El problema central de este trabajo surge al analizar la ecuación de aproximación de campo débil (\ref{eq:campoDebil}). Experimentalmente, lo que se miden son los parámetros de Stokes $V$ e $I$. Como dijimos antes, la deconvolución de $V$ no es fácil debido a que tiene componente negativa.
 
-Al expresar matemáticamente la señal observada afectada por la degradación instrumental (modelada mediante la convolución con la PSF), obtenemos:
+Al expresar matemáticamente la señal observada afectada por la degradación instrumental (modelada mediante la convolución con la PSF), e introducimos la ecuación de aproximación de campo débil (\ref{eq:campoDebil}), obtenemos la siguiente expresión:
 
 \begin{equation}
     \label{eq:expresionConvolucionada}
