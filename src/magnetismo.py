@@ -2,6 +2,7 @@ import numpy as np
 import deconvolucion as deco
 import visualizacion as vis
 from scipy.sparse.linalg import LinearOperator, cg
+from scipy.signal import convolve2d
 
 
 constanteFormula = 4.67e-13 # A^-1 G^-1
@@ -40,12 +41,13 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
 
         n_total = nx * ny
 
-        intensidad = deco.deconvolucion3D(intensidad, psf, pasos = 20)
+        
 
         #Primero vamos a obtener una primera aproximacion del campo Magnetico
         campoMagneticoInicial, _ = calcularCampoMagnetico(intensidad, V, lambdas, g=g)
 
         #campoMagneticoInicial = np.zeros_like(campoMagneticoInicial)
+        intensidad = deco.deconvolucion3D(intensidad, psf, pasos = 20)
 
 
         #intensidadDecon = deco.deconvolucion3D(intensidad, psf, metodo=metodo, pasos=pasos, trabajadores=trabajadores)
@@ -123,15 +125,20 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
 
             return res
 
-        def matrizA(x1D, lambda_reg = lambdaReg):
-            lambda_scaled = lambdaReg / (k_max**2)   # porque ΔB = ΔB' / k_max
+        laplacian_kernel = np.array([[0, -1, 0], [-1, 4, -1], [0, -1, 0]], dtype=float)
+
+        def apply_laplacian_twice(mapa):
+            lap1 = convolve2d(mapa, laplacian_kernel, mode='same', boundary='symm')
+            lap2 = convolve2d(lap1, laplacian_kernel, mode='same', boundary='symm')
+            return lap2
+
+        lambda_scaled = lambdaReg / (k_max**2)
+
+        def matrizA(x1D):
             x2D = x1D.reshape((ny, nx))
-
             correccion = JT(J(x2D))
-
-            resultado = (correccion + lambda_scaled * x2D)
-
-            return resultado.flatten()
+            reg_term = apply_laplacian_twice(x2D)
+            return (correccion + lambda_scaled * reg_term).flatten()
         
         # Ahora preparamos los datos de A ΔB = J^T ΔV => Ax = β
 
@@ -140,8 +147,10 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
         V_inicial = J(campoMagneticoInicial)
         deltaV = (V/k_max) - V_inicial
 
-        beta = JT(deltaV)
-        beta1D = beta.flatten()
+        beta_data = JT(deltaV)
+        beta_reg = apply_laplacian_twice(campoMagneticoInicial)
+        
+        beta1D = (beta_data - lambda_scaled * beta_reg).flatten()
 
         # Y a partir de aquí calculamos el descenso del gradiente
         grafica = vis.GraficaConvergencia(titulo="Convergencia del Algoritmo de Noor", auto_close=cg_auto_close)
@@ -171,6 +180,62 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
 
 
 
+
+
+def calcularCampoMagneticoRL(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1):
+    """
+    Calcula el campo magnético deconvolucionando I y V por separado con Richardson-Lucy.
+
+    Para la deconvolución de V se aplica un shift al mínimo:
+      1. Se desplaza V hacia arriba restando su mínimo (para que sea ≥ 0, requisito de RL).
+      2. Se deconvoluciona V desplazada con RL.
+      3. Se deshace el shift restando el mismo valor desplazado.
+    Por último se calcula el campo magnético con calcularCampoMagnetico.
+
+    ADVERTENCIA: Este método empírico de shift rompe la antisimetría natural del
+    parámetro de Stokes V y aplasta (reduce) la amplitud del campo magnético
+    reconstruido, además de levantar el fondo continuo. Solo debe usarse como
+    referencia o *baseline* comparativo.
+
+    Parámetros
+    ----------
+    intensidad : np.ndarray  (n_lambda, ny, nx)
+    V          : np.ndarray  (n_lambda, ny, nx)
+    lambdas    : np.ndarray  (n_lambda,)
+    psf        : np.ndarray  (ky, kx)
+    g          : float, factor de Landé (por defecto 3)
+    pasos      : int, número de iteraciones de RL (por defecto 30)
+    trabajadores : int, workers FFT (por defecto -1 → todos)
+
+    Retorna
+    -------
+    campoMagnetico : np.ndarray (ny, nx)
+    rCuadrado      : np.ndarray (ny, nx)
+    """
+    # --- Deconvolución de I ---
+    intensidad_deco = deco.deconvolucion3D(
+        intensidad, psf, metodo='rl', pasos=pasos, trabajadores=trabajadores
+    )
+
+    # --- Deconvolución de V con shift al mínimo ---
+    # Shift: desplazamos V hacia arriba para que sea ≥ 0 (RL requiere datos positivos)
+    v_min = V.min()
+    shift = -v_min if v_min < 0 else 0.0   # solo shiftamos si hay valores negativos
+    V_shifted = V + shift
+
+    V_shifted_deco = deco.deconvolucion3D(
+        V_shifted, psf, metodo='rl', pasos=pasos, trabajadores=trabajadores
+    )
+
+    # Deshacemos el shift para volver al rango original
+    V_deco = V_shifted_deco - shift
+
+    # --- Campo magnético ---
+    campoMagnetico, rCuadrado = calcularCampoMagnetico(
+        intensidad_deco, V_deco, lambdas, g=g
+    )
+
+    return campoMagnetico, rCuadrado
 
 
 if __name__ == "__main__":
