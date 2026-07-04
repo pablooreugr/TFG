@@ -2,6 +2,7 @@ import numpy as np
 import deconvolucion as deco
 import visualizacion as vis
 from scipy.sparse.linalg import LinearOperator, cg
+from scipy.ndimage import laplace
 
 
 constanteFormula = 4.67e-13 # A^-1 G^-1
@@ -129,7 +130,9 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
 
             correccion = JT(J(x2D))
 
-            resultado = (correccion + lambda_scaled * x2D)
+            suavidad = - lambda_scaled * laplace(x2D)
+
+            resultado = correccion + suavidad
 
             return resultado.flatten()
         

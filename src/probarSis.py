@@ -99,11 +99,11 @@ def experimento_algoritmo_noor():
     campoMagnetico, _ = mag.calcularCampoMagnetico(intensidad, compV, lambdas_absolutas)
 
     # --- EXPERIMENTO BASE (Recuperación y Residuos) ---
-    print("\n--- Evaluando algoritmo con ruido del 1.0% ---")
+    print("\n--- Evaluando algoritmo con ruido del 0.5% ---")
     intenBorrosa = decon.convolucion3D(intensidad, psf)
     compVborrosa = decon.convolucion3D(compV, psf)
 
-    intenBorrosaRuido, compVborrosaRuido = simular_ruido_telescopio_porcentaje(intenBorrosa, compVborrosa, porcentaje_ruido=1.0)
+    intenBorrosaRuido, compVborrosaRuido = simular_ruido_telescopio_porcentaje(intenBorrosa, compVborrosa, porcentaje_ruido=0.5)
     
     campoBorroso, _ = mag.calcularCampoMagnetico(intenBorrosaRuido, compVborrosaRuido, lambdas_absolutas)
     
@@ -142,7 +142,7 @@ def experimento_algoritmo_noor():
     fig_b.colorbar(im1, ax=axes_b[0], fraction=0.046, pad=0.04)
 
     im2 = axes_b[1].imshow(campoBorroso, cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
-    axes_b[1].set_title(f"B Borroso (Ruido 1%)\nSSIM: {ssim_b:.4f}", fontweight='bold')
+    axes_b[1].set_title(f"B Borroso (Ruido 0.5%)\nSSIM: {ssim_b:.4f}", fontweight='bold')
     axes_b[1].axis('off')
     fig_b.colorbar(im2, ax=axes_b[1], fraction=0.046, pad=0.04)
 
@@ -174,6 +174,46 @@ def experimento_algoritmo_noor():
     
     plt.tight_layout()
     plt.savefig('output/exper/experimento_noor_3_residuos.png')
+    
+    # --- COMPARATIVA VISUAL (B) - ZOOM ---
+    y_ini, y_fin = 140, 235
+    x_ini, x_fin = 163, 255
+    
+    fig_b_z, axes_b_z = plt.subplots(1, 3, figsize=(18, 5))
+    
+    im1_z = axes_b_z[0].imshow(campoMagnetico[y_ini:y_fin, x_ini:x_fin], cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
+    axes_b_z[0].set_title("B Original (Zoom)", fontweight='bold')
+    axes_b_z[0].axis('off')
+    fig_b_z.colorbar(im1_z, ax=axes_b_z[0], fraction=0.046, pad=0.04)
+
+    im2_z = axes_b_z[1].imshow(campoBorroso[y_ini:y_fin, x_ini:x_fin], cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
+    axes_b_z[1].set_title("B Borroso (Zoom)", fontweight='bold')
+    axes_b_z[1].axis('off')
+    fig_b_z.colorbar(im2_z, ax=axes_b_z[1], fraction=0.046, pad=0.04)
+
+    im3_z = axes_b_z[2].imshow(campoMagDeco[y_ini:y_fin, x_ini:x_fin], cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
+    axes_b_z[2].set_title("B Deconvolucionado (Zoom)", fontweight='bold')
+    axes_b_z[2].axis('off')
+    fig_b_z.colorbar(im3_z, ax=axes_b_z[2], fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.savefig('output/exper/experimento_noor_2b_comparativa_b_zoom.png')
+
+    # --- MAPA DE RESIDUOS - ZOOM ---
+    fig_r_z, axes_r_z = plt.subplots(1, 2, figsize=(12, 5))
+    
+    im_r1_z = axes_r_z[0].imshow(residuos_borroso[y_ini:y_fin, x_ini:x_fin], cmap=cmap_residuos, vmax=vmax_r)
+    axes_r_z[0].set_title("Residuos (Borroso vs Original) - Zoom", fontweight='bold')
+    axes_r_z[0].axis('off')
+    fig_r_z.colorbar(im_r1_z, ax=axes_r_z[0], fraction=0.046, pad=0.04)
+
+    im_r2_z = axes_r_z[1].imshow(residuos[y_ini:y_fin, x_ini:x_fin], cmap=cmap_residuos, vmax=vmax_r)
+    axes_r_z[1].set_title("Residuos (Deconvolucionado vs Original) - Zoom", fontweight='bold')
+    axes_r_z[1].axis('off')
+    fig_r_z.colorbar(im_r2_z, ax=axes_r_z[1], fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.savefig('output/exper/experimento_noor_3b_residuos_zoom.png')
 
     # --- LÍMITES DEL MÉTODO (Ruido) ---
     print("\n--- Evaluando límites del método ante el ruido ---")
@@ -527,8 +567,8 @@ def experimento_comparativa_rl_wk_ruido():
     print(f"\nGráfica guardada en: {path_salida}")
     plt.show()
 
-def experimento_wk_compV_ruido():
-    print("Iniciando experimento de Wiener (wk) sobre la componente Stokes V...")
+def experimento_wiener_compV_ruido():
+    print("Iniciando experimento de Wiener (Propio) sobre la componente Stokes V...")
     
     # 1. Cargar datos
     datos_cargados = np.load('data/datos_sunspot.npz')
@@ -549,15 +589,15 @@ def experimento_wk_compV_ruido():
 
     niveles_ruido = [0.1, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0, 12.0, 15.0]
     
-    ssims_wk = []
+    ssims_wiener = []
     ssims_borroso = []
     
     import os
     out_dir = 'output/exper'
     os.makedirs(out_dir, exist_ok=True)
     
-    print(f"{'Ruido (%)':<10} | {'SSIM Borroso V':<15} | {'SSIM Wiener V':<15} | {'¿Wiener Válido?':<15}")
-    print("-" * 60)
+    print(f"{'Ruido (%)':<10} | {'SSIM Borroso V':<15} | {'SSIM Mi Wiener V':<15} | {'¿Wiener Válido?':<15}")
+    print("-" * 65)
     
     # Variables para guardar un ejemplo de ruido alto para visualizar
     ejemplo_ruido = 2.0
@@ -576,28 +616,28 @@ def experimento_wk_compV_ruido():
         _, ssim_borroso_val = calcular_metricas(compV, compV_borrosa_ruido)
         ssims_borroso.append(ssim_borroso_val)
         
-        # 1. Evaluar Wiener (wk) para compV
-        compV_decoWK = decon.deconvolucion3D(compV_borrosa_ruido_3d, psf, metodo='wk')[0]
-        _, ssim_wk_val = calcular_metricas(compV, compV_decoWK)
-        ssims_wk.append(ssim_wk_val)
+        # 1. Evaluar Wiener propio para compV
+        compV_deco_wiener = decon.deconvolucion3D(compV_borrosa_ruido_3d, psf, metodo='wiener')[0]
+        _, ssim_wiener_val = calcular_metricas(compV, compV_deco_wiener)
+        ssims_wiener.append(ssim_wiener_val)
         
         # Guardar ejemplo
         if abs(ruido - ejemplo_ruido) < 0.01:
             compV_ejemplo_borroso = compV_borrosa_ruido
-            compV_ejemplo_wiener = compV_decoWK
+            compV_ejemplo_wiener = compV_deco_wiener
         
-        valido = "SÍ" if ssim_wk_val > ssim_borroso_val else "NO"
-        print(f"{ruido:<10.1f} | {ssim_borroso_val:<15.4f} | {ssim_wk_val:<15.4f} | {valido:<15}")
+        valido = "SÍ" if ssim_wiener_val > ssim_borroso_val else "NO"
+        print(f"{ruido:<10.1f} | {ssim_borroso_val:<15.4f} | {ssim_wiener_val:<15.4f} | {valido:<15}")
 
     # 3. Visualización de la comparativa de SSIM
     fig, ax = plt.subplots(figsize=(10, 6))
     
     ax.plot(niveles_ruido, ssims_borroso, marker='x', linestyle=':', color='gray', linewidth=2, label='Stokes V Borroso (Sin deconvolucionar)')
-    ax.plot(niveles_ruido, ssims_wk, marker='s', linestyle='--', color='tab:blue', linewidth=2, label='Stokes V Wiener (wk)')
+    ax.plot(niveles_ruido, ssims_wiener, marker='s', linestyle='--', color='tab:blue', linewidth=2, label='Stokes V Mi Wiener')
 
     ax.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
     ax.set_ylabel('SSIM', fontweight='bold')
-    ax.set_title('Comparativa SSIM (Stokes V): Wiener vs Borroso Original', fontweight='bold')
+    ax.set_title('Comparativa SSIM (Stokes V): Mi Wiener vs Borroso Original', fontweight='bold')
     ax.grid(True, linestyle='--', alpha=0.6)
     
     ax.set_xticks(niveles_ruido)
@@ -626,7 +666,7 @@ def experimento_wk_compV_ruido():
         fig_v.colorbar(im2, ax=axes_v[1], fraction=0.046, pad=0.04)
 
         im3 = axes_v[2].imshow(compV_ejemplo_wiener, cmap=cmap_v, vmin=-v_max, vmax=v_max)
-        axes_v[2].set_title('Stokes V Deconvolucionado (Wiener)', fontweight='bold')
+        axes_v[2].set_title('Stokes V Deconvolucionado (Mi Wiener)', fontweight='bold')
         axes_v[2].axis('off')
         fig_v.colorbar(im3, ax=axes_v[2], fraction=0.046, pad=0.04)
         
@@ -635,6 +675,108 @@ def experimento_wk_compV_ruido():
         plt.savefig(path_salida_2)
         
     print(f"\nGráficas guardadas en {out_dir}")
+    plt.close('all')
+
+def experimento_stokesV_shift_ruido():
+    print("\nIniciando experimento de deconvolución de Stokes V con shift positivo (RL, Fourier, Wiener)...")
+    
+    # 1. Cargar datos
+    datos_cargados = np.load('data/datos_sunspot.npz')
+    data = datos_cargados['stokes']
+    
+    compV = data[0, 1, :, :]
+    
+    # 2. Generar PSF
+    psf = decon.generar_psf_airy(tamano_matriz=31, radio_piz=3)
+    compV_3d = np.expand_dims(compV, axis=0)
+    
+    compV_borrosa_3d = decon.convolucion3D(compV_3d, psf)
+
+    niveles_ruido = [0.1, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0, 12.0, 15.0]
+    
+    ssims_borroso = []
+    ssims_rl = []
+    ssims_fourier = []
+    ssims_wk = []
+    ssims_wiener = []
+    
+    import os
+    out_dir = 'output/exper'
+    os.makedirs(out_dir, exist_ok=True)
+    
+    print(f"{'Ruido (%)':<10} | {'Borroso':<10} | {'RL (Shift)':<12} | {'Fourier':<10} | {'Wiener (wk)':<12} | {'Mi Wiener':<10}")
+    print("-" * 75)
+    
+    for ruido in niveles_ruido:
+        intensidad = data[0, 0, :, :]
+        intensidad_3d = np.expand_dims(intensidad, axis=0)
+        intensidad_borrosa_3d = decon.convolucion3D(intensidad_3d, psf)
+        
+        _, compV_borrosa_ruido_3d = simular_ruido_telescopio_porcentaje(
+            intensidad_borrosa_3d, compV_borrosa_3d, porcentaje_ruido=ruido
+        )
+        
+        compV_borrosa_ruido = compV_borrosa_ruido_3d[0]
+        
+        # 0. Evaluar Borroso
+        _, ssim_borroso_val = calcular_metricas(compV, compV_borrosa_ruido)
+        ssims_borroso.append(ssim_borroso_val)
+        
+        # --- SHIFT POSITIVO SOLO PARA RL ---
+        min_val = np.min(compV_borrosa_ruido_3d)
+        shift = abs(min_val) + 0.1 if min_val < 0 else 0
+        compV_borrosa_ruido_3d_shifted = compV_borrosa_ruido_3d + shift
+        
+        # 1. RL (Shifted)
+        compV_rl_shifted = decon.deconvolucion3D(compV_borrosa_ruido_3d_shifted, psf, metodo='rl')[0]
+        compV_rl = compV_rl_shifted - shift
+        _, ssim_rl_val = calcular_metricas(compV, compV_rl)
+        ssims_rl.append(ssim_rl_val)
+        
+        # 2. Fourier (Normal)
+        compV_fourier = decon.deconvolucion3D(compV_borrosa_ruido_3d, psf, metodo='fourier')[0]
+        _, ssim_fourier_val = calcular_metricas(compV, compV_fourier)
+        ssims_fourier.append(ssim_fourier_val)
+        
+        # 3. Wiener (wk) (Normal)
+        compV_wk = decon.deconvolucion3D(compV_borrosa_ruido_3d, psf, metodo='wk')[0]
+        _, ssim_wk_val = calcular_metricas(compV, compV_wk)
+        ssims_wk.append(ssim_wk_val)
+        
+        # 4. Mi Wiener (Normal)
+        compV_wiener = decon.deconvolucion3D(compV_borrosa_ruido_3d, psf, metodo='wiener')[0]
+        _, ssim_wiener_val = calcular_metricas(compV, compV_wiener)
+        ssims_wiener.append(ssim_wiener_val)
+        
+        print(f"{ruido:<10.1f} | {ssim_borroso_val:<10.4f} | {ssim_rl_val:<12.4f} | {ssim_fourier_val:<10.4f} | {ssim_wk_val:<12.4f} | {ssim_wiener_val:<10.4f}")
+
+    # Visualización
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    ax.plot(niveles_ruido, ssims_borroso, marker='x', linestyle=':', color='gray', linewidth=2, label='Stokes V Borroso')
+    ax.plot(niveles_ruido, ssims_rl, marker='o', linestyle='-', color='tab:orange', linewidth=2, label='RL (Shifted)')
+    
+    # Clip Fourier SSIM for plotting
+    ssims_fourier_clipped = np.clip(ssims_fourier, -0.1, 1.0)
+    ax.plot(niveles_ruido, ssims_fourier_clipped, marker='^', linestyle='-.', color='tab:green', linewidth=2, label='Fourier (Normal)')
+    
+    ax.plot(niveles_ruido, ssims_wk, marker='s', linestyle='--', color='tab:blue', linewidth=2, label='Wiener wk (Normal)')
+    ax.plot(niveles_ruido, ssims_wiener, marker='d', linestyle='-', color='tab:purple', linewidth=2, label='Mi Wiener (Normal)')
+
+    ax.set_ylim([-0.1, 1.05])
+    ax.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
+    ax.set_ylabel('SSIM', fontweight='bold')
+    ax.set_title('Comparativa Métodos (Stokes V): RL con Shift vs Resto Normal', fontweight='bold')
+    ax.grid(True, linestyle='--', alpha=0.6)
+    
+    ax.set_xticks(niveles_ruido)
+    ax.set_xticklabels([str(r) for r in niveles_ruido])
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    
+    plt.tight_layout()
+    path_salida = os.path.join(out_dir, 'experimento_stokesV_3_comparativa_shift.png')
+    plt.savefig(path_salida)
+    print(f"\nGráfica guardada en {path_salida}")
     plt.close('all')
 
 if __name__ == "__main__":
@@ -649,4 +791,6 @@ if __name__ == "__main__":
     
     # experimento_comparativa_rl_wk_ruido()
     
-    experimento_wk_compV_ruido()
+    experimento_wiener_compV_ruido()
+    
+    experimento_stokesV_shift_ruido()
