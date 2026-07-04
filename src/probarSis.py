@@ -47,6 +47,36 @@ def simular_ruido_telescopio(intensidad, compV, snr=1000):
     return intensidad_ruidosa, compV_ruidosa
 
 
+def simular_ruido_telescopio_porcentaje(intensidad, compV, porcentaje_ruido=1):
+    """
+    Añade ruido gaussiano como porcentaje de la intensidad máxima.
+    Simula un detector polarimétrico. El ruido escala con la intensidad máxima (continuo).
+    
+    Args:
+        intensidad: Componente I del vector de Stokes
+        compV: Componente V del vector de Stokes
+        porcentaje_ruido: Ruido como % de la intensidad máxima (ej: 5 = 5%)
+    
+    Returns:
+        Tupla (intensidad_ruidosa, compV_ruidosa)
+    """
+    # 1. Aproximamos la intensidad del continuo (el máximo del mapa de intensidad)
+    I_continuo = np.max(intensidad)
+    
+    # 2. Calculamos la desviación estándar del ruido como porcentaje
+    sigma_ruido = I_continuo * (porcentaje_ruido / 100)
+    
+    # 3. Generamos los mapas de ruido independiente para I y V
+    ruido_I = np.random.normal(loc=0.0, scale=sigma_ruido, size=intensidad.shape)
+    ruido_V = np.random.normal(loc=0.0, scale=sigma_ruido, size=compV.shape)
+    
+    # 4. Sumamos el ruido a los datos
+    intensidad_ruidosa = intensidad + ruido_I
+    compV_ruidosa = compV + ruido_V
+    
+    return intensidad_ruidosa, compV_ruidosa
+
+
 def experimento_algoritmo_noor():
     datos_cargados = np.load('data/datos_sunspot.npz')
 
@@ -70,8 +100,8 @@ def experimento_algoritmo_noor():
     intenBorrosa = decon.convolucion3D(intensidad, psf)
     compVborrosa = decon.convolucion3D(compV, psf)
 
-    # 2. Añadimos el ruido del sensor (ej. SNR = 1000)
-    intenBorrosaRuido, compVborrosaRuido = simular_ruido_telescopio(intenBorrosa, compVborrosa, snr=1000)
+    # 2. Añadimos el ruido del sensor (ej. 0.1% de ruido)
+    intenBorrosaRuido, compVborrosaRuido = simular_ruido_telescopio_porcentaje(intenBorrosa, compVborrosa, porcentaje_ruido=0.1)
 
     # 3. Calculamos las métricas del campo borroso y ruidoso
     campoBorroso, _ = mag.calcularCampoMagnetico(intenBorrosaRuido, compVborrosaRuido, lambdas_absolutas)
@@ -117,7 +147,7 @@ def experimento_comparacion_intensidad():
     
     # Usamos dummy compV porque sólo nos interesa intensidad
     dummy_compV = np.zeros_like(intensidad)
-    intenBorrosaRuido, _ = simular_ruido_telescopio(intenBorrosa, dummy_compV, snr=1000)
+    intenBorrosaRuido, _ = simular_ruido_telescopio_porcentaje(intenBorrosa, dummy_compV, porcentaje_ruido=0.1)
     
     # 4. Deconvolución con los tres métodos
     print("Aplicando Deconvolución Richardson-Lucy...")
@@ -243,5 +273,50 @@ if __name__ == "__main__":
     # Puedes descomentar la siguiente línea si quieres ejecutar el experimento del Algoritmo de Noor
     # experimento_algoritmo_noor()
     
-    experimento_comparacion_intensidad()
 
+    datos_cargados = np.load('data/datos_sunspot.npz')
+
+    data = datos_cargados['stokes']
+    lambdas = datos_cargados['lam']
+
+    # Solo usar lambda 0
+    intensidad = data[0, 0, :, :]
+    compV = data[0, 1, :, :]
+
+    psf = decon.generar_psf_airy(
+        tamano_matriz=31,
+        radio_piz=3
+    )
+
+    lambdas_absolutas = 6173.0 + (lambdas / 1000.0)
+
+    # Agregar dimensión para que sean 3D (requerido por deconvolucion3D)
+    intensidad_3d = np.expand_dims(intensidad, axis=0)
+    compV_3d = np.expand_dims(compV, axis=0)
+
+    intensidad_borrosa_3d = decon.convolucion3D(intensidad_3d, psf)
+    intensidad_borrosa_ruido_3d, compV_borrosa_ruido_3d = simular_ruido_telescopio_porcentaje(intensidad_borrosa_3d, compV_3d, porcentaje_ruido=2.0)
+
+    intensidad_borrosa_ruido = intensidad_borrosa_ruido_3d[0]
+    
+    rmse_br, ssim_br = calcular_metricas(intensidad, intensidad_borrosa_ruido)
+    print(f'Borroso y Ruidoso -> RMSE={rmse_br:.4f}, SSIM={ssim_br:.4f}')
+
+    intensidad_decoW = decon.deconvolucion3D(intensidad_borrosa_ruido_3d, psf, metodo='wiener', pasos=10)[0]
+    rmse_w, ssim_w = calcular_metricas(intensidad, intensidad_decoW)
+    print(f'Wiener -> RMSE={rmse_w:.4f}, SSIM={ssim_w:.4f}')
+
+    intensidad_decoWK = decon.deconvolucion3D(intensidad_borrosa_ruido_3d, psf, metodo='wk', pasos=10)[0]
+    rmse_wk, ssim_wk = calcular_metricas(intensidad, intensidad_decoWK)
+    print(f'Wiener (skimage) -> RMSE={rmse_wk:.4f}, SSIM={ssim_wk:.4f}')
+
+    intensidad_decoRL = decon.deconvolucion3D(intensidad_borrosa_ruido_3d, psf, metodo='rl', pasos=10)[0]
+    rmse_rl, ssim_rl = calcular_metricas(intensidad, intensidad_decoRL)
+    print(f'Richardson-Lucy -> RMSE={rmse_rl:.4f}, SSIM={ssim_rl:.4f}')
+
+    mapas = [intensidad, intensidad_borrosa_ruido, intensidad_decoW, intensidad_decoWK, intensidad_decoRL]
+    titulos = ['Intensidad Original (λ₀)', 'Intensidad Borrosa y Ruidosa (λ₀)', 'Intensidad Deconvolucionada Wiener (λ₀)', 'Intensidad Deconvolucionada Wiener (skimage) (λ₀)', 'Intensidad Deconvolucionada Richardson-Lucy (λ₀)']
+
+    vis.mostrar_n_arrays(mapas, titles=titulos, cmap='viridis',
+                       figsize=None, save_path=None, colorbar=True, log_scale=False,
+                       share_colors=True, cols=None)

@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.special import j1
 from scipy import signal, fft
+from skimage import restoration
 
 
 def generar_psf_airy(tamano_matriz, radio_piz):
@@ -114,6 +115,11 @@ def decoWiener(imagen, psf, snr, eps=1e-12, trabajadores=-1):
     return np.clip(imagen_deco, 0, None)
 
 
+def wienerSki(imagen, psf, balance):
+    imagen_deco = restoration.wiener(imagen, psf, balance, clip=False)
+    return imagen_deco
+
+
 def estimate_snr_empirical(image):
     # Estimación del ruido usando la desviación estándar de la diferencia local.
     # Esto reduce gran parte de la estructura de baja frecuencia.
@@ -140,6 +146,10 @@ def deconvolucion(imagen, psf, metodo='rl', pasos=30, trabajadores=-1):
     elif metodo == 'wiener':
         snr, _ = estimate_snr_empirical(imagen)
         return decoWiener(imagen, psf, snr, trabajadores=trabajadores)
+    elif metodo in ['wk', 'wienerSki', 'wienerski']:
+        snr, _ = estimate_snr_empirical(imagen)
+        balance = 1 / (snr**2 + 1e-12)
+        return wienerSki(imagen, psf, balance)
     else:
         print('El método no existe')
 
