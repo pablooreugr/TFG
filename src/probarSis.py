@@ -362,9 +362,10 @@ def experimento_comparacion_intensidad():
     plt.tight_layout()
     plt.savefig('output/exper/comparacion_intensidad_3_barras.png')
 
-    # 6.4 Gráfica 4: PSF (sin logaritmo)
+    # 6.4 Gráfica 4: PSF (escala logarítmica)
+    from matplotlib.colors import LogNorm
     fig4, ax4 = plt.subplots(figsize=(6, 5))
-    im6 = ax4.imshow(psf, cmap=sns.color_palette("mako", as_cmap=True))
+    im6 = ax4.imshow(psf, cmap=sns.color_palette("mako", as_cmap=True), norm=LogNorm(vmin=1e-5, vmax=psf.max()))
     ax4.axis('off')
     fig4.colorbar(im6, ax=ax4, fraction=0.046, pad=0.04)
     
@@ -796,9 +797,9 @@ if __name__ == "__main__":
     
     experimento_rl_pasos()
     
-    experimento_rl_ruido_pasos()
+    # experimento_rl_ruido_pasos()
     
-    experimento_comparativa_rl_wk_ruido()
+    # experimento_comparativa_rl_wk_ruido()
     
     experimento_wiener_compV_ruido()
     
