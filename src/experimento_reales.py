@@ -80,19 +80,29 @@ def main():
     
     print(f"Calculando Campo B directo sobre el ROI [{y_min}:{y_max}, {x_min}:{x_max}]...")
     B_directo_roi, _ = mag.calcularCampoMagnetico(intensidad_roi, compV_roi, lambdas, g=1.5)
+
+    print("Calculando Campo B con Intensidad Deconvolucionada sobre el ROI...")
+    I_roi_decon = decon.deconvolucion3D(intensidad_roi, psf, pasos=20)
+    B_semi_roi, _ = mag.calcularCampoMagnetico(I_roi_decon, compV_roi, lambdas, g=1.5)
     
     print("Ejecutando Noor (Deconvolución Acoplada) SOBRE EL ROI (400x400)...")
     print("Al ser más pequeño, podemos permitirle 100 iteraciones para que converja de verdad.")
+    k_max_actual = mag.calcular_k_max(intensidad_roi, lambdas, g=1.5)
+    peso_universal = 0.5  # Peso general unificado
+    lambda_dinamico = peso_universal * (k_max_actual**2)
+
     B_noor_roi, _ = mag.algoritmoDeNoor(
         intensidad_roi, compV_roi, lambdas, psf, g=1.5, 
-        lambdaReg=1e-4, relLim=1e-6, pasosFor=100, cg_auto_close=True
+        lambdaReg=lambda_dinamico, relLim=1e-6, pasosFor=100, cg_auto_close=True
     )
     
     # Métrica 2: Varianza del Laplaciano (Nitidez/Sharpness) para el campo B
     from scipy.ndimage import laplace
     lap_directo = np.var(laplace(B_directo_roi))
+    lap_semi = np.var(laplace(B_semi_roi))
     lap_noor = np.var(laplace(B_noor_roi))
     print(f"\nNitidez (Varianza Laplaciano) B Directo (ROI): {lap_directo:.2e}")
+    print(f"Nitidez (Varianza Laplaciano) B Semi-Deconvolucionado (ROI): {lap_semi:.2e}")
     print(f"Nitidez (Varianza Laplaciano) B Noor (ROI): {lap_noor:.2e}")
     
     # =========================================================================
@@ -115,16 +125,20 @@ def main():
     plt.close()
     
     # 2. Campo Magnético (Zoom ROI) - Comparamos aquí el efecto real
-    fig, axes = plt.subplots(1, 2, figsize=(16, 8))
+    fig, axes = plt.subplots(1, 3, figsize=(24, 8))
     b_max = np.percentile(np.abs(B_completo_crudo), 99.5) # Usamos el maximo global para tener la misma escala de color
     
     axes[0].imshow(B_directo_roi, cmap='bwr', vmin=-b_max, vmax=b_max)
-    axes[0].set_title(f'Zoom B Directo [{y_min}:{y_max}, {x_min}:{x_max}]\nNitidez Laplaciana: {lap_directo:.2e}')
+    axes[0].set_title(f'B Directo (I crudo, V crudo)\nNitidez: {lap_directo:.2e}')
     axes[0].axis('off')
     
-    axes[1].imshow(B_noor_roi, cmap='bwr', vmin=-b_max, vmax=b_max)
-    axes[1].set_title(f'Zoom B Noor (100 iteraciones)\nNitidez Laplaciana: {lap_noor:.2e}')
+    axes[1].imshow(B_semi_roi, cmap='bwr', vmin=-b_max, vmax=b_max)
+    axes[1].set_title(f'B Semideconvolucionado (I decon, V crudo)\nNitidez: {lap_semi:.2e}')
     axes[1].axis('off')
+
+    axes[2].imshow(B_noor_roi, cmap='bwr', vmin=-b_max, vmax=b_max)
+    axes[2].set_title(f'B Noor Completo (100 iter)\nNitidez: {lap_noor:.2e}')
+    axes[2].axis('off')
     plt.tight_layout()
     plt.savefig('output/exper/exp4_3_campoB_zoom.png', dpi=300)
     plt.close()

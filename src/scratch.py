@@ -1,26 +1,27 @@
 import numpy as np
+from astropy.io import fits
+import magnetismo as mag
+import deconvolucion as decon
 
-def opPt_3D(imagen_extendida, psf_shape):
-    pad_size = psf_shape // 2
-    y = imagen_extendida.copy()
-    p = pad_size
+def get_kmax_synth():
+    datos_cargados = np.load('data/datos_sunspot.npz')
+    data = datos_cargados['stokes']
+    lambdas = datos_cargados['lam']
+    intensidad = data[:, 0, :, :]
+    lambdas_absolutas = 6173.0 + (lambdas / 1000.0)
+    derivadaI = np.gradient(intensidad, lambdas_absolutas, axis=0)
+    constanteK = - 4.67e-13 * 3 * derivadaI * (lambdas_absolutas[:, np.newaxis, np.newaxis]**2)
+    return np.abs(constanteK).max()
 
-    # Eje Y (axis 1)
-    y[:, p+1 : 2*p+1, :] += y[:, 0:p, :][:, ::-1, :]
-    y[:, -2*p-1 : -p-1, :] += y[:, -p:, :][:, ::-1, :]
+def get_kmax_real():
+    fits_path = 'data/01_QSUN_TM_00_Mg1_10_10072024T131604_LV_1.0_v0.4.fits'
+    with fits.open(fits_path) as hdul:
+        data = hdul[0].data
+        intensidad = data[:, 0, :, :]
+    lambdas = 5170.0 + (np.arange(10) - 4.5) * 0.05
+    derivadaI = np.gradient(intensidad, lambdas, axis=0)
+    constanteK = - 4.67e-13 * 1.5 * derivadaI * (lambdas[:, np.newaxis, np.newaxis]**2)
+    return np.abs(constanteK).max()
 
-    # Eje X (axis 2)
-    y[:, :, p+1 : 2*p+1] += y[:, :, 0:p][:, :, ::-1]
-    y[:, :, -2*p-1 : -p-1] += y[:, :, -p:][:, :, ::-1]
-
-    return y[:, p:-p, p:-p]
-
-x = np.random.randn(3, 10, 10)
-p = 2
-x_pad = np.pad(x, ((0,0), (p,p), (p,p)), mode='reflect')
-
-# Test adjoint property: <Px, y> = <x, P^T y>
-y = np.random.randn(*x_pad.shape)
-res1 = np.sum(x_pad * y)
-res2 = np.sum(x * opPt_3D(y, 4))
-print(f"Adjoint error: {abs(res1 - res2)}")
+print("K_max Sintetico:", get_kmax_synth())
+print("K_max Real:", get_kmax_real())

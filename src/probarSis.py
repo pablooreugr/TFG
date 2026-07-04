@@ -107,10 +107,15 @@ def experimento_algoritmo_noor():
     
     campoBorroso, _ = mag.calcularCampoMagnetico(intenBorrosaRuido, compVborrosaRuido, lambdas_absolutas)
     
+    k_max_actual = mag.calcular_k_max(intenBorrosaRuido, lambdas_absolutas, g=3)
+    peso_universal = 0.5  # Peso general unificado
+    lambda_dinamico = peso_universal * (k_max_actual**2)
+
     campoMagDeco, historial_conv = mag.algoritmoDeNoor(
         intenBorrosaRuido, compVborrosaRuido, lambdas_absolutas, psf, 
-        pasos=20, trabajadores=-1, pasosFor=30, relLim=1e-30, lambdaReg=1e-5, cg_auto_close=True
+        pasos=20, trabajadores=-1, pasosFor=30, relLim=1e-30, lambdaReg=lambda_dinamico, cg_auto_close=True
     )
+
     
     rmse_b, ssim_b = calcular_metricas(campoMagnetico, campoBorroso)
     rmse_d, ssim_d = calcular_metricas(campoMagnetico, campoMagDeco)
@@ -226,9 +231,13 @@ def experimento_algoritmo_noor():
         cb, _ = mag.calcularCampoMagnetico(i_r, v_r, lambdas_absolutas)
         
         # Reducimos los pasos de CG para ir más rápido en el bucle
+        k_max_actual = mag.calcular_k_max(i_r, lambdas_absolutas, g=3)
+        peso_universal = 0.5  # Peso general unificado
+        lambda_dinamico = peso_universal * (k_max_actual**2)
+
         cd, _ = mag.algoritmoDeNoor(
             i_r, v_r, lambdas_absolutas, psf, 
-            pasos=20, trabajadores=-1, pasosFor=15, relLim=1e-3, lambdaReg=1e-5, cg_auto_close=True
+            pasos=20, trabajadores=-1, pasosFor=15, relLim=1e-3, lambdaReg=lambda_dinamico, cg_auto_close=True
         )
         
         _, sb = calcular_metricas(campoMagnetico, cb)
@@ -785,11 +794,11 @@ if __name__ == "__main__":
     
     experimento_comparacion_intensidad()
     
-    # experimento_rl_pasos()
+    experimento_rl_pasos()
     
-    # experimento_rl_ruido_pasos()
+    experimento_rl_ruido_pasos()
     
-    # experimento_comparativa_rl_wk_ruido()
+    experimento_comparativa_rl_wk_ruido()
     
     experimento_wiener_compV_ruido()
     

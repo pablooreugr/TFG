@@ -7,6 +7,14 @@ from scipy.ndimage import laplace
 
 constanteFormula = 4.67e-13 # A^-1 G^-1
 
+def calcular_k_max(intensidad, lambdas, g=3):
+    derivadaI = np.gradient(intensidad, lambdas, axis=0)
+    constanteK = - constanteFormula * g * derivadaI * (lambdas[:, np.newaxis, np.newaxis]**2)
+    k_max = np.abs(constanteK).max()
+    if k_max == 0:
+        k_max = 1.0
+    return k_max
+
 def calcularCampoMagnetico(intensidad, V, lambdas, g=3):
     #Preparamos las componentes para la regresión lineal
 
@@ -51,13 +59,10 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
 
         #intensidadDecon = deco.deconvolucion3D(intensidad, psf, metodo=metodo, pasos=pasos, trabajadores=trabajadores)
         derivadaI = np.gradient(intensidad, lambdas, axis=0)
-
         constanteK = - constanteFormula * g * derivadaI * (lambdas[:, np.newaxis, np.newaxis]**2)
 
-        # Escalado del kernel K
-        k_max = np.abs(constanteK).max()
-        if k_max == 0:
-            k_max = 1.0  # seguridad
+        # Escalado del kernel K usando la función modularizada
+        k_max = calcular_k_max(intensidad, lambdas, g=g)
         K_scaled = constanteK / k_max
 
         # A partir de aqui calcularemos los distintos operadores
