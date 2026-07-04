@@ -145,8 +145,17 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
 
         # Y a partir de aquí calculamos el descenso del gradiente
         grafica = vis.GraficaConvergencia(titulo="Convergencia del Algoritmo de Noor", auto_close=cg_auto_close)
+        
+        historial_convergencia = []
+        estado_previo = [np.zeros_like(beta1D)]
 
         def callback_cg(xk):
+            # Diferencia iterativa entre iteraciones
+            diff = np.linalg.norm(xk - estado_previo[0])
+            historial_convergencia.append(diff)
+            estado_previo[0] = xk.copy()
+            
+            # Para la gráfica interactiva podemos seguir usando la norma del residuo
             residuo = beta1D - A_op.matvec(xk)
             norma_residuo = np.linalg.norm(residuo)
             grafica.actualizar(norma_residuo)
@@ -165,7 +174,7 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
 
         #deltaB_actual = deltaB_final / k_max
 
-        return campoMagneticoInicial + deltaB_final
+        return campoMagneticoInicial + deltaB_final, historial_convergencia
 
     
 

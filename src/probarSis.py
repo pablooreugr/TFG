@@ -79,56 +79,146 @@ def simular_ruido_telescopio_porcentaje(intensidad, compV, porcentaje_ruido=1):
 
 
 def experimento_algoritmo_noor():
+    print("Iniciando experimento del Algoritmo de Noor modificado...")
+    import os
+    os.makedirs('output/exper', exist_ok=True)
+    
+    # 1. Cargar datos
     datos_cargados = np.load('data/datos_sunspot.npz')
-
     data = datos_cargados['stokes']
     lambdas = datos_cargados['lam']
 
     intensidad = data[:, 0, :, :]
     compV = data[:, 1, :, :]
-
-    psf = decon.generar_psf_airy(
-        tamano_matriz=31,
-        radio_piz=3
-    )
-
     lambdas_absolutas = 6173.0 + (lambdas / 1000.0)
 
+    # 2. Generar PSF
+    psf = decon.generar_psf_airy(tamano_matriz=31, radio_piz=3)
+
+    # 3. Ground Truth (Campo B Original)
     campoMagnetico, _ = mag.calcularCampoMagnetico(intensidad, compV, lambdas_absolutas)
 
-    # Imagen degradada
-    # 1. Imagen degradada por la difracción (PSF)
+    # --- EXPERIMENTO BASE (Recuperación y Residuos) ---
+    print("\n--- Evaluando algoritmo con ruido del 1.0% ---")
     intenBorrosa = decon.convolucion3D(intensidad, psf)
     compVborrosa = decon.convolucion3D(compV, psf)
 
-    # 2. Añadimos el ruido del sensor (ej. 0.1% de ruido)
-    intenBorrosaRuido, compVborrosaRuido = simular_ruido_telescopio_porcentaje(intenBorrosa, compVborrosa, porcentaje_ruido=0.1)
-
-    # 3. Calculamos las métricas del campo borroso y ruidoso
-    campoBorroso, _ = mag.calcularCampoMagnetico(intenBorrosaRuido, compVborrosaRuido, lambdas_absolutas)
-
-
-    rmse_campo_borroso, ssim_campo_borroso = calcular_metricas(
-        campoMagnetico,
-        campoBorroso
-    )
-
-    print(f'Borroso -> RMSE={rmse_campo_borroso:.4f}, SSIM={ssim_campo_borroso:.4f}')
+    intenBorrosaRuido, compVborrosaRuido = simular_ruido_telescopio_porcentaje(intenBorrosa, compVborrosa, porcentaje_ruido=1.0)
     
-    campoMagDeco = mag.algoritmoDeNoor(intenBorrosaRuido, compVborrosaRuido, lambdas_absolutas, psf, pasos=20, trabajadores=-1, pasosFor=2, relLim=1e-30, lambdaReg=1e-5)
-
-    rmse_campo_deco, ssim_campo_deco = calcular_metricas(
-        campoMagnetico,
-        campoMagDeco
+    campoBorroso, _ = mag.calcularCampoMagnetico(intenBorrosaRuido, compVborrosaRuido, lambdas_absolutas)
+    
+    campoMagDeco, historial_conv = mag.algoritmoDeNoor(
+        intenBorrosaRuido, compVborrosaRuido, lambdas_absolutas, psf, 
+        pasos=20, trabajadores=-1, pasosFor=30, relLim=1e-30, lambdaReg=1e-5, cg_auto_close=True
     )
+    
+    rmse_b, ssim_b = calcular_metricas(campoMagnetico, campoBorroso)
+    rmse_d, ssim_d = calcular_metricas(campoMagnetico, campoMagDeco)
+    
+    print(f'Borroso -> RMSE={rmse_b:.4f}, SSIM={ssim_b:.4f}')
+    print(f'Deconvolucionado -> RMSE={rmse_d:.4f}, SSIM={ssim_d:.4f}')    
 
-    print(f'Deconvolucionado -> RMSE={rmse_campo_deco:.4f}, SSIM={ssim_campo_deco:.4f}')    
+    # --- GRÁFICA DE CONVERGENCIA ---
+    fig_c, ax_c = plt.subplots(figsize=(8, 5))
+    ax_c.plot(range(1, len(historial_conv)+1), historial_conv, marker='o', color='tab:red')
+    ax_c.set_yscale('log')
+    ax_c.set_xlabel('Iteración', fontweight='bold')
+    ax_c.set_ylabel('Diferencia iterativa (norma)', fontweight='bold')
+    ax_c.set_title('Convergencia del Algoritmo de Noor', fontweight='bold')
+    ax_c.grid(True, which="both", ls="--", alpha=0.5)
+    plt.tight_layout()
+    plt.savefig('output/exper/experimento_noor_1_convergencia.png')
 
-    vis.mostrar_n_arrays(
-        [campoMagnetico, campoBorroso, campoMagDeco],
-        ['Campo Magnético Original', 'Campo Magnético Borroso y Ruidoso', 'Campo Magnético Deconvolucionado'],
-        cmap='viridis'
-    )
+    # Configurar colormap para B (icefire con centro blanco)
+    cmap_b = sns.color_palette("icefire", as_cmap=True)
+    vmax_b = np.percentile(np.abs(campoMagnetico), 99.5)
+
+    # --- COMPARATIVA VISUAL (B) ---
+    fig_b, axes_b = plt.subplots(1, 3, figsize=(18, 5))
+    
+    im1 = axes_b[0].imshow(campoMagnetico, cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
+    axes_b[0].set_title("B Original (Ground Truth)", fontweight='bold')
+    axes_b[0].axis('off')
+    fig_b.colorbar(im1, ax=axes_b[0], fraction=0.046, pad=0.04)
+
+    im2 = axes_b[1].imshow(campoBorroso, cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
+    axes_b[1].set_title(f"B Borroso (Ruido 1%)\nSSIM: {ssim_b:.4f}", fontweight='bold')
+    axes_b[1].axis('off')
+    fig_b.colorbar(im2, ax=axes_b[1], fraction=0.046, pad=0.04)
+
+    im3 = axes_b[2].imshow(campoMagDeco, cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
+    axes_b[2].set_title(f"B Deconvolucionado (Noor)\nSSIM: {ssim_d:.4f}", fontweight='bold')
+    axes_b[2].axis('off')
+    fig_b.colorbar(im3, ax=axes_b[2], fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.savefig('output/exper/experimento_noor_2_comparativa_b.png')
+
+    # --- MAPA DE RESIDUOS ---
+    residuos = np.abs(campoMagnetico - campoMagDeco)
+    residuos_borroso = np.abs(campoMagnetico - campoBorroso)
+    
+    cmap_residuos = sns.color_palette("viridis", as_cmap=True)
+    vmax_r = np.percentile(residuos_borroso, 99.5)
+    
+    fig_r, axes_r = plt.subplots(1, 2, figsize=(12, 5))
+    im_r1 = axes_r[0].imshow(residuos_borroso, cmap=cmap_residuos, vmax=vmax_r)
+    axes_r[0].set_title("Residuos (Borroso vs Original)", fontweight='bold')
+    axes_r[0].axis('off')
+    fig_r.colorbar(im_r1, ax=axes_r[0], fraction=0.046, pad=0.04)
+
+    im_r2 = axes_r[1].imshow(residuos, cmap=cmap_residuos, vmax=vmax_r)
+    axes_r[1].set_title("Residuos (Deconvolucionado vs Original)", fontweight='bold')
+    axes_r[1].axis('off')
+    fig_r.colorbar(im_r2, ax=axes_r[1], fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.savefig('output/exper/experimento_noor_3_residuos.png')
+
+    # --- LÍMITES DEL MÉTODO (Ruido) ---
+    print("\n--- Evaluando límites del método ante el ruido ---")
+    niveles_ruido = [0.1, 0.5, 1.0, 2.0, 3.0, 5.0, 7.5, 10.0]
+    ssims_b_ruido = []
+    ssims_d_ruido = []
+
+    for ruido in niveles_ruido:
+        i_r, v_r = simular_ruido_telescopio_porcentaje(intenBorrosa, compVborrosa, porcentaje_ruido=ruido)
+        cb, _ = mag.calcularCampoMagnetico(i_r, v_r, lambdas_absolutas)
+        
+        # Reducimos los pasos de CG para ir más rápido en el bucle
+        cd, _ = mag.algoritmoDeNoor(
+            i_r, v_r, lambdas_absolutas, psf, 
+            pasos=20, trabajadores=-1, pasosFor=15, relLim=1e-3, lambdaReg=1e-5, cg_auto_close=True
+        )
+        
+        _, sb = calcular_metricas(campoMagnetico, cb)
+        _, sd = calcular_metricas(campoMagnetico, cd)
+        
+        ssims_b_ruido.append(sb)
+        ssims_d_ruido.append(sd)
+        print(f"Ruido {ruido:>4.1f}% | SSIM Borroso: {sb:.4f} | SSIM Deconvolucionado: {sd:.4f}")
+
+    fig_l, ax_l = plt.subplots(figsize=(10, 6))
+    ax_l.plot(niveles_ruido, ssims_b_ruido, marker='x', linestyle=':', color='gray', linewidth=2, label='Borroso')
+    ax_l.plot(niveles_ruido, ssims_d_ruido, marker='o', linestyle='-', color='tab:blue', linewidth=2, label='Deconvolucionado (Noor)')
+    
+    # Encontrar límite
+    for i in range(len(niveles_ruido) - 1):
+        if ssims_d_ruido[i] > ssims_b_ruido[i] and ssims_d_ruido[i+1] <= ssims_b_ruido[i+1]:
+            ax_l.axvline(x=niveles_ruido[i+1], color='orange', linestyle='-.', alpha=0.7)
+            ax_l.text(niveles_ruido[i+1], ax_l.get_ylim()[1]*0.9, ' Límite de mejora', color='orange')
+            break
+            
+    ax_l.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
+    ax_l.set_ylabel('SSIM', fontweight='bold')
+    ax_l.set_title('Tolerancia al ruido en la estimación del Campo Magnético (B)', fontweight='bold')
+    ax_l.grid(True, linestyle='--', alpha=0.6)
+    ax_l.legend()
+    plt.tight_layout()
+    plt.savefig('output/exper/experimento_noor_4_limite_ruido.png')
+    
+    print("\nExperimento de Noor completado. Gráficas guardadas en 'output/exper/'.")
+    plt.close('all')
 
 
 def experimento_comparacion_intensidad():
@@ -178,7 +268,7 @@ def experimento_comparacion_intensidad():
     import os
     import matplotlib.colors as mcolors
     
-    os.makedirs('output', exist_ok=True)
+    os.makedirs('output/exper', exist_ok=True)
     
     idx_z = intensidad.shape[0] // 2  # Usamos un slice central para visualizar
     
@@ -195,7 +285,7 @@ def experimento_comparacion_intensidad():
     fig1.colorbar(im2, ax=axes1[1], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/comparacion_intensidad_1_original_borrosa.png')
+    plt.savefig('output/exper/comparacion_intensidad_1_original_borrosa.png')
 
     # 6.2 Gráfica 2: 3 Deconvoluciones
     fig2, axes2 = plt.subplots(1, 3, figsize=(15, 5))
@@ -213,7 +303,7 @@ def experimento_comparacion_intensidad():
     fig2.colorbar(im5, ax=axes2[2], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/comparacion_intensidad_2_deconvoluciones.png')
+    plt.savefig('output/exper/comparacion_intensidad_2_deconvoluciones.png')
     
     # 6.3 Gráfica 3: Barras
     fig3, ax3 = plt.subplots(figsize=(8, 6))
@@ -221,7 +311,7 @@ def experimento_comparacion_intensidad():
     ax3.set_xlabel('Método de Deconvolución', fontweight='bold')
     ax3.set_ylabel('SSIM', fontweight='bold')
     plt.tight_layout()
-    plt.savefig('output/comparacion_intensidad_3_barras.png')
+    plt.savefig('output/exper/comparacion_intensidad_3_barras.png')
 
     # 6.4 Gráfica 4: PSF (sin logaritmo)
     fig4, ax4 = plt.subplots(figsize=(6, 5))
@@ -230,7 +320,7 @@ def experimento_comparacion_intensidad():
     fig4.colorbar(im6, ax=ax4, fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/comparacion_intensidad_4_psf.png')
+    plt.savefig('output/exper/comparacion_intensidad_4_psf.png')
     
     # 6.5 Gráfica 5: Original y Borrosa (Zoom)
     print("Generando visualizaciones con zoom y guardando en 'output/'...")
@@ -247,7 +337,7 @@ def experimento_comparacion_intensidad():
     fig5.colorbar(im2_z, ax=axes5[1], fraction=0.046, pad=0.04)
 
     plt.tight_layout()
-    plt.savefig('output/comparacion_intensidad_5_original_borrosa_zoom.png')
+    plt.savefig('output/exper/comparacion_intensidad_5_original_borrosa_zoom.png')
     
     # 6.6 Gráfica 6: 3 Deconvoluciones (Zoom)
     fig6, axes6 = plt.subplots(1, 3, figsize=(15, 5))
@@ -265,10 +355,10 @@ def experimento_comparacion_intensidad():
     fig6.colorbar(im5_z, ax=axes6[2], fraction=0.046, pad=0.04)
 
     plt.tight_layout()
-    plt.savefig('output/comparacion_intensidad_6_deconvoluciones_zoom.png')
+    plt.savefig('output/exper/comparacion_intensidad_6_deconvoluciones_zoom.png')
 
     # Mostrar todas las gráficas generadas
-    plt.show(block=True)
+    plt.close('all')
 
 def experimento_rl_pasos():
     print("Iniciando experimento de barrido de pasos para Richardson-Lucy...")
@@ -463,11 +553,17 @@ def experimento_wk_compV_ruido():
     ssims_borroso = []
     
     import os
-    out_dir = '/home/pabloore/conjuntoV/universidad/TFG/output/exper'
+    out_dir = 'output/exper'
     os.makedirs(out_dir, exist_ok=True)
     
     print(f"{'Ruido (%)':<10} | {'SSIM Borroso V':<15} | {'SSIM Wiener V':<15} | {'¿Wiener Válido?':<15}")
     print("-" * 60)
+    
+    # Variables para guardar un ejemplo de ruido alto para visualizar
+    ejemplo_ruido = 2.0
+    compV_ejemplo_original = compV
+    compV_ejemplo_borroso = None
+    compV_ejemplo_wiener = None
     
     for i, ruido in enumerate(niveles_ruido):
         # Añadir ruido
@@ -485,10 +581,15 @@ def experimento_wk_compV_ruido():
         _, ssim_wk_val = calcular_metricas(compV, compV_decoWK)
         ssims_wk.append(ssim_wk_val)
         
+        # Guardar ejemplo
+        if abs(ruido - ejemplo_ruido) < 0.01:
+            compV_ejemplo_borroso = compV_borrosa_ruido
+            compV_ejemplo_wiener = compV_decoWK
+        
         valido = "SÍ" if ssim_wk_val > ssim_borroso_val else "NO"
         print(f"{ruido:<10.1f} | {ssim_borroso_val:<15.4f} | {ssim_wk_val:<15.4f} | {valido:<15}")
 
-    # 3. Visualización de la comparativa
+    # 3. Visualización de la comparativa de SSIM
     fig, ax = plt.subplots(figsize=(10, 6))
     
     ax.plot(niveles_ruido, ssims_borroso, marker='x', linestyle=':', color='gray', linewidth=2, label='Stokes V Borroso (Sin deconvolucionar)')
@@ -499,22 +600,48 @@ def experimento_wk_compV_ruido():
     ax.set_title('Comparativa SSIM (Stokes V): Wiener vs Borroso Original', fontweight='bold')
     ax.grid(True, linestyle='--', alpha=0.6)
     
-    # Eje X lineal
     ax.set_xticks(niveles_ruido)
     ax.set_xticklabels([str(r) for r in niveles_ruido])
     ax.legend()
     
     plt.tight_layout()
-    path_salida = os.path.join(out_dir, 'limite_validez_wk_compV_ruido.png')
-    plt.savefig(path_salida)
-    print(f"\nGráfica guardada en: {path_salida}")
-    plt.show()
+    path_salida_1 = os.path.join(out_dir, 'experimento_stokesV_1_limite_ruido.png')
+    plt.savefig(path_salida_1)
+    
+    # 4. Visualización directa de mapas
+    if compV_ejemplo_borroso is not None:
+        cmap_v = sns.diverging_palette(145, 300, s=60, as_cmap=True)
+        v_max = np.max(np.abs(compV_ejemplo_original))
+        
+        fig_v, axes_v = plt.subplots(1, 3, figsize=(15, 5))
+        
+        im1 = axes_v[0].imshow(compV_ejemplo_original, cmap=cmap_v, vmin=-v_max, vmax=v_max)
+        axes_v[0].set_title('Stokes V Original', fontweight='bold')
+        axes_v[0].axis('off')
+        fig_v.colorbar(im1, ax=axes_v[0], fraction=0.046, pad=0.04)
+
+        im2 = axes_v[1].imshow(compV_ejemplo_borroso, cmap=cmap_v, vmin=-v_max, vmax=v_max)
+        axes_v[1].set_title(f'Stokes V Borroso (Ruido {ejemplo_ruido}%)', fontweight='bold')
+        axes_v[1].axis('off')
+        fig_v.colorbar(im2, ax=axes_v[1], fraction=0.046, pad=0.04)
+
+        im3 = axes_v[2].imshow(compV_ejemplo_wiener, cmap=cmap_v, vmin=-v_max, vmax=v_max)
+        axes_v[2].set_title('Stokes V Deconvolucionado (Wiener)', fontweight='bold')
+        axes_v[2].axis('off')
+        fig_v.colorbar(im3, ax=axes_v[2], fraction=0.046, pad=0.04)
+        
+        plt.tight_layout()
+        path_salida_2 = os.path.join(out_dir, 'experimento_stokesV_2_visualizacion.png')
+        plt.savefig(path_salida_2)
+        
+    print(f"\nGráficas guardadas en {out_dir}")
+    plt.close('all')
 
 if __name__ == "__main__":
     # Puedes descomentar la siguiente línea si quieres ejecutar el experimento del Algoritmo de Noor
-    # experimento_algoritmo_noor()
+    experimento_algoritmo_noor()
     
-    # experimiento_comparacion_intensidad()
+    experimento_comparacion_intensidad()
     
     # experimento_rl_pasos()
     
