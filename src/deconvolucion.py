@@ -98,19 +98,29 @@ def decoFourier(imagen, psf, eps=1e-12, trabajadores=-1):
     return np.clip(imagen_deco, 0, None)
 
 def decoWiener(imagen, psf, snr, eps=1e-12, trabajadores=-1):
-    u_padded, pad_size = hacerPadding(imagen.astype(float).copy(), psf)
-    imagen_padded, _ = hacerPadding(imagen, psf)
+    # Hacemos el padding una sola vez (asegúrate de que hacerPadding devuelve el modo 'reflect')
+    imagen_padded, pad_size = hacerPadding(imagen.astype(float), psf)
 
+    # 1. FFT de la imagen
     imagen_fft = fft.fft2(imagen_padded, workers=trabajadores)
+    
+    # 2. Alinear y preparar la PSF
     psf_alineada = alinear_psf_fft(psf, imagen_padded.shape)
+    
+    # 3. FFT de la PSF (ya alineada por la función anterior)
     psf_fft = fft.fft2(psf_alineada, workers=trabajadores)
 
+    # 4. Cálculo del filtro de Wiener
     psf_conj = np.conj(psf_fft)
     wiener_filter = psf_conj / (np.abs(psf_fft)**2 + (1 / (snr**2)) + eps)
 
+    # 5. Aplicar filtro y volver al dominio espacial
     imagen_deco_fft = imagen_fft * wiener_filter
     imagen_deco_padded = np.real(fft.ifft2(imagen_deco_fft, workers=trabajadores))
+    
+    # 6. Recortar el padding y asegurar que no hay valores negativos
     imagen_deco = imagen_deco_padded[pad_size:-pad_size, pad_size:-pad_size]
+    
     return np.clip(imagen_deco, 0, None)
 
 
