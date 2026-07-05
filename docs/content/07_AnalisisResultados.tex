@@ -84,14 +84,29 @@ Si analizamos como evoluciona la deconvolución de la señal de Stokes $V$, y lo
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_3_comparativa_shift.png}
-    \caption{}
+    \caption{Evolución del SSIM en función del nivel de ruido para distintos métodos de deconvolución aplicados a la componente Stokes V. Se comparan los resultados de la imagen borrosa original frente a Richardson-Lucy (con \textit{shift} positivo), el filtro de Fourier y el filtro de Wiener.}
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 
+Por lo que vemos, la componente de Stokes $V$, al ser tan pequeña, es muy sensible al ruido. Ninguno de los métodos de deconvolución es capaz de recuperar la señal original. El mejor de todos es el método de Wiener, que miramremos su mapa en $2\%$ de ruido de manera arbitraria para oberservar el resultado. El resultado es el siguiente:
 
 
-\subsubsection{Mostrar mi método utilizado}
-\paragraph{Mostrar visualmente el cambio}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_2_visualizacion.png}
+    \caption{Comparativa visual de la componente Stokes V. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con un $2\%$ de ruido, y resultado tras la deconvolución mediante el filtro de Wiener, mostrando el sobre-suavizado de la señal.}
+    \label{fig:visualizacionStokesV}
+\end{figure}
+
+Se comprueba el por qué la seña es constante en el SSIM, ya que el filtro de Wiener consigue quitar el ruido de la imagen, pero no consigue recuperar la estructura de la señal original, suavizandola muchísimo. \\
+
+Por lo que, para este trabajo, es inviable deconvolucionar la señal de Stokes $V$ con los métodos clásicos, por lo que se utilizará el método desarrollado en este trabajo para recuperar el campo magnético sin llegar a deconvolucionar la señal de Stokes $V$.
+
+
+\subsubsection{Método adaptado de Noor}
+Lo primero que revisaremos es cómo converge nuestro método. Si volvemos a preparar los datos de la misma manera que antes, convolucionandolo con la PSF y añadiendo un ruido. Al realizar la deconvolución 
+
+
 \paragraph{Mostrar el parámetro utilizado}
 \paragraph{Límites del método}
 
