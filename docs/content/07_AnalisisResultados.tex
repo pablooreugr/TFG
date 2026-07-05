@@ -79,7 +79,29 @@ Luego se comprueba que el método de Wiener, a pesar de que en la imagen se apre
 Por último, comprobamos como el algoritmo de Richardson-Lucy es el que obtiene mejores resultados, con un SSIM más alto y un RMSE más bajo que la imagen emborronada original. Esto indica que este método es el más robusto frente al ruido y el que mejor recupera los detalles de la imagen original. Además, se observa en la imagen de la deconvolución que se ha recuperado bastante detalle de la imagen original.
 
 \subsubsection{Problema de la deconvolución de V}
-\paragraph{Comparar la deconvolución con respecto a la de la intensidad}
+Si analizamos como evoluciona la deconvolución de la señal de Stokes $V$, y lo analizamos a distintos porcentajes de ruido, obtenemos los siguientes resultados:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_3_comparativa_shift.png}
+    \caption{Evolución del SSIM en función del nivel de ruido para distintos métodos de deconvolución aplicados a la componente Stokes V. Se comparan los resultados de la imagen borrosa original frente a Richardson-Lucy (con \textit{shift} positivo), el filtro de Fourier y el filtro de Wiener.}
+    \label{fig:SSIM_frenteARuidoV}
+\end{figure}
+
+Por lo que vemos, la componente de Stokes $V$, al ser tan pequeña, es muy sensible al ruido. Ninguno de los métodos de deconvolución es capaz de recuperar la señal original. El mejor de todos es el método de Wiener, que miramremos su mapa en $2\%$ de ruido de manera arbitraria para oberservar el resultado. El resultado es el siguiente:
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_2_visualizacion.png}
+    \caption{Comparativa visual de la componente Stokes V. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con un $2\%$ de ruido, y resultado tras la deconvolución mediante el filtro de Wiener, mostrando el sobre-suavizado de la señal.}
+    \label{fig:visualizacionStokesV}
+\end{figure}
+
+Se comprueba el por qué la seña es constante en el SSIM, ya que el filtro de Wiener consigue quitar el ruido de la imagen, pero no consigue recuperar la estructura de la señal original, suavizandola muchísimo. \\
+
+Por lo que, para este trabajo, es inviable deconvolucionar la señal de Stokes $V$ con los métodos clásicos, por lo que se utilizará el método desarrollado en este trabajo para recuperar el campo magnético sin llegar a deconvolucionar la señal de Stokes $V$.
+
 
 \subsubsection{Mostrar mi método utilizado}
 \paragraph{Mostrar visualmente el cambio}
