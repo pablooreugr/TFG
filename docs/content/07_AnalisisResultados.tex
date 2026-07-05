@@ -115,8 +115,70 @@ Este residuo es básicamente la diferencia entre el valor real esperado y la apr
     \label{fig:convergenciaNoor}
 \end{figure}
 
-\paragraph{Mostrar el parámetro utilizado}
-\paragraph{Límites del método}
+Veremos entonces el resultado de esta deconvolución:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_noor_2_comparativa_b copy.png}
+    \caption{Comparativa visual del campo magnético. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con ruido, y resultado tras la deconvolución mediante el método adaptado de Noor.}
+    \label{fig:campoMagDeco}
+\end{figure}
+
+Igual que antes, volveremos a hacer zoom a la misma zona de interes para observar mejor los detalles de la imagen. El resultado es el siguiente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_noor_2b_comparativa_b_zoom.png}
+    \caption{Comparativa visual del campo magnético esta vez en una región de interes. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con ruido, y resultado tras la deconvolución mediante el método adaptado de Noor. Se puede observar que el método logra recuperar detalles finos del campo magnético que se habían perdido en la imagen degradada.}
+    \label{fig:campoMagDecoZoom}
+\end{figure}
+
+Como se puede observar, el método lograr recuperar la estuctura original del campo magnético. Las regiones vuelven a ser más definidas y muchas estructuras vuelven a aparecer. Además hay información de picos de intensidad que vuelven a recoperarse, lo cual es un éxito. Por último argumentar que hay ciertos bulbos que no se han recuperado perfectamente. Esto es debido a que al emborronar la imagen, hemos perdido información de la señal original, por lo que el método no puede recuperarla. Pero aún así, el resultado es muy satisfactorio y demuestra que el método es capaz de recuperar la estructura del campo magnético a partir de la señal de Stokes $I$ y $V$. \\
+
+Si miramos un mapa de diferencias entre la imagen original y borrosa, y la imagen original y la deconvolucionada, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_noor_3b_residuos_zoom.png}
+    \caption{Mapa de diferencias entre la imagen original y la degradada, y la imagen original y la deconvolucionada.}
+    \label{fig:diferenciasZoom}
+\end{figure}
+
+Como se puede observar, la imagen presenta menor residuo en los filamentos, demostrando que logra reconstruir la estructura de la imagen. \\
+Esta mejora visual se corrobora con las métricas cuantitativas obtenidas. La imagen emborronada original partía de un índice de similitud estructural (SSIM) de $0.8401$ y un error cuadrático medio (RMSE) de $5.2568$. Tras aplicar la deconvolución mediante el método adaptado de Noor (con regularización de Laplace), el SSIM aumenta a $0.8575$, indicando una mejor recuperación de las estructuras espaciales, y el RMSE se reduce a $4.6995$, confirmando numéricamente la disminución del error respecto a la imagen ideal.
+
+Ahora analizaremos cómo se comporta el algoritmo frente a distintos niveles de ruido. Este algoritmo es bastante susceptible a los pasos de iteración, ya que puede sobreajustar la señal y amplificar el ruido si se realizan demasiadas iteraciones. Por lo tanto es importante encontrar un equilibrio entre la cantidad de iteraciones y el nivel de ruido presente en la imagen. \\
+
+Para ello se realizó un estudio donde se encuentra el mejor SSIM y RMSE para distintos niveles de ruido, variando el número de iteraciones. Si vemos el mejor SSIM frente al nivel de ruido, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/experimento_noor_4_limite_ruido.png}
+    \caption{Evolución del SSIM frente al nivel de ruido para el método adaptado de Noor. Se observa que el método siempre logra mejorar la imagen original.}
+    \label{fig:SSIMfrenteARuidoNoor}
+\end{figure}
+
+Y si presentamos el mejor RMSE frente al nivel de ruido, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/experimento_noor_4b_limite_ruido_rmse.png}
+    \caption{Evolución del RMSE frente al nivel de ruido para el método adaptado de Noor. Se observa que siempre es inferior.}
+    \label{fig:RMSEfrenteARuidoNoor}
+\end{figure}
+
+Como podemos observar, el método a pesar del nievl de ruido siempre consigue mejorar la imagen original. Esto se debe a que el método busca recuperar la imagen a partir de la física del problema, buscando el resultado entre todas las posibles soluciones que cumplan con la ecuación de transferencia radiativa. Por lo tanto, aunque el ruido sea elevado, el método siempre consigue recuperar parte de la señal original. \\
+
+Si analizamos el número de iteraciones que se necesitan para conseguir el mejor resultado, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/experimento_noor_5_limite_ruido_pasos.png}
+    \caption{Evolución del número de iteraciones frente al nivel de ruido para el método adaptado de Noor. La curva roja representa el numero de iteraciones para el valor de RMSE, y la curva azul representa el número de iteraciones para el valor de SSIM. Se observa que a medida que aumenta el nivel de ruido, se necesitan más iteraciones para conseguir el mejor resultado.}
+    \label{fig:pasosfrenteARuidoNoor}
+\end{figure}
+
+Como se muestra en la figura, el numero de pasos para encontrar el mejor RMSE siempre es mayor al SSIM. Esto significa que el algoritmo requiere mas pasos para quitar el ruido proporcionado, pero a partir de cierto punto también empieza a sobresuavizar la imagen, limpiando el ruido pero haciendo desaparecer la estructura, tal y como pasaba anteriormente con la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
 
 \subsection{Datos reales}
-\subsubsection{Mostrar la deconvolución con datos reales}
+Para poner a prueba los resultados del experimento, usaremos datos reales del experimento Sunrise-TUMAG proporcionados por su web \cite{SUNRISETuMagTUMAGData}. En este caso, son los datos \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}, que contiene una imagen con la estructura $[10,\,4,\,1600,\,1600]$, donde 10 son las longitudes de onda, 4 son las componentes de Stokes y $1600\times1600$ es el tamaño de la imagen. \\
