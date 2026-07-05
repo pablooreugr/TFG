@@ -103,8 +103,18 @@ Se comprueba el por qué la seña es constante en el SSIM, ya que el filtro de W
 Por lo que, para este trabajo, es inviable deconvolucionar la señal de Stokes $V$ con los métodos clásicos, por lo que se utilizará el método desarrollado en este trabajo para recuperar el campo magnético sin llegar a deconvolucionar la señal de Stokes $V$.
 
 
-\subsubsection{Mostrar mi método utilizado}
-\paragraph{Mostrar visualmente el cambio}
+\subsubsection{Método adaptado de Noor}
+Lo primero que revisaremos es cómo converge nuestro método. Si volvemos a preparar los datos de la misma manera que antes, convolucionándolos con la PSF y añadiendo un ruido, podemos analizar el proceso. Al realizar la deconvolución de forma iterativa, el algoritmo va resolviendo un sistema de ecuaciones paso a paso. Para comprobar que el método funciona bien, miramos el error que va quedando en cada iteración, lo que se conoce como el residuo. 
+
+Este residuo es básicamente la diferencia entre el valor real esperado y la aproximación que ha conseguido el método en esa iteración. Si calculamos la norma (la norma euclidiana o $L_2$) de este residuo, obtenemos un valor que representa el error total, y a esto lo llamamos diferencia iterativa. El resultado de cómo evoluciona este error lo podemos ver en la siguiente gráfica, donde se ha puesto el eje vertical en escala logarítmica para apreciar bien cómo va cayendo:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/experimento_noor_1_convergencia.png}
+    \caption{Esta imagen muestra la evolución de la diferencia iterativa (la norma del residuo) a lo largo de las iteraciones del algoritmo de Noor. Se puede observar cómo el error va disminuyendo progresivamente, lo que indica que el método converge de forma correcta.}
+    \label{fig:convergenciaNoor}
+\end{figure}
+
 \paragraph{Mostrar el parámetro utilizado}
 \paragraph{Límites del método}
 
