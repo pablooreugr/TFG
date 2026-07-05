@@ -129,7 +129,7 @@ def experimento_algoritmo_noor():
     ax_c.set_yscale('log')
     ax_c.set_xlabel('Iteración', fontweight='bold')
     ax_c.set_ylabel('Diferencia iterativa (norma)', fontweight='bold')
-    ax_c.set_title('Convergencia del Algoritmo de Noor', fontweight='bold')
+#     ax_c.set_title('Convergencia del Algoritmo de Noor', fontweight='bold')
     ax_c.grid(True, which="both", ls="--", alpha=0.5)
     plt.tight_layout()
     plt.savefig('output/exper/experimento_noor_1_convergencia.png')
@@ -142,17 +142,17 @@ def experimento_algoritmo_noor():
     fig_b, axes_b = plt.subplots(1, 3, figsize=(18, 5))
     
     im1 = axes_b[0].imshow(campoMagnetico, cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
-    axes_b[0].set_title("B Original (Ground Truth)", fontweight='bold')
+#     axes_b[0].set_title("B Original (Ground Truth)", fontweight='bold')
     axes_b[0].axis('off')
     fig_b.colorbar(im1, ax=axes_b[0], fraction=0.046, pad=0.04)
 
     im2 = axes_b[1].imshow(campoBorroso, cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
-    axes_b[1].set_title(f"B Borroso (Ruido 0.5%)\nSSIM: {ssim_b:.4f}", fontweight='bold')
+#     axes_b[1].set_title(f"B Borroso (Ruido 0.5%)\nSSIM: {ssim_b:.4f}", fontweight='bold')
     axes_b[1].axis('off')
     fig_b.colorbar(im2, ax=axes_b[1], fraction=0.046, pad=0.04)
 
     im3 = axes_b[2].imshow(campoMagDeco, cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
-    axes_b[2].set_title(f"B Deconvolucionado (Noor)\nSSIM: {ssim_d:.4f}", fontweight='bold')
+#     axes_b[2].set_title(f"B Deconvolucionado (Noor)\nSSIM: {ssim_d:.4f}", fontweight='bold')
     axes_b[2].axis('off')
     fig_b.colorbar(im3, ax=axes_b[2], fraction=0.046, pad=0.04)
     
@@ -168,12 +168,12 @@ def experimento_algoritmo_noor():
     
     fig_r, axes_r = plt.subplots(1, 2, figsize=(12, 5))
     im_r1 = axes_r[0].imshow(residuos_borroso, cmap=cmap_residuos, vmax=vmax_r)
-    axes_r[0].set_title("Residuos (Borroso vs Original)", fontweight='bold')
+#     axes_r[0].set_title("Residuos (Borroso vs Original)", fontweight='bold')
     axes_r[0].axis('off')
     fig_r.colorbar(im_r1, ax=axes_r[0], fraction=0.046, pad=0.04)
 
     im_r2 = axes_r[1].imshow(residuos, cmap=cmap_residuos, vmax=vmax_r)
-    axes_r[1].set_title("Residuos (Deconvolucionado vs Original)", fontweight='bold')
+#     axes_r[1].set_title("Residuos (Deconvolucionado vs Original)", fontweight='bold')
     axes_r[1].axis('off')
     fig_r.colorbar(im_r2, ax=axes_r[1], fraction=0.046, pad=0.04)
     
@@ -187,17 +187,17 @@ def experimento_algoritmo_noor():
     fig_b_z, axes_b_z = plt.subplots(1, 3, figsize=(18, 5))
     
     im1_z = axes_b_z[0].imshow(campoMagnetico[y_ini:y_fin, x_ini:x_fin], cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
-    axes_b_z[0].set_title("B Original (Zoom)", fontweight='bold')
+#     axes_b_z[0].set_title("B Original (Zoom)", fontweight='bold')
     axes_b_z[0].axis('off')
     fig_b_z.colorbar(im1_z, ax=axes_b_z[0], fraction=0.046, pad=0.04)
 
     im2_z = axes_b_z[1].imshow(campoBorroso[y_ini:y_fin, x_ini:x_fin], cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
-    axes_b_z[1].set_title("B Borroso (Zoom)", fontweight='bold')
+#     axes_b_z[1].set_title("B Borroso (Zoom)", fontweight='bold')
     axes_b_z[1].axis('off')
     fig_b_z.colorbar(im2_z, ax=axes_b_z[1], fraction=0.046, pad=0.04)
 
     im3_z = axes_b_z[2].imshow(campoMagDeco[y_ini:y_fin, x_ini:x_fin], cmap=cmap_b, vmin=-vmax_b, vmax=vmax_b)
-    axes_b_z[2].set_title("B Deconvolucionado (Zoom)", fontweight='bold')
+#     axes_b_z[2].set_title("B Deconvolucionado (Zoom)", fontweight='bold')
     axes_b_z[2].axis('off')
     fig_b_z.colorbar(im3_z, ax=axes_b_z[2], fraction=0.046, pad=0.04)
     
@@ -208,12 +208,12 @@ def experimento_algoritmo_noor():
     fig_r_z, axes_r_z = plt.subplots(1, 2, figsize=(12, 5))
     
     im_r1_z = axes_r_z[0].imshow(residuos_borroso[y_ini:y_fin, x_ini:x_fin], cmap=cmap_residuos, vmax=vmax_r)
-    axes_r_z[0].set_title("Residuos (Borroso vs Original) - Zoom", fontweight='bold')
+#     axes_r_z[0].set_title("Residuos (Borroso vs Original) - Zoom", fontweight='bold')
     axes_r_z[0].axis('off')
     fig_r_z.colorbar(im_r1_z, ax=axes_r_z[0], fraction=0.046, pad=0.04)
 
     im_r2_z = axes_r_z[1].imshow(residuos[y_ini:y_fin, x_ini:x_fin], cmap=cmap_residuos, vmax=vmax_r)
-    axes_r_z[1].set_title("Residuos (Deconvolucionado vs Original) - Zoom", fontweight='bold')
+#     axes_r_z[1].set_title("Residuos (Deconvolucionado vs Original) - Zoom", fontweight='bold')
     axes_r_z[1].axis('off')
     fig_r_z.colorbar(im_r2_z, ax=axes_r_z[1], fraction=0.046, pad=0.04)
     
@@ -260,7 +260,7 @@ def experimento_algoritmo_noor():
             
     ax_l.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
     ax_l.set_ylabel('SSIM', fontweight='bold')
-    ax_l.set_title('Tolerancia al ruido en la estimación del Campo Magnético (B)', fontweight='bold')
+#     ax_l.set_title('Tolerancia al ruido en la estimación del Campo Magnético (B)', fontweight='bold')
     ax_l.grid(True, linestyle='--', alpha=0.6)
     ax_l.legend()
     plt.tight_layout()
@@ -470,7 +470,7 @@ def experimento_rl_pasos():
     ax2.tick_params(axis='y', labelcolor=color)
 
     fig.tight_layout()  
-    plt.title('Evolución de RMSE y SSIM en función de los pasos de RL', fontweight='bold')
+#     plt.title('Evolución de RMSE y SSIM en función de los pasos de RL', fontweight='bold')
     plt.grid(True, linestyle='--', alpha=0.6)
     
     # Añadir leyendas
@@ -563,7 +563,7 @@ def experimento_comparativa_rl_wk_ruido():
 
     ax.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
     ax.set_ylabel('SSIM', fontweight='bold')
-    ax.set_title('Comparativa SSIM: RL vs Wiener vs Borroso Original', fontweight='bold')
+#     ax.set_title('Comparativa SSIM: RL vs Wiener vs Borroso Original', fontweight='bold')
     ax.grid(True, linestyle='--', alpha=0.6)
     
     # Eje X lineal o log? Para ver el límite mejor usamos lineal
@@ -647,7 +647,7 @@ def experimento_wiener_compV_ruido():
 
     ax.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
     ax.set_ylabel('SSIM', fontweight='bold')
-    ax.set_title('Comparativa SSIM (Stokes V): Mi Wiener vs Borroso Original', fontweight='bold')
+#     ax.set_title('Comparativa SSIM (Stokes V): Mi Wiener vs Borroso Original', fontweight='bold')
     ax.grid(True, linestyle='--', alpha=0.6)
     
     ax.set_xticks(niveles_ruido)
@@ -660,23 +660,24 @@ def experimento_wiener_compV_ruido():
     
     # 4. Visualización directa de mapas
     if compV_ejemplo_borroso is not None:
-        cmap_v = sns.diverging_palette(145, 300, s=60, as_cmap=True)
-        v_max = np.max(np.abs(compV_ejemplo_original))
+        # Para mejorar el contraste, usamos un percentil (99.0) en lugar del máximo absoluto y subimos la saturación de 60 a 85
+        cmap_v = sns.diverging_palette(145, 300, s=85, l=50, center="light", as_cmap=True)
+        v_max = np.percentile(np.abs(compV_ejemplo_original), 99.0)
         
         fig_v, axes_v = plt.subplots(1, 3, figsize=(15, 5))
         
         im1 = axes_v[0].imshow(compV_ejemplo_original, cmap=cmap_v, vmin=-v_max, vmax=v_max)
-        axes_v[0].set_title('Stokes V Original', fontweight='bold')
+#         axes_v[0].set_title('Stokes V Original', fontweight='bold')
         axes_v[0].axis('off')
         fig_v.colorbar(im1, ax=axes_v[0], fraction=0.046, pad=0.04)
 
         im2 = axes_v[1].imshow(compV_ejemplo_borroso, cmap=cmap_v, vmin=-v_max, vmax=v_max)
-        axes_v[1].set_title(f'Stokes V Borroso (Ruido {ejemplo_ruido}%)', fontweight='bold')
+#         axes_v[1].set_title(f'Stokes V Borroso (Ruido {ejemplo_ruido}%)', fontweight='bold')
         axes_v[1].axis('off')
         fig_v.colorbar(im2, ax=axes_v[1], fraction=0.046, pad=0.04)
 
         im3 = axes_v[2].imshow(compV_ejemplo_wiener, cmap=cmap_v, vmin=-v_max, vmax=v_max)
-        axes_v[2].set_title('Stokes V Deconvolucionado (Mi Wiener)', fontweight='bold')
+#         axes_v[2].set_title('Stokes V Deconvolucionado (Mi Wiener)', fontweight='bold')
         axes_v[2].axis('off')
         fig_v.colorbar(im3, ax=axes_v[2], fraction=0.046, pad=0.04)
         
@@ -776,7 +777,7 @@ def experimento_stokesV_shift_ruido():
     ax.set_ylim([-0.1, 1.05])
     ax.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
     ax.set_ylabel('SSIM', fontweight='bold')
-    ax.set_title('Comparativa Métodos (Stokes V): RL con Shift vs Resto Normal', fontweight='bold')
+#     ax.set_title('Comparativa Métodos (Stokes V): RL con Shift vs Resto Normal', fontweight='bold')
     ax.grid(True, linestyle='--', alpha=0.6)
     
     ax.set_xticks(niveles_ruido)

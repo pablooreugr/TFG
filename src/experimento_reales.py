@@ -115,11 +115,11 @@ def main():
     fig, axes = plt.subplots(1, 2, figsize=(16, 8))
     vmin, vmax = np.percentile(I_centro, [1, 99.5])
     axes[0].imshow(I_centro, cmap=sns.color_palette("magma", as_cmap=True), vmin=vmin, vmax=vmax)
-    axes[0].set_title(f'Stokes I Original (FITS)\nContraste: {contraste_orig:.4f}')
+#     axes[0].set_title(f'Stokes I Original (FITS)\nContraste: {contraste_orig:.4f}')
     axes[0].axis('off')
     
     axes[1].imshow(I_centro_rl, cmap=sns.color_palette("magma", as_cmap=True), vmin=vmin, vmax=vmax)
-    axes[1].set_title(f'Stokes I Deconvolucionado (RL)\nContraste: {contraste_rl:.4f} (Mejora: {contraste_rl/contraste_orig:.1f}x)')
+#     axes[1].set_title(f'Stokes I Deconvolucionado (RL)\nContraste: {contraste_rl:.4f} (Mejora: {contraste_rl/contraste_orig:.1f}x)')
     axes[1].axis('off')
     plt.tight_layout()
     plt.savefig('output/exper/exp4_1_intensidad.png', dpi=300)
@@ -131,15 +131,15 @@ def main():
     cmap_b = sns.color_palette("icefire", as_cmap=True)
     
     axes[0].imshow(B_directo_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
-    axes[0].set_title(f'B Directo (I crudo, V crudo)\nNitidez: {lap_directo:.2e}')
+#     axes[0].set_title(f'B Directo (I crudo, V crudo)\nNitidez: {lap_directo:.2e}')
     axes[0].axis('off')
     
     axes[1].imshow(B_semi_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
-    axes[1].set_title(f'B Semideconvolucionado (I decon, V crudo)\nNitidez: {lap_semi:.2e}')
+#     axes[1].set_title(f'B Semideconvolucionado (I decon, V crudo)\nNitidez: {lap_semi:.2e}')
     axes[1].axis('off')
 
     axes[2].imshow(B_noor_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
-    axes[2].set_title(f'B Noor Completo (100 iter)\nNitidez: {lap_noor:.2e}')
+#     axes[2].set_title(f'B Noor Completo (100 iter)\nNitidez: {lap_noor:.2e}')
     axes[2].axis('off')
     plt.tight_layout()
     plt.savefig('output/exper/exp4_3_campoB_zoom.png', dpi=300)
@@ -161,7 +161,7 @@ def main():
     
     fig_dif, ax_dif = plt.subplots(figsize=(8, 8))
     im_dif = ax_dif.imshow(diferencia_B_abs, cmap=sns.color_palette("viridis", as_cmap=True), vmin=0, vmax=dif_max)
-    ax_dif.set_title(f'Mapa de Residuos (|Noor - Directo|)\nIntensidad máx corrección: {dif_max:.1f} G')
+#     ax_dif.set_title(f'Mapa de Residuos (|Noor - Directo|)\nIntensidad máx corrección: {dif_max:.1f} G')
     ax_dif.axis('off')
     fig_dif.colorbar(im_dif, ax=ax_dif, fraction=0.046, pad=0.04, label='Diferencia Absoluta (Gauss)')
     plt.tight_layout()
