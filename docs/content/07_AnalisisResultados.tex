@@ -2,10 +2,48 @@
 
 \section{Análisis de resultados}
 
-\subsection{Con datos sintéticos}
+\subsection{Datos sintéticos}
+Primero se analizaron datos sintéticos (que simulan una porción del Sol en calma) que fueron proporcionados. Estos datos consisten de una señal bidimensional de la forma $[101,\,4,\,336,\,336]$, que representa $101$ valores distinto de longitudes de onda, $4$ componente de Stokes ($I$, $Q$, $U$ y $V$) y una imagen de $336\times336$ píxeles. \\
+Para el análisis de los métodos de deconvolución, se emborronaron la imagen con un PSF de tipo Airy, que es una simplifación de una PSF ideal de un telescopio donde solo influye que su apertura es circular. Este tiene la expresión radial de la forma:
+\begin{equation}
+    \label{eq:PSF}
+    PSF(r) = I_0 \left(\frac{2 J_1(kr)}{kr} \right)
+\end{equation}
+
+Donde $J_1$ es la función de Bessel de primer orden, $k$ es una constante que depende del diámetro del telescopio y de la longitud de onda, y $I_0$ es la intensidad máxima. \\
+
+En este caso se usa una PSF de 30 pixeles de radio y un tamaño de bulbo central de 3 pixeles, donde su representación visual es la siguiente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/comparacion_intensidad_4_psf.png}
+    \caption{Esta imagen muestra la PSF de tipo Airy utilizada para emborronar la imagen original. Se puede observar que el bulbo central tiene un tamaño de 3 píxeles y que el radio de la PSF es de 30 píxeles. Esta representada en escala logaritmica para poder observar mejor la caída de la intensidad en los anillos de difracción.}
+    \label{fig:psfAiry}
+\end{figure}
+
+Además, es necesario implementar ruido para simular un caso real. Este ruido. Se simuló entonces este ruido como ruido blanco gaussiano en cada componente de Stokes, con una desviación estandar $\sigma$ que se define como un porcentaje de la amplitud máxima de cada componente. Esto permite que el ruido sea relativo a la señal, lo cual es más representativo de las condiciones reales de observación.
+Dado que la amplitud de la señal en el canal de Stokes $I$ es sustancialmente mayor que en el canal de Stokes $V$, se implementó un esquema de ruido relativo. La desviación estándar del ruido ($\sigma$) se escala como una fracción porcentual $p$ respecto a la amplitud máxima detectada en cada componente:
+\begin{equation}
+    I_{max} = \max(I(\mathbf{x})), \quad V_{max} = \max(|V(\mathbf{x})|)
+\end{equation}
+donde $\mathbf{x}$ representa las coordenadas espaciales y espectrales del cubo de datos. A partir de estos máximos, las desviaciones estándar para un porcentaje de ruido $p$ se definen como:
+\begin{equation}
+    \sigma_I = I_{max} \cdot \frac{p}{100}, \quad \sigma_V = V_{max} \cdot \frac{p}{100}
+\end{equation}
+
 
 \subsubsection{Análisis de los distintos métodos de deconvolución: Fourier, Wiener y Richardson-Lucy}
+
 \paragraph{Comparación visual entre ellos}
+Primero se realizará una comparación visual entre los distintos métodos de deconvolución a partir de la Intensidad (primera componente de Stokes). Escogeremos una longitud de onda arbitraria y la emborronoramos con un ruido del $0.1 \%$. El resultado es el siguiente.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_1_original_borrosa.png}
+    \caption{Esta imagen muestra la PSF de tipo Airy utilizada para emborronar la imagen original. Se puede observar que el bulbo central tiene un tamaño de 3 píxeles y que el radio de la PSF es de 30 píxeles. Esta representada en escala logaritmica para poder observar mejor la caída de la intensidad en los anillos de difracción.}
+    \label{fig:psfAiry}
+\end{figure}
+
 \paragraph{Comparación con las métricas}
 
 \subsubsection{Problema de la deconvolución de V}

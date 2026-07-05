@@ -39,7 +39,7 @@ Para resolverlo usamos el enfoque de mínimos cuadrados. Tal como lo proponen en
     J^T J \nu = J^T \beta
 \end{equation}
 
-Gracias a esto podemos resolver esta matriz porque $J^T J$ sí que es cuadrada y resoluble.
+Gracias a esto podemos resolver esta matriz porque $J^T J$ sí que es cuadrada y resoluble. Además, el método aprovecha la física del sistema para encontrar una solución que sea físicamente plausible.
 
 \subsection{Adaptarlo a nuestro caso}
 La matriz $J$ es la matriz jacobiana del sistema físico que estamos representando. En nuestro caso implicaría dos transformaciones. Tanto el cálculo del campo magnético a partir de la aproximación débil como la convolución con la PSF. Eso implicaría que cada parámetro de $x_i$ sería el enlace pixel a pixel de la imagen original. Si tenemos una imagen de 1400x1400 entonces tendríamos una matriz Jacobiana tan grande que ocuparía terabytes de memoria RAM.\\
