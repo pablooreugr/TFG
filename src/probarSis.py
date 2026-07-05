@@ -300,8 +300,8 @@ def experimento_comparacion_intensidad():
     inten_wiener = decon.deconvolucion3D(intenBorrosaRuido, psf, metodo='wiener')
     
     # 5. Calcular métricas
-    metodos = ['Borroso + Ruido', 'Richardson-Lucy', 'Fourier', 'Wiener']
-    imagenes = [intenBorrosaRuido, inten_rl, inten_fourier, inten_wiener]
+    metodos = ['Borroso + Ruido', 'Richardson-Lucy', 'Wiener', 'Fourier']
+    imagenes = [intenBorrosaRuido, inten_rl, inten_wiener, inten_fourier]
     
     rmses = []
     ssims = []
@@ -354,11 +354,34 @@ def experimento_comparacion_intensidad():
     plt.tight_layout()
     plt.savefig('output/exper/comparacion_intensidad_2_deconvoluciones.png')
     
-    # 6.3 Gráfica 3: Barras
-    fig3, ax3 = plt.subplots(figsize=(8, 6))
-    sns.barplot(x=metodos, y=ssims, ax=ax3, hue=metodos, palette="viridis", legend=False)
-    ax3.set_xlabel('Método de Deconvolución', fontweight='bold')
-    ax3.set_ylabel('SSIM', fontweight='bold')
+    # 6.3 Gráfica 3: Barras (SSIM y RMSE)
+    fig3, (ax3a, ax3b) = plt.subplots(1, 2, figsize=(14, 6))
+    
+    colores_viridis = sns.color_palette("viridis", 3)
+    paleta_metodos = {
+        'Borroso + Ruido': colores_viridis[0],
+        'Richardson-Lucy': colores_viridis[1],
+        'Wiener': colores_viridis[2],
+        'Fourier': '#d62728'  # Rojo llamativo para Fourier
+    }
+    
+    sns.barplot(x=metodos, y=ssims, ax=ax3a, hue=metodos, palette=paleta_metodos, legend=False)
+    ax3a.set_xlabel('')
+    ax3a.set_ylabel('SSIM', fontweight='bold')
+    
+    sns.barplot(x=metodos, y=rmses, ax=ax3b, hue=metodos, palette=paleta_metodos, legend=False)
+    ax3b.set_xlabel('')
+    ax3b.set_ylabel('RMSE', fontweight='bold')
+    
+    # Inset plot para RMSE (sin Fourier)
+    axins = ax3b.inset_axes([0.15, 0.45, 0.5, 0.45])
+    sns.barplot(x=metodos[:-1], y=rmses[:-1], ax=axins, hue=metodos[:-1], palette=paleta_metodos, legend=False)
+    axins.set_xticks(range(len(metodos)-1))
+    axins.set_xticklabels(['Borroso', 'RL', 'Wiener'], fontsize=8)
+    axins.set_xlabel('')
+    axins.set_ylabel('')
+    ax3b.indicate_inset_zoom(axins, edgecolor="black")
+    
     plt.tight_layout()
     plt.savefig('output/exper/comparacion_intensidad_3_barras.png')
 
