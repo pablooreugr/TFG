@@ -42,7 +42,7 @@ def calcularCampoMagnetico(intensidad, V, lambdas, g=3):
 
     return campoMagnetico, rCuadrado
 
-def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1, metodo='rl', lambdaReg=1e-6, relLim=1e-30, pasosFor=30, cg_auto_close=False):
+def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1, metodo='rl', lambdaReg=1e-6, relLim=1e-30, pasosFor=30, cg_auto_close=False, return_all_steps=False):
         nx = intensidad.shape[2]
         ny = intensidad.shape[1]
         n_lambda = intensidad.shape[0]
@@ -156,12 +156,17 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
         
         historial_convergencia = []
         estado_previo = [np.zeros_like(beta1D)]
+        historial_campos = []
 
         def callback_cg(xk):
             # Diferencia iterativa entre iteraciones
             diff = np.linalg.norm(xk - estado_previo[0])
             historial_convergencia.append(diff)
             estado_previo[0] = xk.copy()
+            
+            if return_all_steps:
+                campo_actual = campoMagneticoInicial + xk.reshape((ny, nx))
+                historial_campos.append(campo_actual)
             
             # Para la gráfica interactiva podemos seguir usando la norma del residuo
             residuo = beta1D - A_op.matvec(xk)
@@ -182,7 +187,10 @@ def algoritmoDeNoor(intensidad, V, lambdas, psf, g=3, pasos=30, trabajadores=-1,
 
         #deltaB_actual = deltaB_final / k_max
 
-        return campoMagneticoInicial + deltaB_final, historial_convergencia
+        if return_all_steps:
+            return campoMagneticoInicial + deltaB_final, historial_convergencia, historial_campos
+        else:
+            return campoMagneticoInicial + deltaB_final, historial_convergencia
 
     
 

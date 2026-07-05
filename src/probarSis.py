@@ -225,6 +225,10 @@ def experimento_algoritmo_noor():
     niveles_ruido = [0.1, 0.5, 1.0, 2.0, 3.0, 5.0, 7.5, 10.0]
     ssims_b_ruido = []
     ssims_d_ruido = []
+    rmses_b_ruido = []
+    rmses_d_ruido = []
+    pasos_ssim_d_ruido = []
+    pasos_rmse_d_ruido = []
 
     for ruido in niveles_ruido:
         i_r, v_r = simular_ruido_telescopio_porcentaje(intenBorrosa, compVborrosa, porcentaje_ruido=ruido)
@@ -235,17 +239,34 @@ def experimento_algoritmo_noor():
         peso_universal = 0.5  # Peso general unificado
         lambda_dinamico = peso_universal * (k_max_actual**2)
 
-        cd, _ = mag.algoritmoDeNoor(
+        cd_final, historial_cd, historial_campos = mag.algoritmoDeNoor(
             i_r, v_r, lambdas_absolutas, psf, 
-            pasos=20, trabajadores=-1, pasosFor=15, relLim=1e-3, lambdaReg=lambda_dinamico, cg_auto_close=True
+            pasos=20, trabajadores=-1, pasosFor=30, relLim=1e-30, lambdaReg=lambda_dinamico, cg_auto_close=True, return_all_steps=True
         )
         
-        _, sb = calcular_metricas(campoMagnetico, cb)
-        _, sd = calcular_metricas(campoMagnetico, cd)
+        rb, sb = calcular_metricas(campoMagnetico, cb)
+        
+        mejor_ssim_d = -1
+        mejor_paso_ssim = -1
+        mejor_rmse_d = float('inf')
+        mejor_paso_rmse = -1
+        
+        for paso_idx, campo_step in enumerate(historial_campos):
+            rmse_step, ssim_step = calcular_metricas(campoMagnetico, campo_step)
+            if ssim_step > mejor_ssim_d:
+                mejor_ssim_d = ssim_step
+                mejor_paso_ssim = paso_idx + 1
+            if rmse_step < mejor_rmse_d:
+                mejor_rmse_d = rmse_step
+                mejor_paso_rmse = paso_idx + 1
         
         ssims_b_ruido.append(sb)
-        ssims_d_ruido.append(sd)
-        print(f"Ruido {ruido:>4.1f}% | SSIM Borroso: {sb:.4f} | SSIM Deconvolucionado: {sd:.4f}")
+        ssims_d_ruido.append(mejor_ssim_d)
+        rmses_b_ruido.append(rb)
+        rmses_d_ruido.append(mejor_rmse_d)
+        pasos_ssim_d_ruido.append(mejor_paso_ssim)
+        pasos_rmse_d_ruido.append(mejor_paso_rmse)
+        print(f"Ruido {ruido:>4.1f}% | SSIM Borroso: {sb:.4f} | Mejor SSIM Noor: {mejor_ssim_d:.4f} | RMSE Noor: {mejor_rmse_d:.4f} | Pasos SSIM: {mejor_paso_ssim} | Pasos RMSE: {mejor_paso_rmse}")
 
     fig_l, ax_l = plt.subplots(figsize=(10, 6))
     ax_l.plot(niveles_ruido, ssims_b_ruido, marker='x', linestyle=':', color='gray', linewidth=2, label='Borroso')
@@ -260,11 +281,36 @@ def experimento_algoritmo_noor():
             
     ax_l.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
     ax_l.set_ylabel('SSIM', fontweight='bold')
-#     ax_l.set_title('Tolerancia al ruido en la estimación del Campo Magnético (B)', fontweight='bold')
     ax_l.grid(True, linestyle='--', alpha=0.6)
     ax_l.legend()
     plt.tight_layout()
     plt.savefig('output/exper/experimento_noor_4_limite_ruido.png')
+    
+    # --- GRÁFICA RMSE INDEPENDIENTE ---
+    fig_rmse, ax_rmse = plt.subplots(figsize=(10, 6))
+    ax_rmse.plot(niveles_ruido, rmses_b_ruido, marker='x', linestyle=':', color='gray', linewidth=2, label='Borroso')
+    ax_rmse.plot(niveles_ruido, rmses_d_ruido, marker='o', linestyle='-', color='tab:orange', linewidth=2, label='Deconvolucionado (Noor Óptimo RMSE)')
+    
+    ax_rmse.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
+    ax_rmse.set_ylabel('RMSE', fontweight='bold')
+    ax_rmse.grid(True, linestyle='--', alpha=0.6)
+    ax_rmse.legend()
+    plt.tight_layout()
+    plt.savefig('output/exper/experimento_noor_4b_limite_ruido_rmse.png')
+    
+    # --- GRÁFICA NÚMERO DE PASOS INDEPENDIENTE ---
+    fig_p, ax_p = plt.subplots(figsize=(10, 6))
+    
+    ax_p.plot(niveles_ruido, pasos_ssim_d_ruido, marker='s', linestyle='-', color='tab:blue', linewidth=2, label='Pasos óptimos (SSIM)')
+    ax_p.plot(niveles_ruido, pasos_rmse_d_ruido, marker='D', linestyle='--', color='tab:red', linewidth=2, label='Pasos óptimos (RMSE)')
+    
+    ax_p.set_xlabel('Nivel de Ruido (%)', fontweight='bold')
+    ax_p.set_ylabel('Número óptimo de Iteraciones (CG)', fontweight='bold')
+    ax_p.grid(True, linestyle='--', alpha=0.6)
+    ax_p.legend()
+    
+    plt.tight_layout()
+    plt.savefig('output/exper/experimento_noor_5_limite_ruido_pasos.png')
     
     print("\nExperimento de Noor completado. Gráficas guardadas en 'output/exper/'.")
     plt.close('all')
