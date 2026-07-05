@@ -37,12 +37,33 @@ donde $\mathbf{x}$ representa las coordenadas espaciales y espectrales del cubo 
 \paragraph{Comparación visual entre ellos}
 Primero se realizará una comparación visual entre los distintos métodos de deconvolución a partir de la Intensidad (primera componente de Stokes). Escogeremos una longitud de onda arbitraria y la emborronoramos con un ruido del $0.1 \%$. El resultado es el siguiente.
 
+
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_1_original_borrosa.png}
-    \caption{Esta imagen muestra la PSF de tipo Airy utilizada para emborronar la imagen original. Se puede observar que el bulbo central tiene un tamaño de 3 píxeles y que el radio de la PSF es de 30 píxeles. Esta representada en escala logaritmica para poder observar mejor la caída de la intensidad en los anillos de difracción.}
-    \label{fig:psfAiry}
+    \caption{Esta imagen muestra dos mapas de intensidad. A la izquierda se muestra el mapar sintético original, mientras que a la derecha se muestra el mapa convolucionado con la PSF (\ref{fig:psfAiry}) y con un ruido del $0.1 \%$. Se puede observar que la imagen de la derecha está emborronada y que se han perdido detalles finos de la imagen original.}
+    \label{fig:intensidadSintEmborro}
 \end{figure}
+
+Aunque se ve el emborronamiento, nos centraremos en una zona concreta de la imagen para observar mejor los detalles. Está representada en la siguiente figura:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_5_original_borrosa_zoom.png}
+    \caption{Región de la imagen de la figura \ref{fig:intensidadSintEmborro} donde se puede observar mejor el emborronamiento de la imagen. A la izquierda se muestra el mapa sintético original, mientras que a la derecha se muestra el mapa convolucionado con la PSF (\ref{fig:psfAiry}) y con un ruido del $0.1 \%$.}
+    \label{fig:intensidadSintEmborroZoom}
+\end{figure}
+
+Entonces realizamos la deconvolución con los distintos métodos (Wiener, Fourier, Richardson-Lucy) y comparamos visualmente los resultados. El resultado es el siguiente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/comparacion_intensidad_6_deconvoluciones_zoom.png}
+    \caption{Resultados de la deconvolución con los distintos métodos. A la izquierda se encuentra el mapa deconvolucionado con el método de Wiener, en el centro se encuentra el mapa deconvolucionado con el método de Fourier y a la derecha se encuentra el mapa deconvolucionado con el método de Richardson-Lucy.}
+    \label{fig:deconvolucionClasicaZoom}
+\end{figure}
+
 
 \paragraph{Comparación con las métricas}
 
