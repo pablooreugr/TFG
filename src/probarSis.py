@@ -731,15 +731,14 @@ def experimento_stokesV_shift_ruido():
     ssims_borroso = []
     ssims_rl = []
     ssims_fourier = []
-    ssims_wk = []
     ssims_wiener = []
     
     import os
     out_dir = 'output/exper'
     os.makedirs(out_dir, exist_ok=True)
     
-    print(f"{'Ruido (%)':<10} | {'Borroso':<10} | {'RL (Shift)':<12} | {'Fourier':<10} | {'Wiener (wk)':<12} | {'Mi Wiener':<10}")
-    print("-" * 75)
+    print(f"{'Ruido (%)':<10} | {'Borroso':<10} | {'RL (Shift)':<12} | {'Fourier':<10} | {'Mi Wiener':<10}")
+    print("-" * 60)
     
     for ruido in niveles_ruido:
         intensidad = data[0, 0, :, :]
@@ -772,17 +771,13 @@ def experimento_stokesV_shift_ruido():
         _, ssim_fourier_val = calcular_metricas(compV, compV_fourier)
         ssims_fourier.append(ssim_fourier_val)
         
-        # 3. Wiener (wk) (Normal)
-        compV_wk = decon.deconvolucion3D(compV_borrosa_ruido_3d, psf, metodo='wk')[0]
-        _, ssim_wk_val = calcular_metricas(compV, compV_wk)
-        ssims_wk.append(ssim_wk_val)
         
         # 4. Mi Wiener (Normal)
         compV_wiener = decon.deconvolucion3D(compV_borrosa_ruido_3d, psf, metodo='wiener')[0]
         _, ssim_wiener_val = calcular_metricas(compV, compV_wiener)
         ssims_wiener.append(ssim_wiener_val)
         
-        print(f"{ruido:<10.1f} | {ssim_borroso_val:<10.4f} | {ssim_rl_val:<12.4f} | {ssim_fourier_val:<10.4f} | {ssim_wk_val:<12.4f} | {ssim_wiener_val:<10.4f}")
+        print(f"{ruido:<10.1f} | {ssim_borroso_val:<10.4f} | {ssim_rl_val:<12.4f} | {ssim_fourier_val:<10.4f} | {ssim_wiener_val:<10.4f}")
 
     # Visualización
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -794,7 +789,6 @@ def experimento_stokesV_shift_ruido():
     ssims_fourier_clipped = np.clip(ssims_fourier, -0.1, 1.0)
     ax.plot(niveles_ruido, ssims_fourier_clipped, marker='^', linestyle='-.', color='tab:green', linewidth=2, label='Fourier (Normal)')
     
-    ax.plot(niveles_ruido, ssims_wk, marker='s', linestyle='--', color='tab:blue', linewidth=2, label='Wiener wk (Normal)')
     ax.plot(niveles_ruido, ssims_wiener, marker='d', linestyle='-', color='tab:purple', linewidth=2, label='Mi Wiener (Normal)')
 
     ax.set_ylim([-0.1, 1.05])
