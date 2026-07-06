@@ -68,7 +68,7 @@ Por lo tanto, el tensor que usamos para medir tanto la intensidad como el desfas
     C \equiv \begin{pmatrix} \langle E_x E_x^* \rangle & \langle E_x E_y^* \rangle \\ \langle E_y E_x^* \rangle & \langle E_y E_y^* \rangle \end{pmatrix}
 \end{equation}
 
-Esta matriz usa números complejos, números que tienen el problema de que no son medibles realmente. Por lo tanto se utiliza una combinación lineal de los elementos de la matriz llamados parámetros de Stokes. Estos son números reales con unidades de energía, por lo que realmente podemos usarlos como medidas del telescopio. Las expresiones de los parámetros de Stokes se muestran en las expresiones (\ref{eq:stokes}). \cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}
+Esta matriz está definida mediante números complejos que contienen información sobre la fase absoluta del campo eléctrico. Sin embargo, los instrumentos de observación únicamente registran intensidades, que son cantidades reales. Para resolver esto, se utiliza una combinación lineal de los elementos de la matriz para definir los parámetros de Stokes. Estos parámetros son la herramienta física adecuada para representar las correlaciones del campo electromagnético sin requerir el conocimiento de las fases absolutas. Al ser cantidades reales con dimensiones de intensidad (energía), se corresponden directamente con las magnitudes medibles por el telescopio. Las definiciones de los parámetros de Stokes se muestran en las expresiones (\ref{eq:stokes}).\cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}
 \begin{equation}
     \label{eq:stokes}
     \begin{aligned}
