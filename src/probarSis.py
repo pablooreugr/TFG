@@ -6,8 +6,8 @@ import deconvolucion as decon
 from skimage.metrics import structural_similarity as ssim
 import magnetismo as mag
 
-# Aplicar el tema de seaborn por defecto
-sns.set_theme()
+# Aplicar el tema de seaborn con estilo whitegrid
+sns.set_theme(style="whitegrid")
 
 def calcular_metricas(original, procesado):
     rmse_val = np.sqrt(np.mean((original - procesado)**2))
