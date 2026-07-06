@@ -88,7 +88,7 @@ Si analizamos como evoluciona la deconvolución de la señal de Stokes $V$, y lo
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 
-Se evidencia que la componente de Stokes $V$, al poseer una amplitud intrínseca reducida, resulta extremadamente sensible al ruido. Ninguno de los algoritmos clásicos de deconvolución logra recuperar satisfactoriamente la señal original. El método que presenta un comportamiento marginalmente superior es el filtro de Wiener, del cual se examina su mapa bidimensional para un nivel de ruido del $2\%$ (elegido arbitrariamente para ilustrar el efecto). El resultado es el siguiente:
+Debido a su reducida amplitud intrínseca, la componente de Stokes $V$ resulta extremadamente sensible al ruido. Esto provoca que ninguno de los algoritmos clásicos de deconvolución consiga recuperar la señal original de forma satisfactoria. El método que ofrece mejores resultados es el filtro de Wiener. Para ilustrar visualmente este efecto, a continuación se muestra el mapa bidimensional recuperado por este filtro asumiendo un nivel de ruido del 2%:
 
 
 \begin{figure}[H]
@@ -100,7 +100,7 @@ Se evidencia que la componente de Stokes $V$, al poseer una amplitud intrínseca
 
 Se verifica analíticamente la constancia del índice SSIM: el filtro de Wiener logra mitigar efectivamente el ruido, pero fracasa en la recuperación de la estructura subyacente de la señal original, introduciendo un sobresuavizado drástico. 
 
-En consecuencia, este análisis justifica la inviabilidad de deconvolucionar la señal de Stokes $V$ mediante enfoques clásicos. Por esta razón fundamental, se emplea el método propuesto en este Trabajo de Fin de Grado, el cual permite derivar topológicamente el campo magnético eludiendo la deconvolución directa de la señal de Stokes $V$.
+En consecuencia, este análisis justifica la inviabilidad de deconvolucionar la señal de Stokes $V$ mediante enfoques clásicos. Por esta razón fundamental, se emplea el método propuesto en este TFG, el cual permite derivar el campo magnético eludiendo la deconvolución directa de la señal de Stokes $V$.
 
 
 \subsubsection{Método adaptado de Noor}
@@ -133,7 +133,7 @@ Igual que antes, volveremos a hacer zoom a la misma zona de interes para observa
     \label{fig:campoMagDecoZoom}
 \end{figure}
 
-Como se puede observar, el método lograr recuperar la estuctura original del campo magnético. Las regiones vuelven a ser más definidas y muchas estructuras vuelven a aparecer. Además hay información de picos de intensidad que vuelven a recoperarse, lo cual es un éxito. Por último argumentar que hay ciertos bulbos que no se han recuperado perfectamente. Esto es debido a que al emborronar la imagen, hemos perdido información de la señal original, por lo que el método no puede recuperarla. Pero aún así, el resultado es muy satisfactorio y demuestra que el método es capaz de recuperar la estructura del campo magnético a partir de la señal de Stokes $I$ y $V$. 
+Como se puede observar, el método lograr recuperar la estuctura original del campo magnético. Las regiones vuelven a ser más definidas y muchas estructuras vuelven a aparecer. Además hay información de picos de intensidad que vuelven a recuperarse, lo cual es un éxito. Por último argumentar que hay ciertos bulbos que no se han recuperado perfectamente. Esto es debido a que al emborronar la imagen, hemos perdido información de la señal original, por lo que el método no puede recuperarla. Pero aún así, el resultado es muy satisfactorio y demuestra que el método es capaz de recuperar la estructura del campo magnético a partir de la señal de Stokes $I$ y $V$. 
 
 Si miramos un mapa de diferencias entre la imagen original y borrosa, y la imagen original y la deconvolucionada, obtenemos el siguiente resultado:
 
@@ -167,7 +167,7 @@ Y si presentamos el mejor RMSE frente al nivel de ruido, obtenemos el siguiente 
     \label{fig:RMSEfrenteARuidoNoor}
 \end{figure}
 
-Como podemos observar, el método a pesar del nievl de ruido siempre consigue mejorar la imagen original. Esto se debe a que el método busca recuperar la imagen a partir de la física del problema, buscando el resultado entre todas las posibles soluciones que cumplan con la ecuación de transferencia radiativa. Por lo tanto, aunque el ruido sea elevado, el método siempre consigue recuperar parte de la señal original. 
+Como podemos observar, el método a pesar del nivel de ruido siempre consigue mejorar la imagen original. Esto se debe a que el método busca recuperar la imagen a partir de la física del problema, buscando el resultado entre todas las posibles soluciones que cumplan con la ecuación de transferencia radiativa. Por lo tanto, aunque el ruido sea elevado, el método siempre consigue recuperar parte de la señal original. 
 
 Si analizamos el número de iteraciones que se necesitan para conseguir el mejor resultado, obtenemos el siguiente resultado:
 
@@ -178,7 +178,7 @@ Si analizamos el número de iteraciones que se necesitan para conseguir el mejor
     \label{fig:pasosfrenteARuidoNoor}
 \end{figure}
 
-Como se muestra en la figura, el número de iteraciones requerido para minimizar el RMSE siempre es mayor que el necesario para optimizar el SSIM. Esto implica que el algoritmo requiere más pasos para mitigar el ruido estadístico, pero a partir de cierto límite también comienza a sobresuavizar la imagen, limpiando el ruido a costa de difuminar la estructura, un efecto homólogo al observado en la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
+Como se muestra en la figura, el número de iteraciones requerido para minimizar el RMSE siempre es mayor que el necesario para optimizar el SSIM. Esto implica que el algoritmo requiere más pasos para mitigar el ruido estadístico, pero a partir de cierto límite también comienza a sobresuavizar la imagen, limpiando el ruido a costa de difuminar la estructura, un efecto parecido al observado en la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
 
 \subsection{Datos reales} \label{sec:datosReales}
 Para poner a prueba los resultados del experimento, usaremos datos reales del experimento Sunrise-TUMAG proporcionados por su web \cite{SUNRISETuMagTUMAGData}. En este caso, son los datos \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}, que contiene una imagen con la estructura $[10,\,4,\,1600,\,1600]$, donde 10 son las longitudes de onda, 4 son las componentes de Stokes y $1600\times1600$ es el tamaño de la imagen. 

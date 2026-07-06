@@ -2,7 +2,7 @@
 
 \section{Métodos de deconvolución: Fourier, Wiener y Richardson-Lucy}
 
-Este capítulo constituye una revisión de los métodos de deconvolución clásicos que conforman el estado del arte en el procesamiento de imágenes astronómicas, evaluados como paso previo al desarrollo de la metodología propia de este trabajo.
+Este capítulo constituye una revisión de los métodos de deconvolución clásicos que conforman, de manera simplificada, el estado actual en el procesamiento de imágenes astronómicas, evaluados como paso previo al desarrollo de la metodología propia de este trabajo.
 
 \subsection{Deconvolución de Fourier}
 El primer método analizado es el filtro inverso o deconvolución de Fourier. Este método clásico se basa en el principio presentado en la ecuación (\ref{eq:deconvolucionIdeal}). Su formulación procede del siguiente modo: dada una imagen observada $d_{observado}$, y conocida la PSF del telescopio $p$ (recordando la convención de minúsculas para el dominio espacial y mayúsculas para las frecuencias espaciales), el procedimiento es:
@@ -116,15 +116,15 @@ En el contexto de este trabajo, la implementación computacional del algoritmo e
     \label{fig:flowchart_rl}
 \end{figure}
 
-Este ciclo iterativo finaliza tras un número predefinido de iteraciones (en la implementación se ha fijado un valor por defecto de 30). La principal desventaja de este método heurístico es la ausencia de un criterio de parada natural o analítico. Un exceso de iteraciones provoca que el algoritmo sobreajuste las fluctuaciones estadísticas del ruido de fondo, amplificándolo artificialmente e introduciendo artefactos espaciales espurios en la imagen resultante. 
+Este ciclo iterativo finaliza tras un número predefinido de iteraciones (en la implementación se ha fijado un valor por defecto de 30). La principal desventaja de este método es la ausencia de un criterio de parada natural o analítico. Un exceso de iteraciones provoca que el algoritmo sobreajuste las fluctuaciones estadísticas del ruido de fondo, amplificándolo artificialmente e introduciendo artefactos espaciales espurios en la imagen resultante. 
 
-Por otra parte, como se ha anticipado, el algoritmo Richardson-Lucy impone estrictamente la no negatividad de los datos. En consecuencia, su aplicación es matemáticamente inválida para señales que presenten dominio tanto positivo como negativo. Este es precisamente el escenario que caracteriza a la componente del parámetro de Stokes $V$, cuya correcta deconvolución es el requisito previo para derivar la topología del campo magnético. A pesar de ello, para el parámetro de intensidad ($I$), este método heurístico es el que proporciona mayor fidelidad geométrica, justificando su inclusión y empleo en este análisis previo. 
+Por otra parte, como se ha anticipado, el algoritmo Richardson-Lucy impone estrictamente la no negatividad de los datos. En consecuencia, su aplicación es matemáticamente inválida para señales que presenten dominio tanto positivo como negativo. Este es precisamente el escenario que caracteriza a la componente del parámetro de Stokes $V$, cuya correcta deconvolución es el requisito previo para derivar la topología del campo magnético. A pesar de ello, para el parámetro de intensidad ($I$), este método que proporciona mayor fidelidad geométrica, justificando su inclusión y empleo en este análisis previo. 
 
 Un aspecto técnico crítico implementado en los métodos de filtrado y deconvolución iterativa es la gestión de las condiciones de contorno mediante técnicas de expansión (\textit{padding}). Durante la operación de convolución numérica, la ausencia de información espacial fuera de los límites de la imagen provoca distorsiones de borde. Para mitigar este efecto, la imagen matriz se expande sintéticamente añadiendo un margen periférico de dimensiones comparables a la extensión efectiva de la PSF, el cual se rellena extrapolando los datos mediante una condición geométrica especular simétrica. De este modo, la convolución procesa el margen simulando la continuidad espacial de la estructura real, lo que estabiliza drásticamente el resultado en la periferia. Como último paso de la rutina, la imagen resultante se recorta a sus dimensiones originales para eliminar este relleno artificial.
 
 \subsection{El problema de la deconvolución del campo magnético}
 
-El núcleo del desafío técnico abordado en este trabajo surge al inspeccionar la ecuación de aproximación de campo magnético débil (\ref{eq:campoDebil}). Las magnitudes observables espectropolarimétricas son los parámetros de Stokes $V$ e $I$. Como se ha fundamentado previamente, la deconvolución de $V$ con herramientas estándar como Richardson-Lucy está proscrita por su naturaleza intrínsecamente bipolar.
+El núcleo del desafío técnico abordado en este trabajo surge al inspeccionar la ecuación de aproximación de campo magnético débil (\ref{eq:campoDebil}). Las magnitudes observables espectropolarimétricas son los parámetros de Stokes $V$ e $I$. Como se ha fundamentado previamente, la deconvolución de $V$ con herramientas estándar como Richardson-Lucy es imposible debido a la presencia de valores negativos en la señal.
 
 Al expresar matemáticamente la señal observada afectada por la degradación instrumental (modelada mediante la convolución con la PSF), e introducimos la ecuación de aproximación de campo débil (\ref{eq:campoDebil}), obtenemos la siguiente expresión:
 

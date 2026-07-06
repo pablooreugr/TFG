@@ -12,7 +12,7 @@ El marco teórico original introducido por Van Noort se articula del siguiente m
 
 Para optimizar esta estimación inicial, se busca determinar un vector de corrección $\nu$, de manera que la nueva aproximación actualizada se exprese como $x_0 + \nu$.
 
-Dado que, según la formulación original, la función $F(x)$ es típicamente compleja y no lineal, se procede a linealizarla computacionalmente mediante una expansión en serie de Taylor de primer orden:
+Dado que, según la formulación original, la función $F(x)$ es típicamente compleja y no lineal, se procede a linealizarla mediante una expansión en serie de Taylor de primer orden:
 
 \begin{equation}
     F(x_o + \nu) \simeq F(x_0) + J \nu
@@ -42,38 +42,38 @@ Para abordar la resolución de este sistema, se implementa una formulación de m
 Esta reformulación algebraica permite calcular la corrección, dado que el producto matricial $J^T J$ genera una matriz cuadrada e invertible. Además, la arquitectura del método integra restricciones físicas intrínsecas del sistema para favorecer la convergencia hacia soluciones físicamente viables.
 
 \subsection{Adaptación de la metodología al problema de la convolución polarimétrica}
-La matriz $J$ constituye el operador Jacobiano del sistema físico modelado. En el problema particular de este Trabajo de Fin de Grado, la transformación directa abarca dos operaciones anidadas: el cálculo local de la señal de polarización bajo la aproximación de campo débil y su posterior degradación espacial mediante la convolución geométrica con la PSF. Al proyectar este problema bidimensional, cada parámetro escalar $x_i$ establece una correspondencia píxel a píxel con la imagen original. Considerando, por ejemplo, matrices de datos de 1400x1400 elementos, la instanciación explícita de la matriz Jacobiana requeriría un volumen de memoria RAM inasumible computacionalmente.
+La matriz $J$ representa el Jacobiano del sistema físico. En este TFG, el modelo directo consta de dos pasos: el cálculo local de la señal de polarización bajo la aproximación de campo débil y su posterior degradación espacial al convolucionar con la PSF. Como cada parámetro $x_i$ está asociado a un píxel de la imagen original, el tamaño del problema bidimensional se dispara. Para imágenes de 1400x1400 píxeles, calcular y almacenar explícitamente la matriz Jacobiana resulta inviable por falta de memoria RAM.
 
-En este punto es donde reside la principal optimización analítica aportada en este desarrollo. Si, en lugar de instanciar explícitamente $J$ como una matriz de dimensiones masivas, se redefine matemáticamente como un operador funcional, y se demuestra su linealidad, el sistema queda rigurosamente bien propuesto. La demostración de linealidad garantiza la existencia analítica de un operador transpuesto (o adjunto) $J^T$, posibilitando así la resolución iterativa de la ecuación (\ref{eq:sistemaResolver}) sin necesidad de almacenar la matriz en memoria.
+En este punto es donde reside la principal optimización de este método. En lugar de construir $J$ explícitamente como una matriz gigantesca, podemos tratarla matemáticamente como un operador lineal. Esta linealidad garantiza la existencia de su operador adjunto (o transpuesto) $J^T$, lo que permite resolver el sistema (\ref{eq:sistemaResolver}) de forma iterativa sin necesidad de almacenar la matriz en memoria.
 
-La demostración formal de linealidad procede del siguiente modo. Partiendo de la expresión teórica (\ref{eq:campoDebil}), es posible agrupar los factores independientes del campo magnético en una magnitud $K(x, y, \lambda)$:
+Para demostrar esta linealidad, partimos de la aproximación de campo débil (\ref{eq:campoDebil}) y agrupamos todos los términos que no dependen del campo magnético en un único factor espacial $K(x, y, \lambda)$:
 
 \begin{equation}
     V = - C \bar{g} \lambda_B^2 \frac{dI_0}{d \lambda} B_{\parallel} = K(x, y, \lambda) B_{\parallel}
 \end{equation}
 
-Se define el operador Jacobiano $J$ de forma funcional. La perturbación diferencial de los datos observados respecto al parámetro libre (el campo magnético longitudinal $B_{\parallel}$) equivale a aplicar secuencialmente la multiplicación local por el factor espacial $K$ seguida de la operación de convolución. Apelando a la linealidad del operador derivada y de la propia convolución bidimensional, se tiene:
+De este modo, la variación de los datos observados respecto al parámetro libre (el campo $B_{\parallel}$) equivale a multiplicar por el factor $K$ y, a continuación, aplicar la convolución espacial. Como tanto la derivada como la convolución son operadores lineales, el Jacobiano se puede expresar funcionalmente como:
 
 \begin{equation}
     \label{eq:demosLinealidad}
     J = \frac{\partial V_{obs}}{\partial B_{\parallel}} = \frac{\partial}{\partial B_{\parallel}} \left[(K \cdot B_{\parallel}) * P \right] = \left[\frac{\partial}{\partial B_{\parallel}} (K \cdot B_{\parallel})\right] * P = K * P
 \end{equation}
 
-Al confirmarse la linealidad estricta del operador funcional, queda garantizada la existencia de su operador adjunto (transpuesto). En la teoría de espacios vectoriales funcionales, se emplea la notación del producto escalar estándar $\langle \cdot , \cdot \rangle$. Matemáticamente, la transpuesta de un operador lineal $J$ se define como el operador $J^T$ que satisface la siguiente identidad geométrica para cualquier par de funciones $x$ e $y$:
+Al confirmar que $J$ es un operador lineal, queda garantizada la existencia de su operador traspuesto $J^T$, definido mediante el producto escalar estándar $\langle \cdot , \cdot \rangle$. Para cualquier par de funciones $x$ e $y$, el traspuesto debe cumplir la identidad:
 
 \begin{equation}
     \label{eq:defTraspuesta}
     \langle Jx , y \rangle = \langle x , J^T y \rangle
 \end{equation}
 
-Inspeccionando la estructura del operador compuesto $J$ deducido en (\ref{eq:demosLinealidad}), se observa que actúa como la composición ordenada de dos transformaciones funcionales elementales: un operador de convolución $C_p$ y un operador de multiplicación diagonal $M_k$. Dado que la multiplicación por un escalar es una operación autoadjunta, su traspuesta es el propio operador:
+Observando la ecuación (\ref{eq:demosLinealidad}), vemos que $J$ es la composición de dos operaciones: un operador de convolución $C_p$ y uno de multiplicación diagonal $M_k$. Como la multiplicación por un escalar es autoadjunta, su traspuesta es ella misma. Por tanto:
 
 \begin{equation}
     \label{eq:defTraspuesConjunta}
     J^T = (C_p M_k)^T = M^T_k C_p^T = M_k C_p^T
 \end{equation}
 
-Por otra parte, se demuestra analíticamente que el adjunto de un operador de convolución equivale a la convolución espacial con el núcleo simetrizado espacialmente (rotado $180^\circ$), el cual se denotará como $\tilde{P}$. Consecuentemente, el operador Jacobiano transpuesto que actuará sobre los mapas de campo magnético adopta la forma definitiva:
+Por otro lado, es conocido que el adjunto de una convolución equivale a convolucionar con el núcleo invertido espacialmente (rotado $180^\circ$), que denotaremos como $\tilde{P}$. Con todo esto, la acción del operador Jacobiano traspuesto sobre un mapa de campo magnético queda definida en su forma definitiva:
 
 \begin{equation}
     \label{eq:jacobianaTras}
@@ -82,7 +82,7 @@ Por otra parte, se demuestra analíticamente que el adjunto de un operador de co
 
 \subsection{Resolución numérica: Subespacios de Krylov y Gradiente Conjugado}
 
-Sustituyendo el operador directo (\ref{eq:demosLinealidad}) y su transpuesta (\ref{eq:jacobianaTras}) en el sistema de ecuaciones normales (\ref{eq:sistemaResolver}), nuestro problema se reduce a un sistema lineal clásico de la forma $Ax = b$. 
+Sustituyendo el operador directo (\ref{eq:demosLinealidad}) y su traspuesto (\ref{eq:jacobianaTras}) en el sistema de ecuaciones normales (\ref{eq:sistemaResolver}), el problema se reduce a resolver un sistema lineal de la forma $Ax = b$. 
 
 El esquema computacional del método es el siguiente:
 
@@ -108,18 +108,17 @@ El esquema computacional del método es el siguiente:
     \label{fig:flowchart_metodo}
 \end{figure}
 
-El resultado es la ecuación integral de optimización:
+Este proceso da lugar a la siguiente ecuación de optimización:
 
 \begin{equation}
     \label{eq:sistemaEcReal}
     J^T J \Delta B_{\parallel} = J^T \beta
 \end{equation}
 
+En la notación algebraica estándar, la matriz del sistema es $A = J^T J$, la incógnita a despejar es la corrección $x = \Delta B_{\parallel}$, y el término independiente es $b = J^T \beta$.
 
-Definiendolo con la notación algebraica clásica, la matriz operativa del sistema es $A = J^T J$, el vector continuo de incógnitas es la corrección paramétrica $x = \Delta B_{\parallel}$, y el vector término independiente es $b = J^T \beta$.
+La resolución de este sistema proporciona el mapa bidimensional de correcciones $\Delta B_{\parallel}$, que se suma a la estimación inicial $B_{\parallel}^0$ para generar el mapa de campo magnético actualizado: $B_{\parallel}^f = B_{\parallel}^0 + \Delta B_{\parallel}$.
 
-La resolución iterativa de este sistema algebraico proporciona el mapa bidimensional de correcciones magnéticas $\Delta B_{\parallel}$. Esta matriz se añade a la estimación inicial $B_{\parallel}^0$ para generar un mapa final de campo magnético de alta resolución espacial: $B_{\parallel}^f = B_{\parallel}^0 + \Delta B_{\parallel}$.
+Dado que calcular y almacenar explícitamente la matriz $A$ sigue siendo inviable, plantear el problema mediante operadores lineales permite emplear métodos iterativos basados en subespacios de Krylov. La principal ventaja de esta familia de algoritmos es que solo requieren evaluar el producto de la matriz por un vector (en este caso, aplicar secuencialmente los operadores sobre la imagen), evitando por completo calcular y guardar los coeficientes de la matriz.
 
-Puesto que la instanciación de la matriz $A$ explícitamente en memoria persiste como un problema computacionalmente intratable, la redefinición funcional del problema como una secuencia de operadores lineales permite la aplicación directa de métodos basados en subespacios de Krylov. La principal ventaja matemática de esta familia de algoritmos iterativos radica en que operan exclusivamente mediante el producto de la matriz por un vector (o en este caso, la aplicación secuencial de operadores funcionales sobre una matriz 2D), eludiendo el cálculo explícito de los coeficientes de la matriz.
-
-Por otro lado, como sabemos de forma teórica que nuestra matriz $J^T J$ es simétrica y definida positiva, el algoritmo ideal para este caso es el método del Gradiente Conjugado (CG). Lo que hace este método es ir construyendo direcciones de búsqueda que son ortogonales (conjugadas), de forma que el error se va minimizando de manera óptima en cada paso. Además, al ser un algoritmo tan conocido, ya existen librerías preparadas para él, por lo que su implementación es bastante sencilla.
+Dentro de los métodos de Krylov, y dado que nuestra matriz $J^T J$ es por construcción simétrica y definida positiva, el algoritmo idóneo para la resolución es el método del Gradiente Conjugado (CG). Este método construye iterativamente direcciones de búsqueda ortogonales (conjugadas) en el subespacio, minimizando el error de forma óptima en cada iteración. Al ser un algoritmo ampliamente estandarizado, su integración resulta directa empleando bibliotecas de cálculo científico convencionales.
