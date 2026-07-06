@@ -204,4 +204,38 @@ Entonces, al igual que antes, cogemos una longitud de onda arbitraria y realizam
     \label{fig:intensidadDecoReal}
 \end{figure}
 
+Como se observa, el método de Richardson-Lucy logra recuperar detalles de la imagen original. Se detallan mejor las estructuras de la imagen, y se observa también un aumento de contraste con la imagen original. \\
 
+Para medir la calidad de la deconvolución, al no tener la imagen original no emborronada, no podemos calcular el SSIM ni el RMSE. Utilizaremos entonces una métrica llamada RMS (\textit{Contraste Cuadrático Medio}) que nos permite medir el contraste de la imagen. Esta métrica se define como:
+\begin{equation}
+    RMS = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (I_i - \bar{I})^2}
+\end{equation}
+
+Cuanto mayor sea el valor de RMS, mayor será el contraste de la imagen. Por lo tanto, mayor contraste y detalle aparecerá en la imagen deconvolucionado. El resultado de la imagen pasamos de una RMS de $0.2028$ a una RMS de $0.2193$, lo que indica una mejora del $8.2\%$ en el contraste de la imagen. Esto indica que el método de Richardson-Lucy logra mejorar el contraste y detalle de la imagen original.
+
+\subsubsection{Medición del campo magnético}
+Ahora mediremos el algoritmo de Noor para medir el campo magnético a partir de la señal de Stokes $I$ y $V$. Para observar mejor los resultados, observaremos una región de interés de la imagen, que es la siguiente tras deconvolucionarlo con el algoritmo:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/exp4_3_campoB_zoom.png}
+    \caption{Campo magnético medido a partir de la señal de Stokes $I$ y $V$ mediante el método adaptado de Noor. Se observa que el campo magnético tiene una estructura más definida y detallada que la imagen original.}
+    \label{fig:campoMagDecoReal}
+\end{figure}
+
+Al igual que antes, se observa que el método logra recuperar la estructura del campo magnético, y se observan detalles que no se veían en la imagen original. Esto indica que el método es capaz de medir el campo magnético a partir de la señal de Stokes $I$ y $V$ de manera efectiva. \\
+
+Para poder medirlo, no es recomendable usar la RMS, ya que el campo magnético tiene polaridad, por lo que se puede cancelar la señal. Por lo que calcularemos la métrica de nitidez (\textit{varianza del Laplaciano}). El operador Laplaciano aisla las altas frecuencias de la imagen, que son los que contiene los detalles. Al calcular su varianza, obtenemos un valor que representa la cantidad de detalles que tiene la imagen: $nitidez = Var(\nabla^2 B)$. Cuanto mayor sea el valor de la varianza del Laplaciano, mayor será la nitidez de la imagen. \\
+
+Los resultados obtenidos son los siguientes, la imagen original tiene una nitidez de $1.96 \times 10^2$ y la imagen deconvolucionada tiene una nitidez de $2.03 \times 10^2$, lo que indica una mejora del $3.6\%$ en la nitidez de la imagen. Esto indica que el método logra mejorar la nitidez y detalle de la imagen original, y por lo tanto, es capaz de medir el campo magnético de manera efectiva. \\
+
+Si vemos la imagen de diferencias entre la imagen original y la deconvolucionada, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/exp4_5_diferencia.png}
+    \caption{Mapa de diferencias entre la imagen original y la deconvolucionada del campo magnético, restando las imágenes. Se observa que las diferencias se concentran en las regiones donde el método logra recuperar detalles finos de la estructura del campo magnético.}
+    \label{fig:campoMagDecoRealDiferencias}
+\end{figure}
+
+Podemos observar que las zonas mas brillantes (colores verdes y amarillos) trazan los contornos y fronteras de la esturctura magnética, indicando que el algoritmo está reconcentrando el flujo magnético en las zonas que fueron esparcidas por la PSF. 
