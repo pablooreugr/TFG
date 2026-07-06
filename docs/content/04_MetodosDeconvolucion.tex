@@ -18,7 +18,7 @@ Como se ha demostrado anteriormente, la deconvolución mediante división direct
 
 Para solucionar este problema, se implementa el filtro de Wiener. Este método consiste en una técnica de filtrado lineal óptimo que busca minimizar el error cuadrático medio entre la imagen real estimada y la imagen original sin degradar. A diferencia del filtro inverso, el filtro de Wiener logra un equilibrio: actúa como una deconvolución normal en las frecuencias donde la señal es fuerte, pero atenúa fuertemente aquellas frecuencias donde el ruido domina.
 
-El filtro de Wiener se aplica de forma algorítmica directamente en el dominio de las frecuencias espaciales. El procedimiento consiste en calcular la Transformada de Fourier de la imagen observada y multiplicarla por la función de transferencia del filtro. Matemáticamente, partiendo del modelo con ruido de la ecuación (\ref{eq:convolucionRuido}), la estimación de la imagen real $D_{real}(u,v)$ se define como:
+El filtro de Wiener se aplica de forma algorítmica directamente en el dominio de las frecuencias espaciales. El procedimiento consiste en calcular la Transformada de Fourier de la imagen observada y multiplicarla por la función de transferencia del filtro. Matemáticamente, partiendo del modelo con ruido de la ecuación (\ref{eq:convolucionRuido}), la estimación de la imagen real $D_{real}(u,v)$ se define como \cite[cap. 5]{gonzalezDigitalImageProcessing2018}:
 
 \begin{equation}
     D_{real}(u,v) = \left[ \frac{P^*(u,v)}{|P(u,v)|^2 + \frac{S_n(u,v)}{S_d(u,v)}} \right] D_{observado}(u,v)
@@ -53,7 +53,7 @@ Finalmente, la estimación de la $\mathrm{SNR}$ que se introduce en el algoritmo
 
 A diferencia de los métodos de Fourier y Wiener, que resuelven el problema de forma directa usando las frecuencias, el algoritmo de Richardson-Lucy funciona mediante iteraciones. Este método asume que el ruido de la imagen sigue una estadística de Poisson, lo cual viene muy bien para imágenes astronómicas que se basan en contar fotones.
 
-La principal ventaja de este método es que asegura que los píxeles de la imagen resultante sean siempre positivos (siempre que la original y la PSF también lo sean) y mantiene el flujo total de energía de la imagen. La ecuación iterativa del método es la siguiente:
+La principal ventaja de este método es que asegura que los píxeles de la imagen resultante sean siempre positivos (siempre que la original y la PSF también lo sean) y mantiene el flujo total de energía de la imagen. La ecuación iterativa del método es la siguiente \cite{richardsonBayesianBasedIterativeMethod1972}:
 
 \begin{equation}
     u^{(k+1)} = u^{(k)} \cdot \left( \frac{d_{observado}}{u^{(k)} \ast p} \ast p^* \right)
