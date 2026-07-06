@@ -2,7 +2,7 @@
 
 \section{Fundamentos Teóricos}
 \subsection{Datos espectrales, parámetros de Stokes}
-Primero, para situarnos dentro del tema, vamos a definir exactamente qué estamos midiendo. Toda la información que extraemos del Sol proviene de las propiedades de la luz, o lo que es lo mismo, de las ondas electromagnéticas. Cuando medimos el Sol, el rango de longitudes de onda que se usará en este proyecto entra en el de la luz visible (entre $4000 - 7000$ \AA). La principal limitación de trabajar con luz visible radica en que medir directamente las propiedades de su campo electromagnético (como la amplitud o la fase) es tecnológicamente inviable debido a sus altísimas frecuencias. \\
+Primero, para situarnos dentro del tema, vamos a definir exactamente qué estamos midiendo. Toda la información que extraemos del Sol proviene de las propiedades de la luz, o lo que es lo mismo, de las ondas electromagnéticas. Cuando medimos el Sol, el rango de longitudes de onda que se usará en este proyecto entra en el de la luz visible (entre $4000 - 7000$ \AA). La principal limitación de trabajar con luz visible radica en que medir directamente las propiedades de su campo electromagnético (como la amplitud o la fase) es tecnológicamente inviable debido a sus altísimas frecuencias.\\
 
 Por lo tanto, los telescopios no miden el campo eléctrico directamente, sino que su respuesta es proporcional a la energía electromagnética promediada en el tiempo (la intensidad). Para poder medir el flujo de la energía además de las propiedades electromagnéticas, se usa el tensor de polarización. 
 
@@ -84,16 +84,16 @@ Donde $\kappa$ es un factor de proporcionalidad que depende de la luz y del tele
 Desde un punto de vista físico, cada uno de los parámetros de Stokes tiene un significado.
 
 \begin{itemize}
-    \item $I$ es la intensidad total de la luz, es decir, la energía electromagnética que llega al detector por unidad de tiempo y superficie. Representa el brillo global de la señal.
-    \item $Q$ mide la diferencia entre la polarización lineal horizontal y la vertical, es decir, entre 0\,deg y 90\,deg.
-    \item $U$ mide la diferencia entre dos orientaciones diagonales de la polarización lineal, a 45\,deg y 135\,deg.
+    \item $I$ es la intensidad total de la luz, es decir, la energía electromagnética que llega al detector por unidad de tiempo y superficie.
+    \item $Q$ mide la diferencia entre la polarización lineal horizontal y la vertical, es decir, entre 0\,grados y 90\,grados.
+    \item $U$ mide la diferencia entre dos orientaciones diagonales de la polarización lineal, a 45\,grados y 135\,grados.
     \item $V$ cuantifica la polarización circular y permite distinguir si domina la componente derecha o la izquierda.
 \end{itemize}
 
-Donde medir $V$ es especialmente importante, ya que nos permitirá poder medir el campo magnético del Sol, como explicaremos más adelante.
+Donde determinar $V$ es especialmente importante, ya que nos permitirá poder medir el campo magnético del Sol, como explicaremos más adelante.
 
 \subsection{Transferencia radiativa}
-En la física solar queremos poder obtener mediante la luz que nos llega del Sol mediante la radiación electromagnética la física que está ocurriendo en el Sol. Sabemos que la luz puede llegar a ser afectada por el medio que le rodea, lo que se conoce como índice de refracción. Si miramos una onda electromagnética monocromática en un medio con índice de refracción:
+Uno de los objetivos fundamentales de la física solar es inferir las condiciones físicas de la atmósfera del Sol a partir del análisis de la radiación electromagnética que recibimos de él. No obstante, la propagación de la luz se ve alterada por las propiedades ópticas del medio que atraviesa, un fenómeno gobernado por el índice de refracción. Siguiendo el formalismo teórico expuesto por \cite{sanchezSolarObservationsTechniques1992}, si consideramos una onda electromagnética monocromática que se propaga en un medio con índice de refracción $n$, su campo eléctrico asociado se puede expresar como:
 
 \begin{equation}
     \label{eq:ondaElectro}
@@ -102,7 +102,7 @@ En la física solar queremos poder obtener mediante la luz que nos llega del Sol
 
 Donde $\nu$ es la frecuencia de la onda, $n$ es el índice de refracción, y $\Omega$ es la dirección de propagación de la onda. \\
 
-Ahora consideramos un medio anisótropo, donde cada dirección de propagación de la onda tiene un distinto índice de refracción. Esto puede deberse directamente a la presencia de un campo magnético que va a una sola dirección, o por múltiples otras razones. Si consideramos que ese medio anisótropo tiene tres direcciones ortogonales (los vectores normales de estas direcciones de propagación lo denotaremos como $\vec{u_\alpha}$, donde $\alpha = (1, 2, 3)$), la función de onda se escribiría como:
+Ahora consideramos un medio anisótropo, donde cada dirección de propagación de la onda tiene un distinto índice de refracción. Esto puede deberse directamente a la presencia de un campo magnético unidireccional, o por múltiples otras razones. Si consideramos que ese medio anisótropo tiene tres direcciones ortogonales (los vectores normales de estas direcciones de propagación lo denotaremos como $\vec{u_\alpha}$, donde $\alpha = (1, 2, 3)$), la función de onda se escribiría como:
 
 \begin{equation}
     \label{eq:ondaAnisotropa}
@@ -184,7 +184,7 @@ Si desarrollamos esto para cada elemento, nos queda un sistema de ecuaciones:
     \end{split}
 \end{equation}
 
-Ahora, si metemos las definiciones de los parámetros de Stokes en la ecuación (\ref{eq:derivada_polarizacion}) y operamos un poco, llegamos a la ecuación de transferencia radiativa para los parámetros de Stokes escrita en forma de matriz:
+Ahora, al introducir las definiciones de los parámetros de Stokes en la ecuación (\ref{eq:derivada_polarizacion}) y tras un breve desarrollo algebraico, llegamos a la ecuación de transferencia radiativa para los parámetros de Stokes escrita en forma matricial:
 
 \begin{equation}
     \label{eq:transfMatriz}
@@ -314,7 +314,7 @@ La radiación electromagnética producida por cada uno de estos tres osciladores
         \node[color=oscsigmaminus] at (-1.4, 0.4) {$\nu_0 - \nu_L$ ($\sigma_-$)};
 
     \end{tikzpicture}
-    \caption{Descomposición clásica del movimiento del electrón sometido a un campo magnético $\vec{B}$. El oscilador a lo largo de $z$ vibra a la frecuencia inalterada $\nu_0$ (componente $\pi$). En el plano ortogonal se crean dos movimientos circulares con frecuencias desplazadas $\nu_0 \pm \nu_L$ (componentes $\sigma$).}
+    \caption{Descomposición clásica del movimiento del electrón sometido a un campo magnético $\vec{B}$. El oscilador a lo largo de $z$ vibra a la frecuencia inalterada $\nu_0$ (componente $\pi$). En el plano ortogonal se crean dos movimientos circulares con frecuencias desplazadas $\nu_0 \pm \nu_L$ (componentes $\sigma$). Adaptada de \cite{sanchezSolarObservationsTechniques1992}.}
     \label{fig:larmor_classic}
 \end{figure}
 
