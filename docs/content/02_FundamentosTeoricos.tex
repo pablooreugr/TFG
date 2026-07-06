@@ -2,11 +2,11 @@
 
 \section{Fundamentos Teóricos}
 \subsection{Datos espectrales, parámetros de Stokes}
-Para establecer el contexto del estudio, es necesario definir la magnitud objeto de medición. La información extraída del Sol proviene de las propiedades de la luz, o más precisamente, de las ondas electromagnéticas. Durante las observaciones solares, el rango de longitudes de onda utilizado en este proyecto corresponde a la luz visible (entre $4000 - 7000$ \AA). La principal limitación de trabajar con luz visible radica en que medir directamente las propiedades de su campo electromagnético (como la amplitud o la fase) es tecnológicamente inviable debido a sus altísimas frecuencias.
+Antes de entrar en detalle, conviene aclarar exactamente qué estamos midiendo. Toda la información que sacamos del Sol nos llega a través de la luz (ondas electromagnéticas). Las observaciones de este trabajo se hicieron en el rango visible, entre $4000$ y $7000$ \AA. El problema con la luz visible es que las frecuencias son tan enormes que resulta imposible medir de forma directa las propiedades del campo electromagnético, como su amplitud o su fase.
 
-Por lo tanto, los telescopios no miden el campo eléctrico directamente, sino que su respuesta es proporcional a la energía electromagnética promediada en el tiempo (la intensidad). Para poder medir el flujo de la energía además de las propiedades electromagnéticas, se usa el tensor de polarización. 
+Por culpa de esto, los telescopios no pueden medir el campo eléctrico tal cual. Lo que hacen es registrar una especie de promedio temporal de la energía electromagnética, que conocemos como intensidad. Y aquí es donde entra el tensor de polarización, que es la herramienta matemática que nos permite analizar tanto el flujo de energía como las propiedades de la luz.
 
-Para comprender la naturaleza de este tensor, es necesario definir matemáticamente la polarización de una onda electromagnética. Una onda polarizada puede describirse como la superposición de dos ondas ortogonales, ambas transversales a la dirección de propagación, con idéntica frecuencia pero distinto desfase. En la figura (\ref{fig:componentes_em}) se ilustra cómo la onda resultante es la suma de dichas componentes.
+Para entender de dónde sale este tensor, hay que definir primero la polarización de la onda. Básicamente, una onda polarizada se puede ver como la suma de dos ondas ortogonales (perpendiculares a la dirección en la que viaja la luz), que vibran con la misma frecuencia pero con un cierto desfase entre ellas. El esquema de la figura (\ref{fig:componentes_em}) ilustra cómo al superponer estas dos partes se obtiene la onda resultante.
 
 \begin{figure}[H]
     \centering
@@ -81,19 +81,19 @@ Esta matriz está definida mediante números complejos que contienen informació
 
 En estas expresiones, $\kappa$ es un factor de proporcionalidad dependiente de la radiación y de las características del telescopio. 
 
-Desde un punto de vista físico, cada parámetro de Stokes tiene un significado específico:
+A nivel físico, cada uno de estos cuatro parámetros nos da una información muy concreta:
 
 \begin{itemize}
-    \item $I$ es la intensidad total de la luz, es decir, la energía electromagnética que llega al detector por unidad de tiempo y superficie.
-    \item $Q$ mide la diferencia entre la polarización lineal horizontal y la vertical, es decir, entre 0\,grados y 90\,grados.
-    \item $U$ mide la diferencia entre dos orientaciones diagonales de la polarización lineal, a 45\,grados y 135\,grados.
-    \item $V$ cuantifica la polarización circular y permite distinguir si domina la componente derecha o la izquierda.
+    \item $I$ representa la intensidad total de la luz. Es simplemente la cantidad de energía que recibe el detector por cada unidad de tiempo y área.
+    \item $Q$ nos marca la diferencia entre la polarización lineal horizontal y la vertical (o sea, entre 0\,grados y 90\,grados).
+    \item $U$ hace algo parecido a $Q$, pero midiendo la diferencia entre dos direcciones diagonales (45\,grados y 135\,grados).
+    \item $V$ cuantifica la polarización circular, sirviendo para distinguir si predomina el giro hacia la derecha o hacia la izquierda.
 \end{itemize}
 
-La determinación de $V$ reviste especial importancia, dado que permite cuantificar el campo magnético solar, aspecto que se detallará en secciones posteriores.
+Para nosotros, el parámetro $V$ es especialmente importante, ya que gracias a él podemos llegar a medir el campo magnético del Sol, como veremos más adelante.
 
 \subsection{Transferencia radiativa}
-Uno de los objetivos fundamentales de la física solar es inferir las condiciones físicas de la atmósfera del Sol a partir del análisis de la radiación electromagnética que recibimos de él. No obstante, la propagación de la luz se ve alterada por las propiedades ópticas del medio que atraviesa, un fenómeno gobernado por el índice de refracción. Siguiendo el formalismo teórico expuesto por \cite{sanchezSolarObservationsTechniques1992}, si consideramos una onda electromagnética monocromática que se propaga en un medio con índice de refracción $n$, su campo eléctrico asociado se puede expresar como:
+El gran objetivo de la física solar es lograr deducir cómo es físicamente la atmósfera del Sol usando únicamente la luz que nos llega. El problema es que, en su camino hacia nosotros, la luz atraviesa distintos medios y sus propiedades cambian. Esto está gobernado en gran medida por el índice de refracción. Siguiendo el planteamiento de \cite{sanchezSolarObservationsTechniques1992}, si pensamos en una onda electromagnética monocromática atravesando un medio con un índice de refracción $n$, su campo eléctrico tomaría esta forma:
 
 \begin{equation}
     \label{eq:ondaElectro}
@@ -127,7 +127,7 @@ Dado que las expresiones (\ref{eq:ondaAnisotropa}) y (\ref{eq:direccionProp}) re
     \sum_\alpha \epsilon_\alpha \vec{u_\alpha} e^{2 \pi \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)} = \sum_k \epsilon_k (\vec{r}, t) \vec{e_k}
 \end{equation}
 
-En esta identidad, el miembro izquierdo representa la onda en la base intrínseca del medio, mientras que el derecho corresponde a la base del observador.
+En esta igualdad, la parte izquierda representa la onda vista desde la base del medio, y la derecha corresponde a la base del observador.
 
 Para proyectar la descripción de la onda desde la base del medio hacia la base del observador, introducimos los cosenos directores definidos por el producto escalar $C_{\alpha j} = \vec{u}_\alpha \cdot \vec{e}_j$. Multiplicando escalarmente la expresión (\ref{eq:igualandoOndas}) por un vector de la base del observador $\vec{e}_j$ y asumiendo que la onda es transversal a la dirección de propagación en la aproximación del observador ($j=1,2$), se obtiene la componente del campo eléctrico en dicha base:
 
@@ -143,7 +143,7 @@ Por otro lado, haciendo uso de las relaciones de ortonormalidad de los cosenos d
     \label{eq:identidad_inversa}
 \end{equation}
 
-El interés de la transferencia radiativa radica en evaluar cómo evoluciona espacialmente el campo electromagnético a medida que viaja a través del medio. Para ello, definimos la coordenada espacial $s = \vec{r} \cdot \vec{\Omega}$, la cual mide la distancia geométrica recorrida a lo largo de la trayectoria del rayo. 
+En transferencia radiativa nos interesa ver cómo cambia el campo electromagnético a medida que avanza por el medio. Para medirlo, usamos la coordenada espacial $s = \vec{r} \cdot \vec{\Omega}$, que es básicamente la distancia que recorre el rayo de luz. 
 
 Tomando la derivada de la ecuación (\ref{eq:epsilon_j}) respecto a la coordenada $s$, obtenemos:
 

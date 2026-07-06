@@ -1,25 +1,25 @@
 % !TeX root = ../main.tex
 
 \section{Métodos de análisis de resultados}
-Para evaluar objetivamente los resultados de los algoritmos de deconvolución, se emplean dos parámetros métricos que permiten cuantificar la calidad de la reconstrucción utilizando datos sintéticos, dado que en estos casos se dispone de la señal original para su comparación directa. 
+A la hora de juzgar qué algoritmo de deconvolución funciona mejor, no basta con mirar las imágenes. Necesitamos formas objetivas de medir la calidad de la reconstrucción. Al trabajar con datos sintéticos, contamos con una gran ventaja: conocemos exactamente la señal original, así que podemos compararla directamente con el resultado de nuestro procesado usando un par de parámetros métricos.
 
 \subsection{Raíz del error cuadrático medio (RMSE)}
-Este parámetro mide la magnitud promedio del error entre la señal original (ideal o de referencia) y otra señal distinta, ya sea la propia señal emborronada por el instrumento o la señal reconstruida tras aplicar un algoritmo de deconvolución. La ecuación que define esta métrica es la siguiente:
+El RMSE (por sus siglas en inglés) nos sirve para medir cuánto se desvía en promedio una señal de la original. Podemos usarlo para ver cuánto error introduce el emborronamiento inicial del instrumento, o para comprobar cuánto error queda después de intentar arreglar la imagen con la deconvolución. Su fórmula matemática es la siguiente:
 
 \begin{equation}
     \label{eq:RMSE}
     RMSE = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - y_i)^2}
 \end{equation}
 
-donde $x_i$ es el valor de la señal original en el punto (o píxel) $i$, $y_i$ es el valor de la señal a comparar en ese mismo punto, y $N$ es el número total de elementos discretos de la señal. 
+donde $x_i$ es el valor de la señal original en el punto (o píxel) $i$, $y_i$ es el valor de la señal a comparar en ese mismo punto, y $N$ es el número total de puntos de la señal. 
 
-Dado que penaliza las diferencias elevándolas al cuadrado, un valor de RMSE más bajo indica que la señal recuperada es cuantitativamente más fiel a la señal original. Por el contrario, un RMSE más alto evidencia una mayor discrepancia entre la señal procesada y la referencia.
+El truco de esta métrica es que, al elevar las diferencias al cuadrado, castiga mucho más los errores grandes. Lógicamente, cuanto más bajo sea el valor del RMSE, más se parecerá nuestra señal recuperada a la original. 
 
 \subsection{Índice de Similitud Estructural (SSIM)}
-El SSIM es una métrica de calidad de imagen que, a diferencia del RMSE, evalúa la degradación de la estructura espacial. Considera tres factores fundamentales: luminancia, contraste y estructura. El resultado de esta métrica es un valor comprendido entre $-1$ y $1$, donde los valores cercanos a $1$ indican una alta similitud con la imagen original. 
+El problema del RMSE es que a veces nos da buenos números numéricos, pero la imagen se sigue viendo borrosa o sin forma. Por eso usamos también el SSIM. A diferencia del RMSE, esta métrica se centra en evaluar la degradación de la estructura espacial, fijándose en tres cosas clave: la luminancia, el contraste y la estructura propiamente dicha. Nos devuelve un número entre $-1$ y $1$, y nuestro objetivo siempre será acercarnos lo máximo posible al $1$ (que indicaría una imagen perfecta).
 
-Aunque matemáticamente pueden presentarse valores negativos correspondientes a una correlación estructural inversa, la degradación instrumental estudiada no produce tales efectos. Por tanto, el rango de valores de interés físico para este análisis se restringe a $[0,1]$. 
+Aunque pueden aparecer valores negativos si las imágenes están invertidas, el emborronamiento instrumental no produce este efecto. Por lo tanto, en la práctica el rango de valores que nos interesa es $[0,1]$. 
 
-Dada la complejidad analítica en el cálculo explícito de esta métrica, se recurre a la implementación computacional provista por la función \texttt{ssim} de la biblioteca \texttt{scikit-image} en Python, facilitando la evaluación eficiente del índice entre pares de imágenes. 
+Como el cálculo de esta métrica es complejo, se utiliza directamente la función \texttt{ssim} de la biblioteca \texttt{scikit-image} en Python, lo que permite calcular este índice entre dos imágenes de forma rápida y sencilla. 
 
-Cabe destacar que, si bien el RMSE y el SSIM proporcionan evaluaciones cuantitativas rigurosas, la inspección visual cualitativa de las imágenes sigue siendo un criterio complementario fundamental para dictaminar la viabilidad final de la reconstrucción.
+Por último, aunque el RMSE y el SSIM nos den valores concretos para medir la calidad, la inspección visual de las imágenes sigue siendo igual de importante para determinar si la reconstrucción es verdaderamente útil y satisfactoria.

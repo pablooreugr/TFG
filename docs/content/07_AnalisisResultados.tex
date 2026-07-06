@@ -3,8 +3,8 @@
 \section{Análisis de resultados}
 
 \subsection{Datos sintéticos}
-Primero se analizaron datos sintéticos (que simulan una porción del Sol en calma) que fueron proporcionados. Estos datos consisten de una señal bidimensional de la forma $[101,\,4,\,336,\,336]$, que representa $101$ valores distinto de longitudes de onda, $4$ componente de Stokes ($I$, $Q$, $U$ y $V$) y una imagen de $336\times336$ píxeles. \\
-Para el análisis de los métodos de deconvolución, se emborronaron la imagen con un PSF de tipo Airy, que es una simplifación de una PSF ideal de un telescopio donde solo influye que su apertura es circular. Este tiene la expresión radial de la forma:
+Para empezar, trabajamos con unos datos sintéticos que simulan una zona del Sol en calma. El formato de estos datos es $[101,\,4,\,336,\,336]$, lo que significa que tenemos $101$ longitudes de onda, las $4$ componentes de Stokes ($I$, $Q$, $U$ y $V$) y un tamaño espacial de $336\times336$ píxeles. \\
+Para poner a prueba los métodos de deconvolución, el primer paso fue emborronar artificialmente estas imágenes usando una PSF de tipo Airy. Esta función es una aproximación teórica de cómo se comporta un telescopio ideal cuya única limitación es tener una apertura circular. Matemáticamente, su perfil radial se escribe así:
 \begin{equation}
     \label{eq:PSF}
     PSF(r) = I_0 \left(\frac{2 J_1(kr)}{kr} \right)
@@ -21,8 +21,7 @@ En este caso se usa una PSF de 30 pixeles de radio y un tamaño de bulbo central
     \label{fig:psfAiry}
 \end{figure}
 
-Además, es necesario implementar ruido para simular un caso real. Este ruido. Se simuló entonces este ruido como ruido blanco gaussiano en cada componente de Stokes, con una desviación estandar $\sigma$ que se define como un porcentaje de la amplitud máxima de cada componente. Esto permite que el ruido sea relativo a la señal, lo cual es más representativo de las condiciones reales de observación.
-Dado que la amplitud de la señal en el canal de Stokes $I$ es sustancialmente mayor que en el canal de Stokes $V$, se implementó un esquema de ruido relativo. La desviación estándar del ruido ($\sigma$) se escala como una fracción porcentual $p$ respecto a la amplitud máxima detectada en cada componente:
+Obviamente, para que la simulación sea realista, también necesitamos meter ruido en la ecuación. Añadimos ruido blanco gaussiano a cada componente de Stokes. Pero como la señal en el canal $I$ es muchísimo más fuerte que en el canal $V$, tuvimos que aplicar un esquema de ruido relativo. Esto significa que la desviación estándar ($\sigma$) del ruido se define como un porcentaje $p$ de la amplitud máxima de cada señal en particular, imitando mejor lo que ocurre en una observación real:
 \begin{equation}
     I_{max} = \max(I(\mathbf{x})), \quad V_{max} = \max(|V(\mathbf{x})|)
 \end{equation}
@@ -72,11 +71,11 @@ Y si miramos los resultados de las métricas RMSE y SSIM, obtenemos los siguient
     \label{fig:rsmeSsimIntensidad}
 \end{figure}
 
-Lo primero que podemos analizar es que el método de Fourier es el que tiene un SSIM muy cercano a cero y un RMSE muy elevado, además, se observa en la imagen de la deconvolución que se pierde todo el detalle de la imagen. Como se mencionó anteriormente, este método es muy sensible al ruido, por lo que se demuestra que no és un método robusto para la deconvolución de imágenes con ruido.
+Empezando por el método de Fourier, salta a la vista que sus métricas son desastrosas: tiene un SSIM casi nulo y un RMSE altísimo. Físicamente, esto se traduce en una imagen donde se ha perdido absolutamente todo el detalle. Como ya habíamos anticipado teóricamente, este método no soporta nada bien el ruido, quedando claro que no nos sirve para imágenes reales que no sean perfectas.
 
-Luego se comprueba que el método de Wiener, a pesar de que en la imagen se aprecia que se ha recuperado bastante el detalle de imagen, el SSIM es más bajo que el de la imagen emborronada original y el RMSE es más alto. Esto indica que aunque parezca que la imagen deconvolucionada con Wiener es mejor, en realidad es peor que la imagen emborronada original. Esto puede deberse a que el método del Filtro de Wiener utilizado era un método muy simple, donde actualmente existen adaptaciones más avanzadas que podrían mejorar los resultados, como en el artículo \cite{orieuxBayesianEstimationRegularization2010}.
+Si pasamos al filtro de Wiener, la situación es engañosa. Visualmente da la sensación de haber recuperado bastante detalle, pero si miramos los números, el SSIM es más bajo y el RMSE es más alto que los de la propia imagen emborronada sin tocar. Es decir, aunque a ojo parezca mejor, la reconstrucción real es peor. Seguramente esto pase porque hemos utilizado la versión más básica del filtro de Wiener; en la literatura actual hay versiones mucho más sofisticadas que logran corregir estos fallos (por ejemplo, \cite{orieuxBayesianEstimationRegularization2010}).
 
-Por último, comprobamos como el algoritmo de Richardson-Lucy es el que obtiene mejores resultados, con un SSIM más alto y un RMSE más bajo que la imagen emborronada original. Esto indica que este método es el más robusto frente al ruido y el que mejor recupera los detalles de la imagen original. Además, se observa en la imagen de la deconvolución que se ha recuperado bastante detalle de la imagen original.
+Por el contrario, el algoritmo de Richardson-Lucy es el claro ganador de esta comparativa. Consigue mejorar el SSIM y bajar el RMSE respecto a la imagen borrosa de partida. Demuestra ser mucho más robusto frente al ruido, y si miramos el resultado, es evidente cómo logra rescatar detalles finos que se habían emborronado por culpa de la PSF.
 
 \subsubsection{Problema de la deconvolución de V}
 Si analizamos como evoluciona la deconvolución de la señal de Stokes $V$, y lo analizamos a distintos porcentajes de ruido, obtenemos los siguientes resultados:
@@ -88,7 +87,7 @@ Si analizamos como evoluciona la deconvolución de la señal de Stokes $V$, y lo
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 
-Debido a su reducida amplitud intrínseca, la componente de Stokes $V$ resulta extremadamente sensible al ruido. Esto provoca que ninguno de los algoritmos clásicos de deconvolución consiga recuperar la señal original de forma satisfactoria. El método que ofrece mejores resultados es el filtro de Wiener. Para ilustrar visualmente este efecto, a continuación se muestra el mapa bidimensional recuperado por este filtro asumiendo un nivel de ruido del 2%:
+Como la componente de Stokes $V$ tiene una amplitud tan pequeña, resulta extremadamente sensible al ruido. Esto provoca que ninguno de los algoritmos clásicos de deconvolución sea capaz de recuperar la señal original de forma satisfactoria. El método que ofrece mejores resultados es el filtro de Wiener. Para ilustrar este efecto, a continuación se muestra el mapa bidimensional recuperado por este filtro con un ruido del 2%:
 
 
 \begin{figure}[H]
@@ -98,15 +97,15 @@ Debido a su reducida amplitud intrínseca, la componente de Stokes $V$ resulta e
     \label{fig:visualizacionStokesV}
 \end{figure}
 
-Se verifica analíticamente la constancia del índice SSIM: el filtro de Wiener logra mitigar efectivamente el ruido, pero fracasa en la recuperación de la estructura subyacente de la señal original, introduciendo un sobresuavizado drástico. 
+Esto explica por qué el índice SSIM se mantiene constante: el filtro de Wiener consigue eliminar el ruido, pero no logra recuperar la estructura de la señal original y termina suavizándola demasiado. 
 
-En consecuencia, este análisis justifica la inviabilidad de deconvolucionar la señal de Stokes $V$ mediante enfoques clásicos. Por esta razón fundamental, se emplea el método propuesto en este TFG, el cual permite derivar el campo magnético eludiendo la deconvolución directa de la señal de Stokes $V$.
+Por lo tanto, este análisis demuestra que es inviable deconvolucionar la señal de Stokes $V$ con los métodos clásicos. Por esta razón, en este TFG se utiliza el método desarrollado para calcular el campo magnético directamente, evitando tener que deconvolucionar la señal de Stokes $V$.
 
 
-\subsubsection{Método adaptado de Noor}
-Lo primero que revisaremos es cómo converge nuestro método. Si volvemos a preparar los datos de la misma manera que antes, convolucionándolos con la PSF y añadiendo un ruido, podemos analizar el proceso. Al realizar la deconvolución de forma iterativa, el algoritmo va resolviendo un sistema de ecuaciones paso a paso. Para comprobar que el método funciona bien, miramos el error que va quedando en cada iteración, lo que se conoce como el residuo. 
+\subsubsection{Método adaptado de Van Noort}
+Antes de ver imágenes, vamos a comprobar si nuestro método converge como debería. Para ello, preparamos los datos igual que en el caso anterior: convolucionamos con la PSF y le metemos ruido. Como nuestra técnica es iterativa, va resolviendo el sistema poco a poco en cada paso. La mejor forma de asegurarnos de que todo marcha bien es vigilar el "residuo" tras cada iteración.
 
-Este residuo es básicamente la diferencia entre el valor real esperado y la aproximación que ha conseguido el método en esa iteración. Si calculamos la norma (la norma euclidiana o $L_2$) de este residuo, obtenemos un valor que representa el error total, y a esto lo llamamos diferencia iterativa. El resultado de cómo evoluciona este error lo podemos ver en la siguiente gráfica, donde se ha puesto el eje vertical en escala logarítmica para apreciar bien cómo va cayendo:
+Ese residuo no es más que la diferencia entre lo que esperábamos obtener y la aproximación que ha logrado calcular el algoritmo en ese momento. Si medimos este error total (calculando la norma euclidiana $L_2$), obtenemos lo que llamamos diferencia iterativa. En la gráfica de abajo hemos representado esta evolución poniendo el eje vertical en escala logarítmica, lo que ayuda a ver muy claro cómo el error se desploma:
 
 \begin{figure}[H]
     \centering
@@ -133,7 +132,7 @@ Igual que antes, volveremos a hacer zoom a la misma zona de interes para observa
     \label{fig:campoMagDecoZoom}
 \end{figure}
 
-Como se puede observar, el método lograr recuperar la estuctura original del campo magnético. Las regiones vuelven a ser más definidas y muchas estructuras vuelven a aparecer. Además hay información de picos de intensidad que vuelven a recuperarse, lo cual es un éxito. Por último argumentar que hay ciertos bulbos que no se han recuperado perfectamente. Esto es debido a que al emborronar la imagen, hemos perdido información de la señal original, por lo que el método no puede recuperarla. Pero aún así, el resultado es muy satisfactorio y demuestra que el método es capaz de recuperar la estructura del campo magnético a partir de la señal de Stokes $I$ y $V$. 
+Como salta a la vista, nuestro método consigue rescatar la estructura original del campo magnético. Las zonas vuelven a estar definidas e incluso recuperamos picos de intensidad que el emborronamiento se había "comido", lo cual es todo un éxito. Sí que es cierto que hay ciertos bulbos magnéticos que no quedan perfectos, pero es totalmente esperable: al emborronar la imagen físicamente perdimos parte de la información original, por lo que ningún método podrá inventársela. Salvando ese detalle, el resultado general es estupendo y confirma que nuestra técnica sí es capaz de extraer el campo magnético combinando las señales $I$ y $V$. 
 
 Si miramos un mapa de diferencias entre la imagen original y borrosa, y la imagen original y la deconvolucionada, obtenemos el siguiente resultado:
 
@@ -144,10 +143,10 @@ Si miramos un mapa de diferencias entre la imagen original y borrosa, y la image
     \label{fig:diferenciasZoom}
 \end{figure}
 
-Como se puede observar, la imagen presenta menor residuo en los filamentos, demostrando que logra reconstruir la estructura de la imagen. \\
-Esta mejora visual se corrobora con las métricas cuantitativas obtenidas. La imagen emborronada original partía de un índice de similitud estructural (SSIM) de $0.8401$ y un error cuadrático medio (RMSE) de $5.2568$. Tras aplicar la deconvolución mediante el método adaptado de Noor (con regularización de Laplace), el SSIM aumenta a $0.8575$, indicando una mejor recuperación de las estructuras espaciales, y el RMSE se reduce a $4.6995$, confirmando numéricamente la disminución del error respecto a la imagen ideal.
+Como vemos en la gráfica de diferencias, el residuo baja significativamente en las zonas de los filamentos, lo que demuestra que realmente está reconstruyendo la estructura. \\
+Esta mejora que vemos a simple vista también la confirman los números. Nuestra imagen emborronada de partida tenía un SSIM de $0.8401$ y un RMSE de $5.2568$. Después de pasarle nuestro método adaptado de Van Noort (usando regularización de Laplace), el SSIM sube a $0.8575$ y el RMSE cae a $4.6995$. Matemáticamente, nos hemos acercado bastante más a la imagen ideal.
 
-Ahora analizaremos cómo se comporta el algoritmo frente a distintos niveles de ruido. Este algoritmo es bastante susceptible a los pasos de iteración, ya que puede sobreajustar la señal y amplificar el ruido si se realizan demasiadas iteraciones. Por lo tanto es importante encontrar un equilibrio entre la cantidad de iteraciones y el nivel de ruido presente en la imagen. 
+El siguiente paso natural es ver qué tal se porta el algoritmo cuando cambiamos los niveles de ruido. Hay que tener en cuenta que este método es bastante sensible al número de iteraciones: si nos pasamos dando pasos, acabaremos sobreajustando la señal y amplificando el ruido. El reto aquí es dar con el equilibrio perfecto entre cuántas iteraciones damos y cuánto ruido tiene la imagen. 
 
 Para ello se realizó un estudio donde se encuentra el mejor SSIM y RMSE para distintos niveles de ruido, variando el número de iteraciones. Si vemos el mejor SSIM frente al nivel de ruido, obtenemos el siguiente resultado:
 
@@ -167,9 +166,9 @@ Y si presentamos el mejor RMSE frente al nivel de ruido, obtenemos el siguiente 
     \label{fig:RMSEfrenteARuidoNoor}
 \end{figure}
 
-Como podemos observar, el método a pesar del nivel de ruido siempre consigue mejorar la imagen original. Esto se debe a que el método busca recuperar la imagen a partir de la física del problema, buscando el resultado entre todas las posibles soluciones que cumplan con la ecuación de transferencia radiativa. Por lo tanto, aunque el ruido sea elevado, el método siempre consigue recuperar parte de la señal original. 
+Lo interesante de estas gráficas es ver que, sin importar cuánto ruido le echemos, el método siempre logra mejorar la imagen de partida. La clave de esto es que nuestro algoritmo no trabaja a ciegas; se apoya directamente en la física del problema para buscar una solución que encaje con la ecuación de transferencia radiativa. Gracias a esta restricción física, el método siempre es capaz de rascar algo de la señal original por mucho ruido que haya de fondo.
 
-Si analizamos el número de iteraciones que se necesitan para conseguir el mejor resultado, obtenemos el siguiente resultado:
+Si nos fijamos ahora en cuántas iteraciones hacen falta para dar con el mejor resultado en cada caso, llegamos a la siguiente gráfica:
 
 \begin{figure}[H]
     \centering
@@ -178,10 +177,15 @@ Si analizamos el número de iteraciones que se necesitan para conseguir el mejor
     \label{fig:pasosfrenteARuidoNoor}
 \end{figure}
 
-Como se muestra en la figura, el número de iteraciones requerido para minimizar el RMSE siempre es mayor que el necesario para optimizar el SSIM. Esto implica que el algoritmo requiere más pasos para mitigar el ruido estadístico, pero a partir de cierto límite también comienza a sobresuavizar la imagen, limpiando el ruido a costa de difuminar la estructura, un efecto parecido al observado en la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
+Salta a la vista que siempre hacen falta más iteraciones para minimizar el RMSE que para alcanzar el mejor SSIM. Básicamente, el algoritmo necesita seguir iterando un rato más para limpiar el ruido estadístico (lo que mejora el RMSE), pero al hacerlo llega a un punto en el que empieza a emborronar ligeramente la estructura (lo que empeora el SSIM). Es el típico compromiso entre matar el ruido y conservar los bordes nítidos, algo parecido a lo que le pasaba a la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
 
 \subsection{Datos reales} \label{sec:datosReales}
-Para poner a prueba los resultados del experimento, usaremos datos reales del experimento Sunrise-TUMAG proporcionados por su web \cite{SUNRISETuMagTUMAGData}. En este caso, son los datos \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}, que contiene una imagen con la estructura $[10,\,4,\,1600,\,1600]$, donde 10 son las longitudes de onda, 4 son las componentes de Stokes y $1600\times1600$ es el tamaño de la imagen. 
+Ha llegado el momento de la verdad: probar todo esto con datos reales. Para ello, utilizamos las observaciones del experimento Sunrise-TUMAG disponibles públicamente \cite{SUNRISETuMagTUMAGData}. Concretamente, hemos cargado el archivo 
+\begin{itemize}
+    \item \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}
+\end{itemize}
+
+Su estructura interna es $[10,\,4,\,1600,\,1600]$, lo que se traduce en 10 puntos de longitud de onda distintos, las 4 componentes de Stokes, y un mapa espacial enorme de $1600\times1600$ píxeles. 
 
 El PSF fue cedido por el equipo de óptica de la sección de  física solar del IAA. Esta PSF se consiguió modelando computacionalmente la óptica del telescopio Sunrise, y se puede observar en la siguiente figura:
 
@@ -204,14 +208,14 @@ Entonces, al igual que antes, cogemos una longitud de onda arbitraria y realizam
     \label{fig:intensidadDecoReal}
 \end{figure}
 
-Como se observa, el método de Richardson-Lucy logra recuperar detalles de la imagen original. Se detallan mejor las estructuras de la imagen, y se observa también un aumento de contraste con la imagen original. 
+Visualmente ya se nota que Richardson-Lucy hace bien su trabajo. Rescata detalles de la imagen que antes estaban difuminados y le da un "empujón" importante al contraste general. 
 
-Para medir la calidad de la deconvolución, al no tener la imagen original no emborronada, no podemos calcular el SSIM ni el RMSE. Utilizaremos entonces una métrica llamada RMS (\textit{Contraste Cuadrático Medio}) que nos permite medir el contraste de la imagen. Esta métrica se define como:
+El problema ahora a la hora de medir esta mejora es que estamos ante datos reales: no existe una "imagen ideal" con la que compararnos, así que las métricas SSIM y RMSE ya no nos sirven. Para sortear esto, tiramos de la métrica RMS (\textit{Contraste Cuadrático Medio}), que simplemente mide el contraste interno de la imagen:
 \begin{equation}
     RMS = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (I_i - \bar{I})^2}
 \end{equation}
 
-Cuanto mayor sea el valor de RMS, mayor será el contraste de la imagen. Por lo tanto, mayor contraste y detalle aparecerá en la imagen deconvolucionado. El resultado de la imagen pasamos de una RMS de $0.2028$ a una RMS de $0.2193$, lo que indica una mejora del $8.2\%$ en el contraste de la imagen. Esto indica que el método de Richardson-Lucy logra mejorar el contraste y detalle de la imagen original.
+La lógica aquí es sencilla: a mayor RMS, más contraste y, en principio, más detalle fino habremos recuperado. En números, pasamos de un RMS inicial de $0.2028$ a $0.2193$ tras la deconvolución. Es una subida del $8.2\%$, lo que confirma numéricamente la mejora en contraste que ya apreciábamos a simple vista.
 
 \subsubsection{Medición del campo magnético}
 Ahora mediremos el algoritmo de Noor para medir el campo magnético a partir de la señal de Stokes $I$ y $V$. Para observar mejor los resultados, observaremos una región de interés de la imagen, que es la siguiente tras deconvolucionarlo con el algoritmo:
@@ -225,9 +229,9 @@ Ahora mediremos el algoritmo de Noor para medir el campo magnético a partir de 
 
 Al igual que antes, se observa que el método logra recuperar la estructura del campo magnético, y se observan detalles que no se veían en la imagen original. Esto indica que el método es capaz de medir el campo magnético a partir de la señal de Stokes $I$ y $V$ de manera efectiva. 
 
-Para poder medirlo, no es recomendable usar la RMS, ya que el campo magnético tiene polaridad, por lo que se puede cancelar la señal. Por lo que calcularemos la métrica de nitidez (\textit{varianza del Laplaciano}). El operador Laplaciano aisla las altas frecuencias de la imagen, que son los que contiene los detalles. Al calcular su varianza, obtenemos un valor que representa la cantidad de detalles que tiene la imagen: $nitidez = Var(\nabla^2 B)$. Cuanto mayor sea el valor de la varianza del Laplaciano, mayor será la nitidez de la imagen. 
+Sin embargo, usar la métrica de RMS aquí no es muy buena idea, ya que el campo magnético tiene polaridades positivas y negativas que al sumarse podrían cancelarse y falsear el contraste. Para evitar este problema, usamos una métrica de nitidez basada en la \textit{varianza del Laplaciano}. Como el Laplaciano se encarga de aislar las altas frecuencias (donde viven los bordes y los detalles finos), su varianza nos da una medida muy fiable de cuánta estructura "nítida" hay en la imagen: $nitidez = Var(\nabla^2 B)$. 
 
-Los resultados obtenidos son los siguientes, la imagen original tiene una nitidez de $1.96 \times 10^2$ y la imagen deconvolucionada tiene una nitidez de $2.03 \times 10^2$, lo que indica una mejora del $3.6\%$ en la nitidez de la imagen. Esto indica que el método logra mejorar la nitidez y detalle de la imagen original, y por lo tanto, es capaz de medir el campo magnético de manera efectiva. 
+Haciendo los números, la nitidez del campo magnético de partida es de $1.96 \times 10^2$, mientras que tras nuestro método sube a $2.03 \times 10^2$. Esta ganancia de un $3.6\%$ demuestra que, efectivamente, la técnica está logrando afinar los detalles de la estructura magnética del Sol con datos completamente reales.
 
 Si vemos la imagen de diferencias entre la imagen original y la deconvolucionada, obtenemos el siguiente resultado:
 

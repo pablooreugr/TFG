@@ -23,7 +23,7 @@ En esta expresión, $d_{observado}$ es la imagen adquirida por el telescopio, $d
 \end{figure}
 
 
-Para tratar este problema matemático de forma más eficiente, se suele aplicar la Transformada de Fourier bidimensional para pasar del dominio de la posición al dominio de las frecuencias espaciales. Físicamente, las frecuencias espaciales indican la rapidez con la que varía la intensidad de la imagen a través del campo de visión: los cambios suaves de iluminación corresponden a bajas frecuencias espaciales, mientras que los detalles más finos y los bordes nítidos representan las altas frecuencias. La gran ventaja de trabajar en este dominio es que, de acuerdo con el Teorema de Convolución, las operaciones matemáticas se simplifican drásticamente: una convolución en el dominio espacial se transforma en una multiplicación en el dominio de las frecuencias, y viceversa.
+Para hacer que este problema matemático sea más manejable, la técnica habitual es aplicar la Transformada de Fourier bidimensional. Esto nos permite pasar del dominio de la posición al dominio de las frecuencias espaciales. Si lo pensamos físicamente, estas frecuencias nos dicen cómo de rápido cambia la intensidad de la luz a lo largo de la imagen. Por ejemplo, las zonas donde la iluminación cambia poco a poco son las bajas frecuencias, mientras que los bordes marcados o los detalles más finos corresponden a las altas frecuencias. La gran ventaja matemática de saltar a este dominio es el Teorema de Convolución: gracias a él, una operación tan pesada como la convolución se convierte en una simple multiplicación, y viceversa.
 
 \begin{equation}
     \label{eq:propFurier}
@@ -33,7 +33,7 @@ Para tratar este problema matemático de forma más eficiente, se suele aplicar 
     \end{split}
 \end{equation}
 
-De esta forma, al aplicar la transformada de Fourier a la expresión \ref{eq:convolucion}, el modelo en el dominio de las frecuencias se expresa de la siguiente manera:
+Sabiendo esto, si aplicamos la transformada a nuestra ecuación inicial (\ref{eq:convolucion}), el modelo en frecuencias queda mucho más limpio:
 
 \begin{equation}
     \label{eq:convolucionFourier}
@@ -42,14 +42,14 @@ De esta forma, al aplicar la transformada de Fourier a la expresión \ref{eq:con
 
 En este texto, la convención de notación emplea letras minúsculas para el dominio espacial y mayúsculas para el dominio de las frecuencias espaciales.
 
-En un caso ideal, la deconvolución directa para obtener $d_{real}$ procedería de la siguiente manera: se divide la transformada de Fourier de la imagen observada por la de la PSF para obtener $D_{real}$, tal como se expresa en la ecuación:
+Si estuviéramos en un caso puramente ideal, bastaría con despejar directamente para encontrar $d_{real}$. Solo tendríamos que dividir la transformada de la imagen observada entre la de la PSF, llegando a la siguiente ecuación:
 
 \begin{equation}
     \label{eq:deconvolucionIdeal}
     D_{real} = \frac{D_{observado}}{P}
 \end{equation}
 
-Por último se realiza la transformada de Fourier inversa para obtener el $d_{real}$. Pero este caso resulta ser ideal. En la práctica, la imagen observada también contiene ruido, por lo que el modelo real se expresa como:
+Finalmente, bastaría con deshacer la transformada (aplicar la inversa) para recuperar nuestra imagen $d_{real}$. Sin embargo, la realidad es bastante distinta, ya que las observaciones reales siempre arrastran ruido. Por ello, el modelo completo tiene que incluir este nuevo factor:
 
 \begin{equation}
     \label{eq:convolucionRuido}
@@ -63,7 +63,7 @@ donde $n$ representa el ruido añadido por el detector, la atmósfera u otras fu
     D_{observado} = D_{real} \cdot P + N
 \end{equation}
 
-En este caso, una deconvolución directa no es estable, ya que al dividir por $P$ el ruido también se amplifica:
+Con el ruido presente, la idea de despejar dividiendo directamente se vuelve inestable. El motivo es que al dividir entre $P$, también acabamos amplificando el ruido:
 
 \begin{equation}
     \label{eq:deconvolucionRuido}
