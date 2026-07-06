@@ -18,7 +18,7 @@ Dado que, según la formulación original, la función $F(x)$ es típicamente co
     F(x_o + \nu) \simeq F(x_0) + J \nu
 \end{equation}
 
-donde $J$ es la matriz Jacobiana del sistema. \\
+donde $J$ es la matriz Jacobiana del sistema. 
 
 La convergencia ideal del algoritmo exige que la nueva estimación concuerde analíticamente con los datos observados, anulando el residuo:
 
@@ -30,7 +30,7 @@ La convergencia ideal del algoritmo exige que la nueva estimación concuerde ana
     \end{split}
 \end{equation}
 
-donde $\beta = d - F(x_0)$. La dificultad analítica subyacente en el tratamiento de datos experimentales radica en que el número de observaciones supera ampliamente al de parámetros libres a ajustar. En consecuencia, $J$ adquiere la estructura de una matriz rectangular, configurando un sistema algebraico sobredeterminado. \\
+donde $\beta = d - F(x_0)$. La dificultad analítica subyacente en el tratamiento de datos experimentales radica en que el número de observaciones supera ampliamente al de parámetros libres a ajustar. En consecuencia, $J$ adquiere la estructura de una matriz rectangular, configurando un sistema algebraico sobredeterminado. 
 
 Para abordar la resolución de este sistema, se implementa una formulación de mínimos cuadrados. Siguiendo la derivación del autor original, la optimización cuadrática del residuo conduce al siguiente sistema de ecuaciones normales:
 
@@ -42,9 +42,9 @@ Para abordar la resolución de este sistema, se implementa una formulación de m
 Esta reformulación algebraica permite calcular la corrección, dado que el producto matricial $J^T J$ genera una matriz cuadrada e invertible. Además, la arquitectura del método integra restricciones físicas intrínsecas del sistema para favorecer la convergencia hacia soluciones físicamente viables.
 
 \subsection{Adaptación de la metodología al problema de la convolución polarimétrica}
-La matriz $J$ constituye el operador Jacobiano del sistema físico modelado. En el problema particular de este Trabajo de Fin de Grado, la transformación directa abarca dos operaciones anidadas: el cálculo local de la señal de polarización bajo la aproximación de campo débil y su posterior degradación espacial mediante la convolución geométrica con la PSF. Al proyectar este problema bidimensional, cada parámetro escalar $x_i$ establece una correspondencia píxel a píxel con la imagen original. Considerando, por ejemplo, matrices de datos de 1400x1400 elementos, la instanciación explícita de la matriz Jacobiana requeriría un volumen de memoria RAM inasumible computacionalmente.\\
+La matriz $J$ constituye el operador Jacobiano del sistema físico modelado. En el problema particular de este Trabajo de Fin de Grado, la transformación directa abarca dos operaciones anidadas: el cálculo local de la señal de polarización bajo la aproximación de campo débil y su posterior degradación espacial mediante la convolución geométrica con la PSF. Al proyectar este problema bidimensional, cada parámetro escalar $x_i$ establece una correspondencia píxel a píxel con la imagen original. Considerando, por ejemplo, matrices de datos de 1400x1400 elementos, la instanciación explícita de la matriz Jacobiana requeriría un volumen de memoria RAM inasumible computacionalmente.
 
-En este punto es donde reside la principal optimización analítica aportada en este desarrollo. Si, en lugar de instanciar explícitamente $J$ como una matriz de dimensiones masivas, se redefine matemáticamente como un operador funcional, y se demuestra su linealidad, el sistema queda rigurosamente bien propuesto. La demostración de linealidad garantiza la existencia analítica de un operador transpuesto (o adjunto) $J^T$, posibilitando así la resolución iterativa de la ecuación (\ref{eq:sistemaResolver}) sin necesidad de almacenar la matriz en memoria.\\
+En este punto es donde reside la principal optimización analítica aportada en este desarrollo. Si, en lugar de instanciar explícitamente $J$ como una matriz de dimensiones masivas, se redefine matemáticamente como un operador funcional, y se demuestra su linealidad, el sistema queda rigurosamente bien propuesto. La demostración de linealidad garantiza la existencia analítica de un operador transpuesto (o adjunto) $J^T$, posibilitando así la resolución iterativa de la ecuación (\ref{eq:sistemaResolver}) sin necesidad de almacenar la matriz en memoria.
 
 La demostración formal de linealidad procede del siguiente modo. Partiendo de la expresión teórica (\ref{eq:campoDebil}), es posible agrupar los factores independientes del campo magnético en una magnitud $K(x, y, \lambda)$:
 
@@ -82,16 +82,31 @@ Por otra parte, se demuestra analíticamente que el adjunto de un operador de co
 
 \subsection{Resolución numérica: Subespacios de Krylov y Gradiente Conjugado}
 
-Sustituyendo el operador directo (\ref{eq:demosLinealidad}) y su transpuesta (\ref{eq:jacobianaTras}) en el sistema de ecuaciones normales (\ref{eq:sistemaResolver}), nuestro problema se reduce a un sistema lineal clásico de la forma $Ax = b$. \\
+Sustituyendo el operador directo (\ref{eq:demosLinealidad}) y su transpuesta (\ref{eq:jacobianaTras}) en el sistema de ecuaciones normales (\ref{eq:sistemaResolver}), nuestro problema se reduce a un sistema lineal clásico de la forma $Ax = b$. 
 
 El esquema computacional del método es el siguiente:
 
-\begin{enumerate}
-    \item Se establece un mapa bidimensional inicial para el campo magnético, $B_{\parallel}^0$. Una aproximación heurística válida para este punto de partida es el propio mapa de campo magnético extraído directamente de los datos en crudo (afectado por la degradación instrumental).
-    \item Se evalúa el operador directo sobre esta estimación inicial para generar el modelo sintético de la señal de polarización: $V' = J B_{\parallel}^0$.
-    \item Se cuantifica el residuo espacial restando el modelo sintético a los datos experimentales observados: $\beta = V_{\mathrm{obs}} - V'$.
-    \item Se formula el sistema de ecuaciones normales acoplando las incógnitas $\Delta B_{\parallel}$ a los operadores funcionales.
-\end{enumerate}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.8cm,
+        font=\small,
+        block/.style={rectangle, draw, fill=purple!10, text width=6.5cm, text centered, rounded corners, minimum height=1cm},
+        arrow/.style={-{Stealth[scale=1.0]}, thick}
+        ]
+        
+        \node[block] (step1) {\textbf{1. Inicialización:} \\ Estimación inicial $B_{\parallel}^0$};
+        \node[block, below=of step1] (step2) {\textbf{2. Modelo sintético:} \\ Señal $V' = J B_{\parallel}^0$};
+        \node[block, below=of step2] (step3) {\textbf{3. Residuo:} \\ $\beta = V_{\mathrm{obs}} - V'$};
+        \node[block, below=of step3] (step4) {\textbf{4. Corrección:} \\ Resolver $J^T J \Delta B_{\parallel} = J^T \beta$};
+        
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+        \draw[arrow] (step3) -- (step4);
+    \end{tikzpicture}
+    \caption{Diagrama de flujo del esquema computacional del método de inversión.}
+    \label{fig:flowchart_metodo}
+\end{figure}
 
 El resultado es la ecuación integral de optimización:
 

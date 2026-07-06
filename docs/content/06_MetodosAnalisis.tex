@@ -16,10 +16,10 @@ donde $x_i$ es el valor de la señal original en el punto (o píxel) $i$, $y_i$ 
 Dado que penaliza las diferencias elevándolas al cuadrado, un valor de RMSE más bajo indica que la señal recuperada es cuantitativamente más fiel a la señal original. Por el contrario, un RMSE más alto evidencia una mayor discrepancia entre la señal procesada y la referencia.
 
 \subsection{Índice de Similitud Estructural (SSIM)}
-El SSIM es una métrica de calidad de imagen que, a diferencia del RMSE, evalúa la degradación de la estructura espacial. Considera tres factores fundamentales: luminancia, contraste y estructura. El resultado de esta métrica es un valor comprendido entre $-1$ y $1$, donde los valores cercanos a $1$ indican una alta similitud con la imagen original. \\
+El SSIM es una métrica de calidad de imagen que, a diferencia del RMSE, evalúa la degradación de la estructura espacial. Considera tres factores fundamentales: luminancia, contraste y estructura. El resultado de esta métrica es un valor comprendido entre $-1$ y $1$, donde los valores cercanos a $1$ indican una alta similitud con la imagen original. 
 
-Aunque matemáticamente pueden presentarse valores negativos correspondientes a una correlación estructural inversa, la degradación instrumental estudiada no produce tales efectos. Por tanto, el rango de valores de interés físico para este análisis se restringe a $[0,1]$. \\
+Aunque matemáticamente pueden presentarse valores negativos correspondientes a una correlación estructural inversa, la degradación instrumental estudiada no produce tales efectos. Por tanto, el rango de valores de interés físico para este análisis se restringe a $[0,1]$. 
 
-Dada la complejidad analítica en el cálculo explícito de esta métrica, se recurre a la implementación computacional provista por la función \texttt{ssim} de la biblioteca \texttt{scikit-image} en Python, facilitando la evaluación eficiente del índice entre pares de imágenes. \\
+Dada la complejidad analítica en el cálculo explícito de esta métrica, se recurre a la implementación computacional provista por la función \texttt{ssim} de la biblioteca \texttt{scikit-image} en Python, facilitando la evaluación eficiente del índice entre pares de imágenes. 
 
 Cabe destacar que, si bien el RMSE y el SSIM proporcionan evaluaciones cuantitativas rigurosas, la inspección visual cualitativa de las imágenes sigue siendo un criterio complementario fundamental para dictaminar la viabilidad final de la reconstrucción.

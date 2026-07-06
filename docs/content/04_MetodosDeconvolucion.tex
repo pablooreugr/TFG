@@ -7,11 +7,25 @@ Este capítulo constituye una revisión de los métodos de deconvolución clási
 \subsection{Deconvolución de Fourier}
 El primer método analizado es el filtro inverso o deconvolución de Fourier. Este método clásico se basa en el principio presentado en la ecuación (\ref{eq:deconvolucionIdeal}). Su formulación procede del siguiente modo: dada una imagen observada $d_{observado}$, y conocida la PSF del telescopio $p$ (recordando la convención de minúsculas para el dominio espacial y mayúsculas para las frecuencias espaciales), el procedimiento es:
 
-\begin{enumerate}
-    \item Se realiza la transformada de Fourier de la imagen observada y de la PSF, obteniendo así $D_{observado}$ y $P$.
-    \item Se realiza la división de $D_{observado}$ entre $P$, obteniendo así $D_{real}$, tal y como se indica en la ecuación (\ref{eq:deconvolucionIdeal}).
-    \item Se realiza la transformada de Fourier inversa para obtener el $d_{real}$.
-\end{enumerate}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.8cm,
+        font=\small,
+        block/.style={rectangle, draw, fill=blue!10, text width=6.5cm, text centered, rounded corners, minimum height=1cm},
+        arrow/.style={-{Stealth[scale=1.0]}, thick}
+        ]
+        
+        \node[block] (step1) {\textbf{1. Transformada de Fourier:} \\ $d_{obs} \rightarrow D_{obs}$, $p \rightarrow P$};
+        \node[block, below=of step1] (step2) {\textbf{2. División frecuencial:} \\ $D_{real} = D_{obs} / P$};
+        \node[block, below=of step2] (step3) {\textbf{3. Transformada inversa:} \\ $D_{real} \rightarrow d_{real}$};
+        
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+    \end{tikzpicture}
+    \caption{Diagrama de flujo del algoritmo de deconvolución de Fourier.}
+    \label{fig:flowchart_fourier}
+\end{figure}
 
 La principal limitación de este método reside en que, al dividir la transformada de la imagen entre la función de transferencia óptica de la PSF, el ruido inherente a los datos se amplifica severamente, provocando inestabilidad numérica. Como se ilustrará empíricamente en secciones posteriores, este enfoque resulta insuficiente para obtener resultados aceptables, motivando la exploración de algoritmos de deconvolución más avanzados capaces de mitigar el efecto del ruido.
 
@@ -36,20 +50,31 @@ En el procesado de datos reales, los espectros de potencia exactos rara vez se c
     W(u,v) = \frac{P^*(u,v)}{|P(u,v)|^2 + \frac{1}{\mathrm{SNR}^2} + \epsilon}
 \end{equation}
 
-Cabe destacar que se introduce el parámetro numérico $\epsilon$ en el denominador para garantizar la estabilidad del algoritmo y evitar posibles singularidades o divisiones por cero durante la ejecución computacional. \\
+Cabe destacar que se introduce el parámetro numérico $\epsilon$ en el denominador para garantizar la estabilidad del algoritmo y evitar posibles singularidades o divisiones por cero durante la ejecución computacional. 
 
-
-Analizando el comportamiento asintótico de la ecuación (\ref{eq:wieeener}), se distinguen dos regímenes principales. En el rango de las bajas frecuencias espaciales, donde típicamente se concentra la mayor parte de la señal de las estructuras observadas, la relación señal-ruido ($\mathrm{SNR}$) toma valores elevados. En consecuencia, el término $1/\mathrm{SNR}^2$ tiende a cero y el filtro se aproxima al comportamiento de un filtro inverso clásico. Por el contrario, en el régimen de altas frecuencias espaciales, que suele estar dominado por las fluctuaciones rápidas del ruido instrumental, la $\mathrm{SNR}$ decae significativamente. Esto provoca que el denominador de la expresión aumente, atenuando así los componentes frecuenciales correspondientes y evitando la amplificación del ruido. \\
+Analizando el comportamiento asintótico de la ecuación (\ref{eq:wieeener}), se distinguen dos regímenes principales. En el rango de las bajas frecuencias espaciales, donde típicamente se concentra la mayor parte de la señal de las estructuras observadas, la relación señal-ruido ($\mathrm{SNR}$) toma valores elevados. En consecuencia, el término $1/\mathrm{SNR}^2$ tiende a cero y el filtro se aproxima al comportamiento de un filtro inverso clásico. Por el contrario, en el régimen de altas frecuencias espaciales, que suele estar dominado por las fluctuaciones rápidas del ruido instrumental, la $\mathrm{SNR}$ decae significativamente. Esto provoca que el denominador de la expresión aumente, atenuando así los componentes frecuenciales correspondientes y evitando la amplificación del ruido. 
 
 Para la implementación computacional de este filtro, ha sido necesario estimar numéricamente un valor global de la $\mathrm{SNR}$ directamente a partir de la imagen observada. Como aportación propia en esta fase experimental del trabajo, se ha desarrollado y programado una rutina empírica basada en el análisis estadístico de los píxeles adyacentes, estructurada en los siguientes pasos:
 
-\begin{enumerate}
-    \item \textbf{Estimación de la señal:} Se aproxima la amplitud característica de la señal mediante el cálculo del valor medio de intensidad de todos los píxeles que conforman la matriz de la imagen.
-    
-    \item \textbf{Extracción de la componente de ruido:} Se calcula la diferencia de intensidad entre columnas adyacentes de la imagen. Dado que las estructuras físicas reales presentan variaciones espaciales suaves a la escala de un píxel, esta sustracción cancela la mayor parte de la señal subyacente, aislando fundamentalmente las fluctuaciones de alta frecuencia asociadas al ruido aleatorio.
-    
-    \item \textbf{Cuantificación del nivel de ruido:} Asumiendo que el ruido en píxeles contiguos se comporta como variables aleatorias independientes, por las propiedades estadísticas de la varianza, la varianza de la diferencia de estas dos variables es igual a la suma de sus respectivas varianzas. Por tanto, la desviación típica de esta matriz diferencia será $\sqrt{2}$ veces mayor que la del ruido original de la imagen. Así, la estimación real del ruido se obtiene calculando la desviación estándar estadística de estas diferencias y dividiéndola por el factor de corrección $\sqrt{2}$.
-\end{enumerate}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.8cm,
+        font=\small,
+        block/.style={rectangle, draw, fill=green!10, text width=6.5cm, text centered, rounded corners, minimum height=1cm},
+        arrow/.style={-{Stealth[scale=1.0]}, thick}
+        ]
+        
+        \node[block] (step1) {\textbf{1. Señal:} \\ Valor medio de intensidad de la imagen.};
+        \node[block, below=of step1] (step2) {\textbf{2. Ruido relativo:} \\ Diferencia de intensidad entre columnas adyacentes.};
+        \node[block, below=of step2] (step3) {\textbf{3. Nivel de ruido real:} \\ Desviación típica de las diferencias dividida por $\sqrt{2}$.};
+        
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+    \end{tikzpicture}
+    \caption{Diagrama de flujo de la rutina empírica para la estimación del nivel de ruido.}
+    \label{fig:flowchart_wiener_snr}
+\end{figure}
 
 Finalmente, la estimación de la $\mathrm{SNR}$ que se introduce en el algoritmo de deconvolución se obtiene como el cociente directo entre el valor medio de la señal y esta estimación estadística del ruido.
 
@@ -67,16 +92,33 @@ donde $u^{(k)}$ es la estimación de la imagen en la iteración $k$, $d_{observa
 
 En el contexto de este trabajo, la implementación computacional del algoritmo ejecuta de forma recurrente los siguientes pasos para converger hacia la solución:
 
-\begin{enumerate}
-    \item En primer lugar, se convoluciona la estimación actual de la imagen con la PSF original ($u^{(k)} \ast p$). Este paso simula analíticamente la degradación instrumental que sufriría dicha estimación. Para garantizar la estabilidad numérica frente a singularidades, se añade un parámetro infinitesimal ($\epsilon = 10^{-12}$) al resultado.
-    \item A continuación, se calcula el cociente escalar, píxel a píxel, entre la imagen observada ($d_{observado}$) y la imagen simulada obtenida en el paso anterior. En el límite de convergencia ideal, esta matriz de cocientes tendería a la unidad escalar.
-    \item Seguidamente, el resultado de dicho cociente se convoluciona con la PSF adjunta ($p^*$), obteniendo así el mapa espacial de factores de corrección geométricamente coherentes.
-    \item Finalmente, se actualiza la estimación multiplicando la imagen actual ($u^{(k)}$) por el mapa de correcciones calculado, generando la nueva aproximación iterativa ($u^{(k+1)}$).
-\end{enumerate}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.8cm,
+        font=\small,
+        block/.style={rectangle, draw, fill=orange!10, text width=6.5cm, text centered, rounded corners, minimum height=1cm},
+        arrow/.style={-{Stealth[scale=1.0]}, thick}
+        ]
+        
+        \node[block] (step1) {\textbf{1. Simulación:} \\ $u^{(k)} \ast p + \epsilon$};
+        \node[block, below=of step1] (step2) {\textbf{2. Cociente escalar:} \\ $\frac{d_{obs}}{u^{(k)} \ast p}$};
+        \node[block, below=of step2] (step3) {\textbf{3. Corrección espacial:} \\ $\left( \frac{d_{obs}}{u^{(k)} \ast p} \right) \ast p^*$};
+        \node[block, below=of step3] (step4) {\textbf{4. Actualización:} \\ $u^{(k+1)} = u^{(k)} \cdot \text{Corrección}$};
+        
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+        \draw[arrow] (step3) -- (step4);
+        
+        \draw[arrow] (step4.west) -- ++(-0.5,0) |- node[anchor=east, pos=0.25, font=\footnotesize] {Siguiente iteración} (step1.west);
+    \end{tikzpicture}
+    \caption{Diagrama de flujo de una iteración del algoritmo de Richardson-Lucy.}
+    \label{fig:flowchart_rl}
+\end{figure}
 
-Este ciclo iterativo finaliza tras un número predefinido de iteraciones (en la implementación se ha fijado un valor por defecto de 30). La principal desventaja de este método heurístico es la ausencia de un criterio de parada natural o analítico. Un exceso de iteraciones provoca que el algoritmo sobreajuste las fluctuaciones estadísticas del ruido de fondo, amplificándolo artificialmente e introduciendo artefactos espaciales espurios en la imagen resultante. \\
+Este ciclo iterativo finaliza tras un número predefinido de iteraciones (en la implementación se ha fijado un valor por defecto de 30). La principal desventaja de este método heurístico es la ausencia de un criterio de parada natural o analítico. Un exceso de iteraciones provoca que el algoritmo sobreajuste las fluctuaciones estadísticas del ruido de fondo, amplificándolo artificialmente e introduciendo artefactos espaciales espurios en la imagen resultante. 
 
-Por otra parte, como se ha anticipado, el algoritmo Richardson-Lucy impone estrictamente la no negatividad de los datos. En consecuencia, su aplicación es matemáticamente inválida para señales que presenten dominio tanto positivo como negativo. Este es precisamente el escenario que caracteriza a la componente del parámetro de Stokes $V$, cuya correcta deconvolución es el requisito previo para derivar la topología del campo magnético. A pesar de ello, para el parámetro de intensidad ($I$), este método heurístico es el que proporciona mayor fidelidad geométrica, justificando su inclusión y empleo en este análisis previo. \\
+Por otra parte, como se ha anticipado, el algoritmo Richardson-Lucy impone estrictamente la no negatividad de los datos. En consecuencia, su aplicación es matemáticamente inválida para señales que presenten dominio tanto positivo como negativo. Este es precisamente el escenario que caracteriza a la componente del parámetro de Stokes $V$, cuya correcta deconvolución es el requisito previo para derivar la topología del campo magnético. A pesar de ello, para el parámetro de intensidad ($I$), este método heurístico es el que proporciona mayor fidelidad geométrica, justificando su inclusión y empleo en este análisis previo. 
 
 Un aspecto técnico crítico implementado en los métodos de filtrado y deconvolución iterativa es la gestión de las condiciones de contorno mediante técnicas de expansión (\textit{padding}). Durante la operación de convolución numérica, la ausencia de información espacial fuera de los límites de la imagen provoca distorsiones de borde. Para mitigar este efecto, la imagen matriz se expande sintéticamente añadiendo un margen periférico de dimensiones comparables a la extensión efectiva de la PSF, el cual se rellena extrapolando los datos mediante una condición geométrica especular simétrica. De este modo, la convolución procesa el margen simulando la continuidad espacial de la estructura real, lo que estabiliza drásticamente el resultado en la periferia. Como último paso de la rutina, la imagen resultante se recorta a sus dimensiones originales para eliminar este relleno artificial.
 

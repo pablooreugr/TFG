@@ -2,7 +2,7 @@
 
 \section{Fundamentos Teóricos}
 \subsection{Datos espectrales, parámetros de Stokes}
-Para establecer el contexto del estudio, es necesario definir la magnitud objeto de medición. La información extraída del Sol proviene de las propiedades de la luz, o más precisamente, de las ondas electromagnéticas. Durante las observaciones solares, el rango de longitudes de onda utilizado en este proyecto corresponde a la luz visible (entre $4000 - 7000$ \AA). La principal limitación de trabajar con luz visible radica en que medir directamente las propiedades de su campo electromagnético (como la amplitud o la fase) es tecnológicamente inviable debido a sus altísimas frecuencias.\\
+Para establecer el contexto del estudio, es necesario definir la magnitud objeto de medición. La información extraída del Sol proviene de las propiedades de la luz, o más precisamente, de las ondas electromagnéticas. Durante las observaciones solares, el rango de longitudes de onda utilizado en este proyecto corresponde a la luz visible (entre $4000 - 7000$ \AA). La principal limitación de trabajar con luz visible radica en que medir directamente las propiedades de su campo electromagnético (como la amplitud o la fase) es tecnológicamente inviable debido a sus altísimas frecuencias.
 
 Por lo tanto, los telescopios no miden el campo eléctrico directamente, sino que su respuesta es proporcional a la energía electromagnética promediada en el tiempo (la intensidad). Para poder medir el flujo de la energía además de las propiedades electromagnéticas, se usa el tensor de polarización. 
 
@@ -100,7 +100,7 @@ Uno de los objetivos fundamentales de la física solar es inferir las condicione
     \vec{E}(\vec{r}, t) = \vec{E_0} e^{2 \pi \frac{\nu}{c}(n \vec{r} \cdot \vec{\Omega} - ct)}
 \end{equation}
 
-donde $\nu$ es la frecuencia de la onda, $n$ es el índice de refracción, y $\Omega$ es la dirección de propagación de la onda. \\
+donde $\nu$ es la frecuencia de la onda, $n$ es el índice de refracción, y $\Omega$ es la dirección de propagación de la onda. 
 
 Si se considera un medio anisótropo, cada dirección de propagación de la onda posee un índice de refracción distinto. Esto puede deberse a la presencia de un campo magnético unidireccional o a otras anisotropías del plasma. Asumiendo que dicho medio presenta tres direcciones principales ortogonales (cuyos vectores normales se denotarán como $\vec{u_\alpha}$, con $\alpha = 1, 2, 3$), la función de onda se expresaría como:
 
@@ -109,7 +109,7 @@ Si se considera un medio anisótropo, cada dirección de propagación de la onda
     \vec{E} (\vec{r}, t) = \sum_\alpha \epsilon_\alpha \vec{u_\alpha} e^{2 \pi \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)}
 \end{equation}
 
-donde $\epsilon_\alpha$ es la amplitud de la onda en la dirección $\vec{u_\alpha}$, y $n_\alpha$ es el índice de refracción correspondiente. \\
+donde $\epsilon_\alpha$ es la amplitud de la onda en la dirección $\vec{u_\alpha}$, y $n_\alpha$ es el índice de refracción correspondiente. 
 
 Para definir los parámetros de Stokes, es necesario proyectar la onda en una base vectorial donde un vector coincida con la dirección de propagación y los otros dos sean ortogonales a esta ($\vec{e_1}, \vec{e_2}$). En dicha base del observador, la onda se escribe como:
 
@@ -118,7 +118,7 @@ Para definir los parámetros de Stokes, es necesario proyectar la onda en una ba
     \vec{E} (\vec{r}, t) = \sum_k \epsilon_k (\vec{r}, t) \vec{e_k} 
 \end{equation}
 
-donde $k = 1, 2$, y $\epsilon_k$ es la amplitud de la onda en la dirección $\vec{e_k}$. \\
+donde $k = 1, 2$, y $\epsilon_k$ es la amplitud de la onda en la dirección $\vec{e_k}$. 
 
 Dado que las expresiones (\ref{eq:ondaAnisotropa}) y (\ref{eq:direccionProp}) representan el mismo campo eléctrico, pueden igualarse:
 
@@ -164,7 +164,7 @@ donde los coeficientes $G_{jk}$ forman la matriz de propagación del campo eléc
     G_{jk} = -2\pi i \frac{\nu}{c} \sum_\alpha n_\alpha C_{\alpha j} C_{\alpha k}^* \qquad (j,k = 1,2)
 \end{equation}
 
-La matriz $G$ encapsula las propiedades ópticas del medio, tales como los coeficientes de absorción, dispersión y los efectos introducidos por el campo magnético. A partir de ella se formula la ecuación de evolución espacial de los parámetros de Stokes. \\
+La matriz $G$ encapsula las propiedades ópticas del medio, tales como los coeficientes de absorción, dispersión y los efectos introducidos por el campo magnético. A partir de ella se formula la ecuación de evolución espacial de los parámetros de Stokes. 
 
 Si recuperamos el tensor de polarización de la ecuación (\ref{eq: tensorDePolarizacion}) y derivamos cada parte respecto a la distancia $s$, aplicando la ecuación (\ref{eq:transferencia_campo}) nos queda:
 
@@ -444,7 +444,7 @@ El término $\lambda_B$ representa el desdoblamiento Zeeman para un triplete nor
     \lambda_B = \frac{e \lambda_o^2 B}{4 \pi m_e c}
 \end{equation}
 
-donde $e$ es la carga elemental del electrón, $m_e$ es su masa, $c$ es la velocidad de la luz, $\lambda_o$ es la longitud de onda central de la transición en reposo, y $B$ es la intensidad del campo magnético (expresado en el Sistema Internacional). Por tanto, la constante $\bar{g}$, que es el factor de Landé efectivo de la transición atómica, actúa como un factor de corrección cuántico, de manera que el producto $\bar{g} \lambda_B$ nos da el desdoblamiento total y real de la línea debido al efecto Zeeman. \\
+donde $e$ es la carga elemental del electrón, $m_e$ es su masa, $c$ es la velocidad de la luz, $\lambda_o$ es la longitud de onda central de la transición en reposo, y $B$ es la intensidad del campo magnético (expresado en el Sistema Internacional). Por tanto, la constante $\bar{g}$, que es el factor de Landé efectivo de la transición atómica, actúa como un factor de corrección cuántico, de manera que el producto $\bar{g} \lambda_B$ nos da el desdoblamiento total y real de la línea debido al efecto Zeeman. 
 
 Al ser una variación pequeña, podemos aproximar las soluciones de la ecuación de la transferencia radiativa (\ref{eq:solPsi}) hasta primer orden del polinomio de Taylor alrededor de la frecuencia central.
 
@@ -492,7 +492,7 @@ Que gracias a la definición de $\lambda_B$ de la ecuación (\ref{eq:lambdaB}) y
 \end{equation}
 
 donde $C = 4.67 \times 10^{-13} \text{G}^{-1}\text{\AA}^{-1}$ es una constante de proporcionalidad dependiente del sistema de unidades empleado.
-Esta relación constituye la ecuación central del presente trabajo, a partir de la cual se inferirán los valores del campo magnético longitudinal. \\
+Esta relación constituye la ecuación central del presente trabajo, a partir de la cual se inferirán los valores del campo magnético longitudinal. 
 
 Si revisamos un ejemplo de con datos reales, que será los mismos datos que se revisarán en la sección (\ref{sec:datosReales}) posteriormente, se observará un ejemplo de la forma real que tienen las curvas de intensidad y polarización circular, y cómo se ajusta la ecuación (\ref{eq:campoDebil}) a los datos experimentales, con valores normalizados para visualizar la forma de las curvas.
 

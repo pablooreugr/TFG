@@ -24,7 +24,7 @@
 
 \usepackage{latexsym}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,babel}
+\usetikzlibrary{arrows.meta,babel,positioning,shapes.geometric,calc}
 \usepackage{soul}
 \usepackage{array}
 %\usepackage{marvosym}
@@ -34,7 +34,7 @@
 \usepackage{xspace}
 \usepackage{color}
 \usepackage{booktabs}
-\usepackage{parskip}
+% \usepackage{parskip} % Comentado para habilitar la sangría (indentación) en los párrafos
 \usepackage{xtab}
 \usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=blue]{hyperref}
 \numberwithin{equation}{section}
@@ -49,15 +49,15 @@
 %\addto\captionsenglish{\renewcommand{\chaptername}{}}
 
 % TFG en español:
-\usepackage[spanish,es-nodecimaldot,es-tabla,es-lcroman,es-nosectiondot,
-            es-noindentfirst]{babel}
+\usepackage[spanish,es-nodecimaldot,es-tabla,es-lcroman,es-nosectiondot]{babel}
 \renewcommand\spanishchaptername{}
 
 % Formato de la página:
 \usepackage{fancyhdr}
 \usepackage[top=2.88cm,bottom=2.97cm,left=2.95cm,right=2.95cm]{geometry}
 \setlength{\parskip}{0.1cm}
-
+\setlength{\parindent}{1.5em} % Añadida sangría para la primera línea de cada párrafo
+\raggedbottom
 % Pon aquí tus definiciones:
 
 \newcommand{\dis}{\displaystyle}
