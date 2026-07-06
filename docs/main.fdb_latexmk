@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex main"] 1781792573.90843 "main.aux" "main.bbl" "main" 1781792575.71279 0
-  "./referencias.bib" 1781792570.33194 7575 298678bcecadb4b8e1744e5a5af04b7c ""
+["bibtex main"] 1781792573.90843 "main.aux" "main.bbl" "main" 1783345894.89022 0
+  "./referencias.bib" 1783345892.97958 7575 298678bcecadb4b8e1744e5a5af04b7c ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/unsrt.bst" 1777593600 18030 1376b4b231b50c66211e47e42eda2875 ""
-  "main.aux" 1781792575.31082 2172 6221e6a4472bff4eb7bf8228d6673586 "pdflatex"
+  "main.aux" 1783345894.67936 2172 6221e6a4472bff4eb7bf8228d6673586 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1781792574.18405 "/home/pabloore/conjuntoV/universidad/TFG/docs/main.tex" "main.pdf" "main" 1781792575.71298 0
-  "/home/pabloore/conjuntoV/universidad/TFG/docs/main.tex" 1777312038.74313 3935 793ba48b831f65782f3c536d4ac782e6 ""
+["pdflatex"] 1783345894.06796 "/home/pabloore/conjuntoV/universidad/TFG/docs/main.tex" "main.pdf" "main" 1783345894.89038 0
+  "/home/pabloore/conjuntoV/universidad/TFG/docs/main.tex" 1783345892.97934 3935 793ba48b831f65782f3c536d4ac782e6 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1777593600 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/palatino/pplb8r.tfm" 1136768653 2532 9ad73cf4dd2173a847f2a5f5608e0b9a ""
@@ -136,19 +136,19 @@
   "/usr/share/texlive/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texlive/texmf-dist/tex/latex/xtab/xtab.sty" 1312313272 20106 cec6cadeaa62ca1707a316e38d65a9eb ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1777593600 43785 66587115382950aca692b5f6e3c2fb74 ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1779955590 4809859 1cc0b42a4059a502ddddf08a9dd2fe76 ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1779955332 3520603 cea0e457c7b68129786020111aefbf1c ""
-  "content/01_Introduccion.tex" 1781792570.32534 155 3bd4dc04c9e88d7a5336b505e4845370 ""
-  "content/02_FundamentoTeor.tex" 1781792570.32552 3235 0c08c89cc270644d67d0979b7e50deda ""
-  "content/03_Metodologia.tex" 1781792570.32552 49 72ed9db5abf54f1da7afa4fc3c9b21ef ""
-  "content/04_Resultados.tex" 1777312038.73914 47 e0d9da4de3c39496bb5b697a4c02588a ""
-  "content/05_Conclusion.tex" 1777312038.7392 49 d58aaa31f76df2e959b2b6172ae82c4d ""
-  "img/escudoUGRmonocromo.png" 1777312038.73985 160809 de7617aa95455ecd794fe6065fc4748a ""
-  "main.aux" 1781792575.31082 2172 6221e6a4472bff4eb7bf8228d6673586 "pdflatex"
-  "main.bbl" 1781792574.17679 49 0eba253fc001332e731e8aba3f23127b "bibtex main"
-  "main.out" 1781792575.31282 1276 fd19c41925302872867ef5012ba6f1bc "pdflatex"
-  "main.tex" 1777312038.74313 3935 793ba48b831f65782f3c536d4ac782e6 ""
-  "main.toc" 1781792575.31425 715 81ed3e38d4baf71c161b80aeac2beacf "pdflatex"
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1782936211 4809859 1cc0b42a4059a502ddddf08a9dd2fe76 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1783065414 3520872 5b1c91ecc8a398fa52d2e48cb2478c78 ""
+  "content/01_Introduccion.tex" 1783345892.97503 155 3bd4dc04c9e88d7a5336b505e4845370 ""
+  "content/02_FundamentoTeor.tex" 1783345892.97512 3235 0c08c89cc270644d67d0979b7e50deda ""
+  "content/03_Metodologia.tex" 1783345892.97519 49 72ed9db5abf54f1da7afa4fc3c9b21ef ""
+  "content/04_Resultados.tex" 1783345892.97527 47 e0d9da4de3c39496bb5b697a4c02588a ""
+  "content/05_Conclusion.tex" 1783345892.97533 49 d58aaa31f76df2e959b2b6172ae82c4d ""
+  "img/escudoUGRmonocromo.png" 1782122304.77919 160809 de7617aa95455ecd794fe6065fc4748a ""
+  "main.aux" 1783345894.67936 2172 6221e6a4472bff4eb7bf8228d6673586 "pdflatex"
+  "main.bbl" 1783345892.97557 49 0eba253fc001332e731e8aba3f23127b "bibtex main"
+  "main.out" 1783345894.68082 1276 fd19c41925302872867ef5012ba6f1bc "pdflatex"
+  "main.tex" 1783345892.97934 3935 793ba48b831f65782f3c536d4ac782e6 ""
+  "main.toc" 1783345894.68172 715 81ed3e38d4baf71c161b80aeac2beacf "pdflatex"
   (generated)
   "main.aux"
   "main.log"
