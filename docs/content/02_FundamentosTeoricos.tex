@@ -2,11 +2,11 @@
 
 \section{Fundamentos Teóricos}
 \subsection{Datos espectrales, parámetros de Stokes}
-Primero, para situarnos dentro del tema, vamos a definir exactamente qué estamos midiendo. Toda la información que extraemos del Sol proviene de las propiedades de la luz, o lo que es lo mismo, de las ondas electromagnéticas. Cuando medimos el Sol, el rango de longitudes de onda que se usará en este proyecto entra en el de la luz visible (entre $4000 - 7000$ \AA). La principal limitación de trabajar con luz visible radica en que medir directamente las propiedades de su campo electromagnético (como la amplitud o la fase) es tecnológicamente inviable debido a sus altísimas frecuencias.\\
+Para establecer el contexto del estudio, es necesario definir la magnitud objeto de medición. La información extraída del Sol proviene de las propiedades de la luz, o más precisamente, de las ondas electromagnéticas. Durante las observaciones solares, el rango de longitudes de onda utilizado en este proyecto corresponde a la luz visible (entre $4000 - 7000$ \AA). La principal limitación de trabajar con luz visible radica en que medir directamente las propiedades de su campo electromagnético (como la amplitud o la fase) es tecnológicamente inviable debido a sus altísimas frecuencias.\\
 
 Por lo tanto, los telescopios no miden el campo eléctrico directamente, sino que su respuesta es proporcional a la energía electromagnética promediada en el tiempo (la intensidad). Para poder medir el flujo de la energía además de las propiedades electromagnéticas, se usa el tensor de polarización. 
 
-Para entender el tensor primero hay que entender cómo se entiende matemáticamente la polarización de una onda electromagnética. Podemos entender una onda polarizada como suma de dos ondas una en cada eje de coordenadas, los dos transversales a la dirección de propagación, con la misma frecuencia pero distinto desfase. En la siguiente figura (\ref{fig:componentes_em}) se muestra cómo la onda final es la suma de distintas ondas.
+Para comprender la naturaleza de este tensor, es necesario definir matemáticamente la polarización de una onda electromagnética. Una onda polarizada puede describirse como la superposición de dos ondas ortogonales, ambas transversales a la dirección de propagación, con idéntica frecuencia pero distinto desfase. En la figura (\ref{fig:componentes_em}) se ilustra cómo la onda resultante es la suma de dichas componentes.
 
 \begin{figure}[H]
     \centering
@@ -79,9 +79,9 @@ Esta matriz está definida mediante números complejos que contienen informació
     \end{aligned}
 \end{equation}
 
-Donde $\kappa$ es un factor de proporcionalidad que depende de la luz y del telescopio. 
+En estas expresiones, $\kappa$ es un factor de proporcionalidad dependiente de la radiación y de las características del telescopio. 
 
-Desde un punto de vista físico, cada uno de los parámetros de Stokes tiene un significado.
+Desde un punto de vista físico, cada parámetro de Stokes tiene un significado específico:
 
 \begin{itemize}
     \item $I$ es la intensidad total de la luz, es decir, la energía electromagnética que llega al detector por unidad de tiempo y superficie.
@@ -90,7 +90,7 @@ Desde un punto de vista físico, cada uno de los parámetros de Stokes tiene un 
     \item $V$ cuantifica la polarización circular y permite distinguir si domina la componente derecha o la izquierda.
 \end{itemize}
 
-Donde determinar $V$ es especialmente importante, ya que nos permitirá poder medir el campo magnético del Sol, como explicaremos más adelante.
+La determinación de $V$ reviste especial importancia, dado que permite cuantificar el campo magnético solar, aspecto que se detallará en secciones posteriores.
 
 \subsection{Transferencia radiativa}
 Uno de los objetivos fundamentales de la física solar es inferir las condiciones físicas de la atmósfera del Sol a partir del análisis de la radiación electromagnética que recibimos de él. No obstante, la propagación de la luz se ve alterada por las propiedades ópticas del medio que atraviesa, un fenómeno gobernado por el índice de refracción. Siguiendo el formalismo teórico expuesto por \cite{sanchezSolarObservationsTechniques1992}, si consideramos una onda electromagnética monocromática que se propaga en un medio con índice de refracción $n$, su campo eléctrico asociado se puede expresar como:
@@ -100,34 +100,34 @@ Uno de los objetivos fundamentales de la física solar es inferir las condicione
     \vec{E}(\vec{r}, t) = \vec{E_0} e^{2 \pi \frac{\nu}{c}(n \vec{r} \cdot \vec{\Omega} - ct)}
 \end{equation}
 
-Donde $\nu$ es la frecuencia de la onda, $n$ es el índice de refracción, y $\Omega$ es la dirección de propagación de la onda. \\
+donde $\nu$ es la frecuencia de la onda, $n$ es el índice de refracción, y $\Omega$ es la dirección de propagación de la onda. \\
 
-Ahora consideramos un medio anisótropo, donde cada dirección de propagación de la onda tiene un distinto índice de refracción. Esto puede deberse directamente a la presencia de un campo magnético unidireccional, o por múltiples otras razones. Si consideramos que ese medio anisótropo tiene tres direcciones ortogonales (los vectores normales de estas direcciones de propagación lo denotaremos como $\vec{u_\alpha}$, donde $\alpha = (1, 2, 3)$), la función de onda se escribiría como:
+Si se considera un medio anisótropo, cada dirección de propagación de la onda posee un índice de refracción distinto. Esto puede deberse a la presencia de un campo magnético unidireccional o a otras anisotropías del plasma. Asumiendo que dicho medio presenta tres direcciones principales ortogonales (cuyos vectores normales se denotarán como $\vec{u_\alpha}$, con $\alpha = 1, 2, 3$), la función de onda se expresaría como:
 
 \begin{equation}
     \label{eq:ondaAnisotropa}
     \vec{E} (\vec{r}, t) = \sum_\alpha \epsilon_\alpha \vec{u_\alpha} e^{2 \pi \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)}
 \end{equation}
 
-Donde $\epsilon_\alpha$ es la amplitud de la onda en la dirección $\vec{u_\alpha}$, y $n_\alpha$ es el índice de refracción en esa dirección. \\
+donde $\epsilon_\alpha$ es la amplitud de la onda en la dirección $\vec{u_\alpha}$, y $n_\alpha$ es el índice de refracción correspondiente. \\
 
-Para poder definir los parámetros de Stokes, también necesitamos escribir la onda vectorialmente con vectores normales donde uno de ellos es la dirección de propagación de la onda, y los otros dos son ortogonales a la dirección de propagación ($\vec{e_1}, \vec{e_2}$). En este caso, la onda se escribiría como:
+Para definir los parámetros de Stokes, es necesario proyectar la onda en una base vectorial donde un vector coincida con la dirección de propagación y los otros dos sean ortogonales a esta ($\vec{e_1}, \vec{e_2}$). En dicha base del observador, la onda se escribe como:
 
 \begin{equation}
     \label{eq:direccionProp}
     \vec{E} (\vec{r}, t) = \sum_k \epsilon_k (\vec{r}, t) \vec{e_k} 
 \end{equation}
 
-Donde $k = (1, 2)$, y $\epsilon_k$ es la amplitud de la onda en la dirección $\vec{e_k}$. \\
+donde $k = 1, 2$, y $\epsilon_k$ es la amplitud de la onda en la dirección $\vec{e_k}$. \\
 
-Como la expresión (\ref{eq:ondaAnisotropa}) y la expresión (\ref{eq:direccionProp}) representan la misma onda, se pueden igualar:
+Dado que las expresiones (\ref{eq:ondaAnisotropa}) y (\ref{eq:direccionProp}) representan el mismo campo eléctrico, pueden igualarse:
 
 \begin{equation}
     \label{eq:igualandoOndas}
     \sum_\alpha \epsilon_\alpha \vec{u_\alpha} e^{2 \pi \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)} = \sum_k \epsilon_k (\vec{r}, t) \vec{e_k}
 \end{equation}
 
-Donde se puede explicar como la parte izquierda es la onda en la base del medio y la parte derecha es la onda en la base del observador.
+En esta identidad, el miembro izquierdo representa la onda en la base intrínseca del medio, mientras que el derecho corresponde a la base del observador.
 
 Para proyectar la descripción de la onda desde la base del medio hacia la base del observador, introducimos los cosenos directores definidos por el producto escalar $C_{\alpha j} = \vec{u}_\alpha \cdot \vec{e}_j$. Multiplicando escalarmente la expresión (\ref{eq:igualandoOndas}) por un vector de la base del observador $\vec{e}_j$ y asumiendo que la onda es transversal a la dirección de propagación en la aproximación del observador ($j=1,2$), se obtiene la componente del campo eléctrico en dicha base:
 
@@ -158,13 +158,13 @@ Finalmente, sustituyendo la identidad dada por la ecuación (\ref{eq:identidad_i
     \label{eq:transferencia_campo}
 \end{equation}
 
-Donde los coeficientes $G_{jk}$ forman la matriz de propagación del campo eléctrico, que se define como:
+donde los coeficientes $G_{jk}$ forman la matriz de propagación del campo eléctrico, que se define como:
 
 \begin{equation}
     G_{jk} = -2\pi i \frac{\nu}{c} \sum_\alpha n_\alpha C_{\alpha j} C_{\alpha k}^* \qquad (j,k = 1,2)
 \end{equation}
 
-Esta matriz $G$ guarda las propiedades ópticas del medio (como si absorbe o dispersa la luz, o los efectos del campo magnético). Con esto ya tenemos todo para llegar a la ecuación de los parámetros de Stokes. \\
+La matriz $G$ encapsula las propiedades ópticas del medio, tales como los coeficientes de absorción, dispersión y los efectos introducidos por el campo magnético. A partir de ella se formula la ecuación de evolución espacial de los parámetros de Stokes. \\
 
 Si recuperamos el tensor de polarización de la ecuación (\ref{eq: tensorDePolarizacion}) y derivamos cada parte respecto a la distancia $s$, aplicando la ecuación (\ref{eq:transferencia_campo}) nos queda:
 
@@ -210,7 +210,7 @@ Ahora, al introducir las definiciones de los parámetros de Stokes en la ecuaci�
     \end{pmatrix}
 \end{equation}
 
-Donde las variables $\eta$ y $\rho$ se definen de la siguiente manera:
+donde las variables $\eta$ y $\rho$ se definen de la siguiente manera:
 
 \begin{equation}
     \label{eq:definicionDeetaYtho}
@@ -264,7 +264,7 @@ Cuando este sistema se somete a un campo magnético estático $\vec{B}$, el elec
     \frac{d^2\vec{x}}{dt^2} = -4\pi^2\nu_o^2\vec{x} - \frac{e_o}{mc}\frac{d\vec{x}}{dt}\times\vec{B} - \gamma\frac{d\vec{x}}{dt} - \frac{e_o}{m}\vec{E}e^{-2\pi i\nu t}
 \end{equation}
 
-Donde $e_o$ es la carga del electrón, $m$ su masa, y $c$ la velocidad de la luz. La resolución detallada de esta ecuación diferencial acoplada es laboriosa, pero la física que subyace es elegante y se comprende directamente mediante el teorema de Larmor. 
+donde $e_o$ es la carga del electrón, $m$ su masa, y $c$ la velocidad de la luz. La resolución detallada de esta ecuación diferencial se puede interpretar físicamente de forma directa mediante el teorema de Larmor. 
 
 El teorema dicta que, al aplicar un campo magnético, el movimiento del electrón oscilante puede descomponerse en la superposición de tres osciladores fundamentales independientes. Para visualizarlo, supongamos que el campo magnético $\vec{B}$ está alineado con el eje $z$. 
 \begin{itemize}
@@ -339,7 +339,7 @@ Estas soluciones tienen la siguiente forma:
 \end{aligned}
 \end{equation}
 
-Donde $\phi$ representa los perfiles de absorción (o perfil de línea) de cada componente espectral, y $\psi$ representa los perfiles dispersivos asociados al corrimiento de fase. En ambos casos, el subíndice $p$ corresponde a la componente $\pi$, mientras que $r$ y $b$ corresponden a las componentes $\sigma_+$ y $\sigma_-$, respectivamente. Estas funciones dependen de la distancia entre la frecuencia observada $\nu$ y la frecuencia central de cada componente, además del ancho de línea $\Gamma$ y del desplazamiento de Zeeman $\nu_L$, donde se demuestra que existe un desplazamiento.
+En estas expresiones, $\phi$ representa los perfiles de absorción (o perfil de línea) de cada componente espectral, y $\psi$ denota los perfiles dispersivos asociados al corrimiento de fase. El subíndice $p$ corresponde a la componente $\pi$, mientras que $r$ y $b$ corresponden a las componentes $\sigma_+$ y $\sigma_-$, respectivamente. Estas funciones dependen de la distancia entre la frecuencia observada $\nu$ y la frecuencia central de la línea, del ancho de línea $\Gamma$ y del desplazamiento de Zeeman $\nu_L$.
 
 
 \begin{equation}
@@ -435,9 +435,9 @@ En el caso de la atmósfera solar, la ecuación de transferencia radiativa (\ref
 
 donde la resta en el vector de la derecha refleja la contribución neta entre la atenuación del medio y la propia emisión térmica no polarizada de la atmósfera.
 
- Miraremos ahora entonces una posible solución para un caso de campo magnético débil, ya que será la solución en la que se centrará este trabajo. Campo magnético débil significa que la intensidad del campo magnético es lo suficientemente pequeña como para que el desdoblamiento de las líneas espectrales no sea suficiente de sobrepasar al ensanchamiento Doppler de la línea espectral ($\bar{g} \lambda_B \ll \Delta \lambda_D$). Visualmente no se podrá apreciar la línea espectral desdoblada, pero sí se podrá medir la polarización de la luz emitida.
+ A continuación, se examina el régimen de campo magnético débil, que constituye el núcleo analítico de este trabajo. En esta aproximación, la intensidad del campo magnético es suficientemente baja como para que el desdoblamiento Zeeman sea mucho menor que el ensanchamiento térmico Doppler de la línea espectral ($\bar{g} \lambda_B \ll \Delta \lambda_D$). Bajo estas condiciones, el desdoblamiento de la línea no es resuelto visualmente, aunque la polarización inducida sigue siendo medible.
 
-Donde $\lambda_B$ representa el desdoblamiento Zeeman para un triplete normal (también conocido como desplazamiento de Larmor expresado en longitud de onda). Físicamente, corresponde al desplazamiento en longitud de onda que sufriría una línea espectral bajo la influencia de un campo magnético si se tratara de un oscilador clásico (o de una transición atómica con factor de Landé igual a 1). Su valor viene dado por la expresión:
+El término $\lambda_B$ representa el desdoblamiento Zeeman para un triplete normal, equivalente al desplazamiento de Larmor expresado en longitud de onda. Físicamente, cuantifica el desplazamiento espectral que sufriría la línea bajo la influencia magnética si se tratara de un oscilador clásico (con factor de Landé igual a 1), dado por:
 
 \begin{equation}
     \label{eq:lambdaB}
@@ -474,11 +474,11 @@ Si lo introducimos en la ecuación de transferencia radiativa (\ref{eq:fuenteRad
 \begin{equation}
 \begin{aligned}
 \frac{dI}{d\tau} &= \eta_I(I - B_T) + \eta_V V \, , \\[6pt]
-\frac{dV}{d\tau} &= \eta_I V + \eta_V(I - B_T) \, .
+    \frac{dV}{d\tau} &= \eta_I V + \eta_V(I - B_T) \, .
 \end{aligned}
 \end{equation}
 
-Donde los términos $Q$ y $U$ se anulan al no tener término de fuentes. Si sustituimos los valores de $\eta_I$ y $\eta_V$ de la ecuación (\ref{eq:solRho}), y realizamos cierta álgebra descrita por el libro \cite[pag. 110]{sanchezSolarObservationsTechniques1992}, se llega a la siguiente expresión para la polarización circular de la luz emitida por un medio con campo magnético débil:
+Los términos correspondientes a $Q$ y $U$ se anulan en este régimen. Al sustituir las aproximaciones de $\eta_I$ y $\eta_V$ obtenidas en (\ref{eq:solRho}), y aplicando el desarrollo algebraico detallado en \cite[pag. 110]{sanchezSolarObservationsTechniques1992}, se obtiene la siguiente expresión para la polarización circular emergente de un medio bajo la aproximación de campo magnético débil:
 
 \begin{equation}
 V = -\bar{g}\lambda_B \cos \theta \frac{dI_o}{d\lambda} 
@@ -491,7 +491,7 @@ Que gracias a la definición de $\lambda_B$ de la ecuación (\ref{eq:lambdaB}) y
     V = -C \bar{g} \lambda_B^2 B_{\parallel} \frac{d I_0}{d \lambda}
 \end{equation}
 
-Donde $C = 4.67 \times 10^{-13} \text{G}^{-1}\text{\AA}^{-1}$ es una constante de proporcionalidad que depende de las unidades empleadas.
-Siendo esta la ecuación central del trabajo en la que obtendremos los valores del campo magnético.
+donde $C = 4.67 \times 10^{-13} \text{G}^{-1}\text{\AA}^{-1}$ es una constante de proporcionalidad dependiente del sistema de unidades empleado.
+Esta relación constituye la ecuación central del presente trabajo, a partir de la cual se inferirán los valores del campo magnético longitudinal.
 
 

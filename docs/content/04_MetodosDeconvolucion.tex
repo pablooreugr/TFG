@@ -1,8 +1,11 @@
 % !TeX root = ../main.tex
 
 \section{Métodos de deconvolución: Fourier, Wiener y Richardson-Lucy}
+
+Este capítulo constituye una revisión de los métodos de deconvolución clásicos que conforman el estado del arte en el procesamiento de imágenes astronómicas, evaluados como paso previo al desarrollo de la metodología propia de este trabajo.
+
 \subsection{Deconvolución de Fourier}
-El primer método utilizado lo he denominado método de Fourier. Este es el método presentado anteriormente en la sección anterior, presentado mediante la ecuación (\ref{eq:deconvolucionIdeal}). Entonces, para recordar el método, este se demuestra en los siguientes pasos. Si tenemos una imagen observada $d_{observado}$, y conocemos la PSF del telescopio $p$ (recordando la notación de minuscula para el dominio de las posiciones, y mayúscula para el dominio de las frecuencias espaciales), entonces:
+El primer método analizado es el filtro inverso o deconvolución de Fourier. Este método clásico se basa en el principio presentado en la ecuación (\ref{eq:deconvolucionIdeal}). Su formulación procede del siguiente modo: dada una imagen observada $d_{observado}$, y conocida la PSF del telescopio $p$ (recordando la convención de minúsculas para el dominio espacial y mayúsculas para las frecuencias espaciales), el procedimiento es:
 
 \begin{enumerate}
     \item Se realiza la transformada de Fourier de la imagen observada y de la PSF, obteniendo así $D_{observado}$ y $P$.
@@ -10,7 +13,7 @@ El primer método utilizado lo he denominado método de Fourier. Este es el mét
     \item Se realiza la transformada de Fourier inversa para obtener el $d_{real}$.
 \end{enumerate}
 
-El problema de este método reside en que al dividir la imagen entre la PSF, el ruido presente en la imagen se puede amplificar, y por lo tanto el resultado puede ser inestable. Como se demostrará más adelante en el trabajo, este método no da buenos resultados. Por lo tanto tenemos que encontrar distintos métodos que nos sirvan para poder deconvolucionar la imagen tratando este ruido.
+La principal limitación de este método reside en que, al dividir la transformada de la imagen entre la función de transferencia óptica de la PSF, el ruido inherente a los datos se amplifica severamente, provocando inestabilidad numérica. Como se ilustrará empíricamente en secciones posteriores, este enfoque resulta insuficiente para obtener resultados aceptables, motivando la exploración de algoritmos de deconvolución más avanzados capaces de mitigar el efecto del ruido.
 
 \subsection{Filtro de Wiener}
 
@@ -24,20 +27,21 @@ El filtro de Wiener se aplica de forma algorítmica directamente en el dominio d
     D_{real}(u,v) = \left[ \frac{P^*(u,v)}{|P(u,v)|^2 + \frac{S_n(u,v)}{S_d(u,v)}} \right] D_{observado}(u,v)
 \end{equation}
 
-Donde $P(u,v)$ es la transformada de Fourier de la PSF, $P^*(u,v)$ es su complejo conjugado, y los términos $S_n(u,v)$ y $S_d(u,v)$ representan los espectros de potencia del ruido y de la señal, respectivamente. 
+donde $P(u,v)$ es la transformada de Fourier de la PSF, $P^*(u,v)$ es su complejo conjugado, y los términos $S_n(u,v)$ y $S_d(u,v)$ representan los espectros de potencia del ruido y de la señal, respectivamente. 
 
 En el procesado de datos reales, los espectros de potencia exactos rara vez se conocen a priori. Por ello, es una práctica estándar en la implementación computacional aproximar el cociente de los espectros por una constante relacionada con la relación señal-ruido (SNR). Sustituyendo este término por $1/\mathrm{SNR}^2$, la expresión final implementada en el código para construir el filtro $W(u,v)$ resulta ser:
 
 \begin{equation}
+    \label{eq:wieeener}
     W(u,v) = \frac{P^*(u,v)}{|P(u,v)|^2 + \frac{1}{\mathrm{SNR}^2} + \epsilon}
 \end{equation}
 
 Cabe destacar que se introduce el parámetro numérico $\epsilon$ en el denominador para garantizar la estabilidad del algoritmo y evitar posibles singularidades o divisiones por cero durante la ejecución computacional. \\
 
 
-Analizando el comportamiento asintótico de la ecuación (4.2), se distinguen dos regímenes principales. En el rango de las bajas frecuencias espaciales, donde típicamente se concentra la mayor parte de la señal de las estructuras observadas, la relación señal-ruido ($\mathrm{SNR}$) toma valores elevados. En consecuencia, el término $1/\mathrm{SNR}^2$ tiende a cero y el filtro se aproxima al comportamiento de un filtro inverso clásico. Por el contrario, en el régimen de altas frecuencias espaciales, que suele estar dominado por las fluctuaciones rápidas del ruido instrumental, la $\mathrm{SNR}$ decae significativamente. Esto provoca que el denominador de la expresión aumente, atenuando así los componentes frecuenciales correspondientes y evitando la amplificación del ruido. \\
+Analizando el comportamiento asintótico de la ecuación (\ref{eq:wieeener}), se distinguen dos regímenes principales. En el rango de las bajas frecuencias espaciales, donde típicamente se concentra la mayor parte de la señal de las estructuras observadas, la relación señal-ruido ($\mathrm{SNR}$) toma valores elevados. En consecuencia, el término $1/\mathrm{SNR}^2$ tiende a cero y el filtro se aproxima al comportamiento de un filtro inverso clásico. Por el contrario, en el régimen de altas frecuencias espaciales, que suele estar dominado por las fluctuaciones rápidas del ruido instrumental, la $\mathrm{SNR}$ decae significativamente. Esto provoca que el denominador de la expresión aumente, atenuando así los componentes frecuenciales correspondientes y evitando la amplificación del ruido. \\
 
-Para la implementación computacional de este filtro, ha sido necesario estimar numéricamente un valor global de $\mathrm{SNR}$ directamente a partir de la imagen observada. Para ello, se ha desarrollado una rutina empírica basada en el análisis estadístico de los píxeles adyacentes, estructurada en los siguientes pasos:
+Para la implementación computacional de este filtro, ha sido necesario estimar numéricamente un valor global de la $\mathrm{SNR}$ directamente a partir de la imagen observada. Como aportación propia en esta fase experimental del trabajo, se ha desarrollado y programado una rutina empírica basada en el análisis estadístico de los píxeles adyacentes, estructurada en los siguientes pasos:
 
 \begin{enumerate}
     \item \textbf{Estimación de la señal:} Se aproxima la amplitud característica de la señal mediante el cálculo del valor medio de intensidad de todos los píxeles que conforman la matriz de la imagen.
@@ -51,34 +55,34 @@ Finalmente, la estimación de la $\mathrm{SNR}$ que se introduce en el algoritmo
 
 \subsection{Algoritmo de Richardson-Lucy}
 
-A diferencia de los métodos de Fourier y Wiener, que resuelven el problema de forma directa usando las frecuencias, el algoritmo de Richardson-Lucy funciona mediante iteraciones. Este método asume que el ruido de la imagen sigue una estadística de Poisson, lo cual viene muy bien para imágenes astronómicas que se basan en contar fotones.
+A diferencia de los métodos de Fourier y Wiener, que formulan la solución algebraicamente en el dominio frecuencial, el algoritmo de Richardson-Lucy se basa en un procedimiento numérico iterativo. Este método asume que el ruido de la imagen sigue una estadística de Poisson, lo cual resulta idóneo para imágenes astronómicas limitadas por el recuento discreto de fotones incidentes.
 
-La principal ventaja de este método es que asegura que los píxeles de la imagen resultante sean siempre positivos (siempre que la original y la PSF también lo sean) y mantiene el flujo total de energía de la imagen. La ecuación iterativa del método es la siguiente \cite{richardsonBayesianBasedIterativeMethod1972}:
+La principal ventaja de este algoritmo es que garantiza la no negatividad de los píxeles en la imagen resultante (siempre que los datos originales y la PSF sean definidos positivos) y conserva el flujo total de energía. La ecuación iterativa subyacente es \cite{richardsonBayesianBasedIterativeMethod1972}:
 
 \begin{equation}
     u^{(k+1)} = u^{(k)} \cdot \left( \frac{d_{observado}}{u^{(k)} \ast p} \ast p^* \right)
 \end{equation}
 
-Donde $u^{(k)}$ es la imagen que se estima en la iteración $k$, $d_{observado}$ es la imagen observada, $p$ es la PSF y $p^*$ es la PSF girada o invertida. Además, el símbolo $\ast$ indica que se trata de una convolución.
+donde $u^{(k)}$ es la estimación de la imagen en la iteración $k$, $d_{observado}$ es la imagen observada, $p$ es la PSF y $p^*$ es la PSF adjunta (invertida espacialmente). El símbolo $\ast$ denota el operador de convolución bidimensional.
 
-Para implementar esto en el código, el algoritmo hace los siguientes pasos repetidas veces para ir mejorando la imagen:
+En el contexto de este trabajo, la implementación computacional del algoritmo ejecuta de forma recurrente los siguientes pasos para converger hacia la solución:
 
 \begin{enumerate}
-    \item Primero se convoluciona la estimación que se tiene de la imagen con la PSF normal ($u^{(k)} \ast p$). Con esto se simula cómo se vería esa estimación si pasara de verdad por el telescopio. Al igual que antes, se le suma un número muy pequeño ($\epsilon = 10^{-12}$) para no tener divisiones por cero.
-    \item Después se divide la imagen observada ($d_{observado}$) entre la imagen simulada del paso anterior. Si la estimación fuera perfecta, esta división daría exactamente 1 en todos los píxeles.
-    \item Luego se convoluciona ese resultado con la PSF girada. Con esto se calcula la corrección que hay que aplicar.
-    \item Por último, se multiplica la estimación actual ($u^{(k)}$) por esa corrección que se ha calculado para obtener la nueva estimación ($u^{(k+1)}$) del siguiente paso.
+    \item En primer lugar, se convoluciona la estimación actual de la imagen con la PSF original ($u^{(k)} \ast p$). Este paso simula analíticamente la degradación instrumental que sufriría dicha estimación. Para garantizar la estabilidad numérica frente a singularidades, se añade un parámetro infinitesimal ($\epsilon = 10^{-12}$) al resultado.
+    \item A continuación, se calcula el cociente escalar, píxel a píxel, entre la imagen observada ($d_{observado}$) y la imagen simulada obtenida en el paso anterior. En el límite de convergencia ideal, esta matriz de cocientes tendería a la unidad escalar.
+    \item Seguidamente, el resultado de dicho cociente se convoluciona con la PSF adjunta ($p^*$), obteniendo así el mapa espacial de factores de corrección geométricamente coherentes.
+    \item Finalmente, se actualiza la estimación multiplicando la imagen actual ($u^{(k)}$) por el mapa de correcciones calculado, generando la nueva aproximación iterativa ($u^{(k+1)}$).
 \end{enumerate}
 
-Este proceso se va repitiendo un número determinado de veces, que en el código se controla con la variable \textit{pasos} (por defecto se ha puesto a 30). El mayor problema de usar este método es que no tiene un punto claro donde parar por sí solo. Si se hacen demasiadas iteraciones, el algoritmo intenta ajustar también el ruido de fondo, amplificándolo y creando pequeños artefactos (como puntos o ruido) por la imagen. \\
+Este ciclo iterativo finaliza tras un número predefinido de iteraciones (en la implementación se ha fijado un valor por defecto de 30). La principal desventaja de este método heurístico es la ausencia de un criterio de parada natural o analítico. Un exceso de iteraciones provoca que el algoritmo sobreajuste las fluctuaciones estadísticas del ruido de fondo, amplificándolo artificialmente e introduciendo artefactos espaciales espurios en la imagen resultante. \\
 
-Otro problema que se ha comentado anteriormente, el algoritmo solo detecta señales positivas. Por lo tanto es inválido para señales que contengan valores tanto positivos como negativos. Es el caso de la señal de Stokes $V$, que es necesario deconvolucionar para poder extraer el campo magnético. Pero aún así, como se indicará más adelante, este es el método con mejores resultados para la intensidad de los tres, por lo que es el utilizado. \\
+Por otra parte, como se ha anticipado, el algoritmo Richardson-Lucy impone estrictamente la no negatividad de los datos. En consecuencia, su aplicación es matemáticamente inválida para señales que presenten dominio tanto positivo como negativo. Este es precisamente el escenario que caracteriza a la componente del parámetro de Stokes $V$, cuya correcta deconvolución es el requisito previo para derivar la topología del campo magnético. A pesar de ello, para el parámetro de intensidad ($I$), este método heurístico es el que proporciona mayor fidelidad geométrica, justificando su inclusión y empleo en este análisis previo. \\
 
-Otro detalle a destacar de los dos últimos métodos es el uso del padding. Al realizar la convolución, los píxeles de los bordes de la imagen se ven afectados por el hecho de que no hay información fuera de la imagen. Para evitar esto, se añade un borde del tamaño de la PSF alrededor de la imagen, rellenando ese borde con un espejo de la imagen. De esta forma, al realizar la convolución, los píxeles de los bordes se ven afectados por un reflejo de la imagen y no por ceros, lo que hace que el resultado sea más estable en los bordes y se obtenga un mejor resultado. Al final, se recorta la imagen para quedarse solo con la parte original y no con el padding.
+Un aspecto técnico crítico implementado en los métodos de filtrado y deconvolución iterativa es la gestión de las condiciones de contorno mediante técnicas de expansión (\textit{padding}). Durante la operación de convolución numérica, la ausencia de información espacial fuera de los límites de la imagen provoca distorsiones de borde. Para mitigar este efecto, la imagen matriz se expande sintéticamente añadiendo un margen periférico de dimensiones comparables a la extensión efectiva de la PSF, el cual se rellena extrapolando los datos mediante una condición geométrica especular simétrica. De este modo, la convolución procesa el margen simulando la continuidad espacial de la estructura real, lo que estabiliza drásticamente el resultado en la periferia. Como último paso de la rutina, la imagen resultante se recorta a sus dimensiones originales para eliminar este relleno artificial.
 
 \subsection{El problema de la deconvolución del campo magnético}
 
-El problema central de este trabajo surge al analizar la ecuación de aproximación de campo débil (\ref{eq:campoDebil}). Experimentalmente, lo que se miden son los parámetros de Stokes $V$ e $I$. Como dijimos antes, la deconvolución de $V$ no es fácil debido a que tiene componente negativa.
+El núcleo del desafío técnico abordado en este trabajo surge al inspeccionar la ecuación de aproximación de campo magnético débil (\ref{eq:campoDebil}). Las magnitudes observables espectropolarimétricas son los parámetros de Stokes $V$ e $I$. Como se ha fundamentado previamente, la deconvolución de $V$ con herramientas estándar como Richardson-Lucy está proscrita por su naturaleza intrínsecamente bipolar.
 
 Al expresar matemáticamente la señal observada afectada por la degradación instrumental (modelada mediante la convolución con la PSF), e introducimos la ecuación de aproximación de campo débil (\ref{eq:campoDebil}), obtenemos la siguiente expresión:
 

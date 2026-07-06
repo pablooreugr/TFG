@@ -10,7 +10,7 @@ Para el análisis de los métodos de deconvolución, se emborronaron la imagen c
     PSF(r) = I_0 \left(\frac{2 J_1(kr)}{kr} \right)
 \end{equation}
 
-Donde $J_1$ es la función de Bessel de primer orden, $k$ es una constante que depende del diámetro del telescopio y de la longitud de onda, y $I_0$ es la intensidad máxima. \\
+donde $J_1$ es la función de Bessel de primer orden, $k$ es una constante que depende del diámetro del telescopio y de la longitud de onda, e $I_0$ es la intensidad máxima. \\
 
 En este caso se usa una PSF de 30 pixeles de radio y un tamaño de bulbo central de 3 pixeles, donde su representación visual es la siguiente:
 
@@ -88,7 +88,7 @@ Si analizamos como evoluciona la deconvolución de la señal de Stokes $V$, y lo
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 
-Por lo que vemos, la componente de Stokes $V$, al ser tan pequeña, es muy sensible al ruido. Ninguno de los métodos de deconvolución es capaz de recuperar la señal original. El mejor de todos es el método de Wiener, que miramremos su mapa en $2\%$ de ruido de manera arbitraria para oberservar el resultado. El resultado es el siguiente:
+Se evidencia que la componente de Stokes $V$, al poseer una amplitud intrínseca reducida, resulta extremadamente sensible al ruido. Ninguno de los algoritmos clásicos de deconvolución logra recuperar satisfactoriamente la señal original. El método que presenta un comportamiento marginalmente superior es el filtro de Wiener, del cual se examina su mapa bidimensional para un nivel de ruido del $2\%$ (elegido arbitrariamente para ilustrar el efecto). El resultado es el siguiente:
 
 
 \begin{figure}[H]
@@ -98,9 +98,9 @@ Por lo que vemos, la componente de Stokes $V$, al ser tan pequeña, es muy sensi
     \label{fig:visualizacionStokesV}
 \end{figure}
 
-Se comprueba el por qué la seña es constante en el SSIM, ya que el filtro de Wiener consigue quitar el ruido de la imagen, pero no consigue recuperar la estructura de la señal original, suavizandola muchísimo. \\
+Se verifica analíticamente la constancia del índice SSIM: el filtro de Wiener logra mitigar efectivamente el ruido, pero fracasa en la recuperación de la estructura subyacente de la señal original, introduciendo un sobresuavizado drástico. \\
 
-Por lo que, para este trabajo, es inviable deconvolucionar la señal de Stokes $V$ con los métodos clásicos, por lo que se utilizará el método desarrollado en este trabajo para recuperar el campo magnético sin llegar a deconvolucionar la señal de Stokes $V$.
+En consecuencia, este análisis justifica la inviabilidad de deconvolucionar la señal de Stokes $V$ mediante enfoques clásicos. Por esta razón fundamental, se emplea el método propuesto en este Trabajo de Fin de Grado, el cual permite derivar topológicamente el campo magnético eludiendo la deconvolución directa de la señal de Stokes $V$.
 
 
 \subsubsection{Método adaptado de Noor}
@@ -120,7 +120,7 @@ Veremos entonces el resultado de esta deconvolución:
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_noor_2_comparativa_b copy.png}
-    \caption{Comparativa visual del campo magnético. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con ruido, y resultado tras la deconvolución mediante el método adaptado de Noor.}
+    \caption{Comparativa visual del campo magnético, representado en Gauss. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con ruido, y resultado tras la deconvolución mediante el método adaptado de Noor.}
     \label{fig:campoMagDeco}
 \end{figure}
 
@@ -129,7 +129,7 @@ Igual que antes, volveremos a hacer zoom a la misma zona de interes para observa
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_noor_2b_comparativa_b_zoom.png}
-    \caption{Comparativa visual del campo magnético esta vez en una región de interes. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con ruido, y resultado tras la deconvolución mediante el método adaptado de Noor. Se puede observar que el método logra recuperar detalles finos del campo magnético que se habían perdido en la imagen degradada.}
+    \caption{Comparativa visual del campo magnético, representado en Gauss. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con ruido, y resultado tras la deconvolución mediante el método adaptado de Noor. Se puede observar que el método logra recuperar detalles finos del campo magnético que se habían perdido en la imagen degradada.}
     \label{fig:campoMagDecoZoom}
 \end{figure}
 
@@ -178,7 +178,7 @@ Si analizamos el número de iteraciones que se necesitan para conseguir el mejor
     \label{fig:pasosfrenteARuidoNoor}
 \end{figure}
 
-Como se muestra en la figura, el numero de pasos para encontrar el mejor RMSE siempre es mayor al SSIM. Esto significa que el algoritmo requiere mas pasos para quitar el ruido proporcionado, pero a partir de cierto punto también empieza a sobresuavizar la imagen, limpiando el ruido pero haciendo desaparecer la estructura, tal y como pasaba anteriormente con la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
+Como se muestra en la figura, el número de iteraciones requerido para minimizar el RMSE siempre es mayor que el necesario para optimizar el SSIM. Esto implica que el algoritmo requiere más pasos para mitigar el ruido estadístico, pero a partir de cierto límite también comienza a sobresuavizar la imagen, limpiando el ruido a costa de difuminar la estructura, un efecto homólogo al observado en la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
 
 \subsection{Datos reales}
 Para poner a prueba los resultados del experimento, usaremos datos reales del experimento Sunrise-TUMAG proporcionados por su web \cite{SUNRISETuMagTUMAGData}. En este caso, son los datos \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}, que contiene una imagen con la estructura $[10,\,4,\,1600,\,1600]$, donde 10 son las longitudes de onda, 4 son las componentes de Stokes y $1600\times1600$ es el tamaño de la imagen. \\
@@ -238,4 +238,4 @@ Si vemos la imagen de diferencias entre la imagen original y la deconvolucionada
     \label{fig:campoMagDecoRealDiferencias}
 \end{figure}
 
-Podemos observar que las zonas mas brillantes (colores verdes y amarillos) trazan los contornos y fronteras de la esturctura magnética, indicando que el algoritmo está reconcentrando el flujo magnético en las zonas que fueron esparcidas por la PSF. 
+Se puede observar que las zonas más brillantes (colores verdes y amarillos) trazan los contornos y fronteras de la estructura magnética, indicando que el algoritmo está reconcentrando el flujo magnético en las zonas que fueron esparcidas por la PSF. 

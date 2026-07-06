@@ -14,7 +14,7 @@ Matemáticamente se describe de esta manera:
 \end{equation}
 
 
-Donde $d_{observado}$ es la imagen que observamos en el telescopio, $d_{real}$ es el objeto extenso, y $p$ es la PSF del propio telescopio. Si miramos una imagen de ejemplo para este caso:
+En esta expresión, $d_{observado}$ es la imagen adquirida por el telescopio, $d_{real}$ es el objeto extenso original, y $p$ es la PSF del sistema óptico. A modo ilustrativo, se presenta la siguiente figura:
 
 
 \begin{figure}[H]
@@ -35,16 +35,16 @@ Para tratar este problema matemático de forma más eficiente, se suele aplicar 
     \end{split}
 \end{equation}
 
-De esta forma, si se realiza una transformada de Fourier a la expresión \ref{eq:convolucion}, esta pasaría al dominio de frecuencias de la siguiente manera:
+De esta forma, al aplicar la transformada de Fourier a la expresión \ref{eq:convolucion}, el modelo en el dominio de las frecuencias se expresa de la siguiente manera:
 
 \begin{equation}
     \label{eq:convolucionFourier}
     D_{observado} = D_{real} \cdot P
 \end{equation}
 
-Donde la notación se indica de manera que si está en minúscula está en el dominio de las posiciones, y mayúscula estando en el dominio de las frecuencias espaciales.
+En este texto, la convención de notación emplea letras minúsculas para el dominio espacial y mayúsculas para el dominio de las frecuencias espaciales.
 
-Donde en un caso ideal una deconvolución sería obtener el $d_{real}$ de la siguiente manera. Se realiza la transformada de Fourier del $d_{real}$ y de la PSF, y se obtiene el $D_{real}$ de la siguiente manera:
+En un caso ideal, la deconvolución directa para obtener $d_{real}$ procedería de la siguiente manera: se divide la transformada de Fourier de la imagen observada por la de la PSF para obtener $D_{real}$, tal como se expresa en la ecuación:
 
 \begin{equation}
     \label{eq:deconvolucionIdeal}
