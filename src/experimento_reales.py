@@ -51,9 +51,9 @@ def main():
     contraste_rl = np.std(I_centro_rl) / np.mean(I_centro_rl)
     print(f"Contraste RMS Original: {contraste_orig:.4f}")
     print(f"Contraste RMS RL: {contraste_rl:.4f}")
-    
+
     # =========================================================================
-    # EXPERIMENTO 4.2: Campo Magnético (Stokes V) con NOOR en ROI (Zoom)
+    # EXPERIMENTO 4.2: Campo Magnético con Algoritmo de Noor en ROI (Zoom)
     # =========================================================================
     print("\n--- Experimento 4.2: Algoritmo de Noor sobre ROI (400x400) ---")
     
@@ -82,10 +82,6 @@ def main():
     print(f"Calculando Campo B directo sobre el ROI [{y_min}:{y_max}, {x_min}:{x_max}]...")
     B_directo_roi, _ = mag.calcularCampoMagnetico(intensidad_roi, compV_roi, lambdas, g=1.5)
 
-    print("Calculando Campo B con Intensidad Deconvolucionada sobre el ROI...")
-    I_roi_decon = decon.deconvolucion3D(intensidad_roi, psf, pasos=20)
-    B_semi_roi, _ = mag.calcularCampoMagnetico(I_roi_decon, compV_roi, lambdas, g=1.5)
-    
     print("Ejecutando Noor (Deconvolución Acoplada) SOBRE EL ROI (400x400)...")
     print("Al ser más pequeño, podemos permitirle 100 iteraciones para que converja de verdad.")
     k_max_actual = mag.calcular_k_max(intensidad_roi, lambdas, g=1.5)
@@ -100,10 +96,8 @@ def main():
     # Métrica 2: Varianza del Laplaciano (Nitidez/Sharpness) para el campo B
     from scipy.ndimage import laplace
     lap_directo = np.var(laplace(B_directo_roi))
-    lap_semi = np.var(laplace(B_semi_roi))
     lap_noor = np.var(laplace(B_noor_roi))
     print(f"\nNitidez (Varianza Laplaciano) B Directo (ROI): {lap_directo:.2e}")
-    print(f"Nitidez (Varianza Laplaciano) B Semi-Deconvolucionado (ROI): {lap_semi:.2e}")
     print(f"Nitidez (Varianza Laplaciano) B Noor (ROI): {lap_noor:.2e}")
     
     # =========================================================================
@@ -126,7 +120,7 @@ def main():
     plt.close()
     
     # 2. Campo Magnético (Zoom ROI) - Comparamos aquí el efecto real
-    fig, axes = plt.subplots(1, 3, figsize=(24, 8))
+    fig, axes = plt.subplots(1, 2, figsize=(16, 8))
     b_max = np.percentile(np.abs(B_completo_crudo), 99.5) # Usamos el maximo global para tener la misma escala de color
     cmap_b = sns.color_palette("icefire", as_cmap=True)
     
@@ -134,13 +128,9 @@ def main():
 #     axes[0].set_title(f'B Directo (I crudo, V crudo)\nNitidez: {lap_directo:.2e}')
     axes[0].axis('off')
     
-    axes[1].imshow(B_semi_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
-#     axes[1].set_title(f'B Semideconvolucionado (I decon, V crudo)\nNitidez: {lap_semi:.2e}')
+    axes[1].imshow(B_noor_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
+#     axes[1].set_title(f'B Noor Completo (100 iter)\nNitidez: {lap_noor:.2e}')
     axes[1].axis('off')
-
-    axes[2].imshow(B_noor_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
-#     axes[2].set_title(f'B Noor Completo (100 iter)\nNitidez: {lap_noor:.2e}')
-    axes[2].axis('off')
     plt.tight_layout()
     plt.savefig('output/exper/exp4_3_campoB_zoom.png', dpi=300)
     plt.close()

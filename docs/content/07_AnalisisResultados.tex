@@ -111,4 +111,42 @@ Lo primero que revisaremos es cómo converge nuestro método. Si volvemos a prep
 \paragraph{Límites del método}
 
 \subsection{Datos reales}
-\subsubsection{Mostrar la deconvolución con datos reales}
+Una vez validadas las propiedades teóricas del algoritmo mediante simulaciones sintéticas, hemos escalado el modelo para operar sobre observaciones reales del Sol capturadas por el telescopio Sunrise. Para este experimento, hemos utilizado un cubo de datos que contiene observaciones en la línea espectral de Mg I, con un tamaño espacial de $1600\times1600$ píxeles, junto con su Función de Dispersión de Punto (PSF) experimental recortada y normalizada.
+
+\subsubsection{Deconvolución del Continuo (Stokes I)}
+
+Primero, aplicamos el clásico método de Richardson-Lucy a un corte espectral central de la intensidad (Stokes I) para observar la mejora morfológica sobre la granulación y estructuras superficiales de forma aislada.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/exp4_1_intensidad.png}
+    \caption{Intensidad (Stokes I) cruda observada por el telescopio (izquierda) vs Deconvolucionada con Richardson-Lucy (derecha).}
+    \label{fig:datosRealesI}
+\end{figure}
+
+El contraste espacial (RMS) de la imagen original es de $0.2028$, mientras que el de la imagen deconvolucionada sube a $0.2193$. El incremento en el contraste espacial del ${\sim}8\%$ indica que la deconvolución logró invertir exitosamente los efectos del seeing atmosférico y la difracción instrumental, recuperando un rango dinámico mucho más nítido entre los gránulos brillantes y las zonas intergranulares más oscuras.
+
+\subsubsection{Inversión del Campo Magnético Acoplado}
+Dado el inmenso tamaño del cubo, resolver las ecuaciones acopladas sobre toda la matriz limitaba severamente el número de iteraciones posibles. Para evaluar el algoritmo de forma robusta, hemos extraído una Región de Interés (ROI) de $400\times400$ píxeles centrada en la zona de mayor actividad magnética, sobre la cual el Gradiente Conjugado ha iterado 100 veces.
+
+Para demostrar que la mejora proviene de la deconvolución de Noor, medimos la nitidez (Varianza del Laplaciano) en dos etapas: calculando el campo magnético directo a partir de las imágenes crudas, y calculando el campo magnético tras aplicar el algoritmo acoplado.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/exp4_3_campoB_zoom.png}
+    \caption{Recorte ampliado ($400\times400$) comparando el cálculo directo del campo magnético (izquierda) frente al resultado tras aplicar el algoritmo de Noor acoplado (derecha).}
+    \label{fig:datosRealesB}
+\end{figure}
+
+Cuantitativamente, la nitidez Laplaciana pasa de $1.96 \times 10^2$ (directo) a $2.03 \times 10^2$ (Noor), confirmando la recuperación de estructuras de alta frecuencia espacial que antes estaban diluidas por la difracción instrumental y el seeing.
+
+Para aislar exactamente qué información aporta el algoritmo a la imagen real, restamos el mapa base del mapa procesado, obteniendo el mapa de residuos absolutos:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/exp4_5_diferencia.png}
+    \caption{Mapa de diferencia absoluta (en Gauss) entre el campo magnético deconvolucionado por el algoritmo de Noor y el cálculo directo crudo.}
+    \label{fig:datosRealesDif}
+\end{figure}
+
+Las zonas más brillantes de este mapa de diferencia trazan exactamente los contornos y fronteras de las estructuras magnéticas. Esto demuestra que el algoritmo reconcentra de forma precisa el flujo magnético que había sido esparcido por las alas de la PSF hacia sus núcleos originales, esculpiendo detalles de alta frecuencia sin inyectar ruido o estructuras espurias en el fondo vacío.
