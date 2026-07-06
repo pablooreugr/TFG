@@ -182,3 +182,26 @@ Como se muestra en la figura, el numero de pasos para encontrar el mejor RMSE si
 
 \subsection{Datos reales}
 Para poner a prueba los resultados del experimento, usaremos datos reales del experimento Sunrise-TUMAG proporcionados por su web \cite{SUNRISETuMagTUMAGData}. En este caso, son los datos \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}, que contiene una imagen con la estructura $[10,\,4,\,1600,\,1600]$, donde 10 son las longitudes de onda, 4 son las componentes de Stokes y $1600\times1600$ es el tamaño de la imagen. \\
+
+El PSF fue cedido por el equipo de óptica de la sección de  física solar del IAA. Esta PSF se consiguió modelando computacionalmente la óptica del telescopio Sunrise, y se puede observar en la siguiente figura:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/exp4_4_psf.png}
+    \caption{Esta imagen muestra la PSF del telescopio Sunrise. Se muestra en escala logaritmica para poder observar mejor la caída de la intensidad en los anillos de difracción.}
+    \label{fig:psfReal}
+\end{figure}
+
+
+\subsubsection{Algoritmo de Richarson-Lucy}
+
+Entonces, al igual que antes, cogemos una longitud de onda arbitraria y realizamos la deconvolución con el método de Richardson-Lucy. El resultado es el siguiente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/exp4_1_intensidad.png}
+    \caption{Intensidad de la imagen deconvolucionada con el método de Richardson-Lucy. En la parte izquierda se muestra la imagen original, mientras que en la parte derecha se muestra la imagen deconvolucionada. Se puede observar que la imagen deconvolucionada tiene más detalle y contraste que la imagen original.}
+    \label{fig:intensidadDecoReal}
+\end{figure}
+
+
