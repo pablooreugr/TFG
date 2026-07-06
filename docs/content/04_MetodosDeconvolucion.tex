@@ -2,7 +2,7 @@
 
 \section{Métodos de deconvolución: Fourier, Wiener y Richardson-Lucy}
 \subsection{Deconvolución de Fourier}
-El primer método utilizado lo he denominado método de Fourier. Este es el método presentado anteriormente en la sección anterior, presentado mediante la ecuación (\ref{eq:deconvolucionIdeal}). Entonces, para recordar el método, este se demuestra en los siguientes pasos. Si tenemos una imagen observada $d_{observado}$, y conocemos la PSF del telescopio $p$, entonces:
+El primer método utilizado lo he denominado método de Fourier. Este es el método presentado anteriormente en la sección anterior, presentado mediante la ecuación (\ref{eq:deconvolucionIdeal}). Entonces, para recordar el método, este se demuestra en los siguientes pasos. Si tenemos una imagen observada $d_{observado}$, y conocemos la PSF del telescopio $p$ (recordando la notación de minuscula para el dominio de las posiciones, y mayúscula para el dominio de las frecuencias espaciales), entonces:
 
 \begin{enumerate}
     \item Se realiza la transformada de Fourier de la imagen observada y de la PSF, obteniendo así $D_{observado}$ y $P$.
@@ -14,43 +14,46 @@ El problema de este método reside en que al dividir la imagen entre la PSF, el 
 
 \subsection{Filtro de Wiener}
 
-Como se ha mencionado antes, si se realiza la deconvolución dividiendo directamente en el dominio de Fourier, tenemos el problema de que el ruido se amplifica. Esto pasa sobre todo en las frecuencias altas, donde hay muy poca señal y casi todo es ruido. Para arreglar esto se implementa el filtro de Wiener.
+Como se ha demostrado anteriormente, la deconvolución mediante división directa en el dominio de Fourier falla drásticamente en presencia de ruido. Esto ocurre porque en las altas frecuencias espaciales los valores de la función de transferencia óptica tienden a cero, lo que provoca que al dividir por ellos, el ruido de alta frecuencia se amplifique desproporcionadamente y destruya la información de la imagen. 
 
-El filtro de Wiener busca el mejor filtro posible para que la diferencia entre la imagen que se estima y la imagen original sea mínima. Partiendo del modelo con ruido de la ecuación (\ref{eq:convolucionRuido}), la fórmula teórica del filtro de Wiener en el dominio de las frecuencias queda de la siguiente manera:
+Para solucionar este problema, se implementa el filtro de Wiener. Este método consiste en una técnica de filtrado lineal óptimo que busca minimizar el error cuadrático medio entre la imagen real estimada y la imagen original sin degradar. A diferencia del filtro inverso, el filtro de Wiener logra un equilibrio: actúa como una deconvolución normal en las frecuencias donde la señal es fuerte, pero atenúa fuertemente aquellas frecuencias donde el ruido domina.
+
+El filtro de Wiener se aplica de forma algorítmica directamente en el dominio de las frecuencias espaciales. El procedimiento consiste en calcular la Transformada de Fourier de la imagen observada y multiplicarla por la función de transferencia del filtro. Matemáticamente, partiendo del modelo con ruido de la ecuación (\ref{eq:convolucionRuido}), la estimación de la imagen real $D_{real}(u,v)$ se define como \cite[cap. 5]{gonzalezDigitalImageProcessing2018}:
 
 \begin{equation}
     D_{real}(u,v) = \left[ \frac{P^*(u,v)}{|P(u,v)|^2 + \frac{S_n(u,v)}{S_d(u,v)}} \right] D_{observado}(u,v)
 \end{equation}
 
-Donde $P(u,v)$ es la transformada de la PSF, $P^*(u,v)$ es su conjugado y las $S$ son el espectro de potencia del ruido ($S_n$) y de la señal ($S_d$). 
+Donde $P(u,v)$ es la transformada de Fourier de la PSF, $P^*(u,v)$ es su complejo conjugado, y los términos $S_n(u,v)$ y $S_d(u,v)$ representan los espectros de potencia del ruido y de la señal, respectivamente. 
 
-Pero en un caso real, no conocemos exactamente estos espectros. Normalmente lo que se hace es aproximar esa división de espectros por una constante. Esta constante está relacionada con la relación señal-ruido (SNR), por lo que se puede cambiar por $1/\mathrm{SNR}^2$.
-
-De esta forma, la ecuación final que he utilizado en el código para el filtro es:
+En el procesado de datos reales, los espectros de potencia exactos rara vez se conocen a priori. Por ello, es una práctica estándar en la implementación computacional aproximar el cociente de los espectros por una constante relacionada con la relación señal-ruido (SNR). Sustituyendo este término por $1/\mathrm{SNR}^2$, la expresión final implementada en el código para construir el filtro $W(u,v)$ resulta ser:
 
 \begin{equation}
     W(u,v) = \frac{P^*(u,v)}{|P(u,v)|^2 + \frac{1}{\mathrm{SNR}^2} + \epsilon}
 \end{equation}
 
-Donde se añade un número muy pequeño ($\epsilon = 10^{-12}$) sumando abajo para evitar divisiones por cero en el ordenador. 
+Cabe destacar que se introduce el parámetro numérico $\epsilon$ en el denominador para garantizar la estabilidad del algoritmo y evitar posibles singularidades o divisiones por cero durante la ejecución computacional. \\
 
-Si nos fijamos en la fórmula, cuando hay mucha señal (bajas frecuencias), la SNR es muy grande y entonces el término de la SNR se hace casi cero, quedando parecido a la división simple de Fourier. Pero cuando hay mucho ruido (altas frecuencias), la SNR es pequeña, lo que hace que la parte de abajo crezca y el filtro no amplifique tanto el ruido.
 
-Para calcular la SNR en el código, se ha desarrollado una función que estima este valor directamente de la imagen siguiendo estos pasos:
+Analizando el comportamiento asintótico de la ecuación (4.2), se distinguen dos regímenes principales. En el rango de las bajas frecuencias espaciales, donde típicamente se concentra la mayor parte de la señal de las estructuras observadas, la relación señal-ruido ($\mathrm{SNR}$) toma valores elevados. En consecuencia, el término $1/\mathrm{SNR}^2$ tiende a cero y el filtro se aproxima al comportamiento de un filtro inverso clásico. Por el contrario, en el régimen de altas frecuencias espaciales, que suele estar dominado por las fluctuaciones rápidas del ruido instrumental, la $\mathrm{SNR}$ decae significativamente. Esto provoca que el denominador de la expresión aumente, atenuando así los componentes frecuenciales correspondientes y evitando la amplificación del ruido. \\
+
+Para la implementación computacional de este filtro, ha sido necesario estimar numéricamente un valor global de $\mathrm{SNR}$ directamente a partir de la imagen observada. Para ello, se ha desarrollado una rutina empírica basada en el análisis estadístico de los píxeles adyacentes, estructurada en los siguientes pasos:
 
 \begin{enumerate}
-    \item Primero se calcula la señal de la imagen. Esto se hace simplemente calculando la media de todos los píxeles.
-    \item Después se estima el ruido. Para ello se resta cada columna de la imagen con la siguiente. Al hacer esta resta, la estructura normal de la imagen se cancela casi por completo y lo que queda es principalmente el ruido aleatorio.
-    \item Como al restar dos cosas con ruido sus varianzas se suman, el ruido resultante de la resta es el doble. Por eso, se calcula la desviación típica de esas diferencias y se divide entre $\sqrt{2}$ para obtener la estimación real del ruido.
+    \item \textbf{Estimación de la señal:} Se aproxima la amplitud característica de la señal mediante el cálculo del valor medio de intensidad de todos los píxeles que conforman la matriz de la imagen.
+    
+    \item \textbf{Extracción de la componente de ruido:} Se calcula la diferencia de intensidad entre columnas adyacentes de la imagen. Dado que las estructuras físicas reales presentan variaciones espaciales suaves a la escala de un píxel, esta sustracción cancela la mayor parte de la señal subyacente, aislando fundamentalmente las fluctuaciones de alta frecuencia asociadas al ruido aleatorio.
+    
+    \item \textbf{Cuantificación del nivel de ruido:} Asumiendo que el ruido en píxeles contiguos se comporta como variables aleatorias independientes, por las propiedades estadísticas de la varianza, la varianza de la diferencia de estas dos variables es igual a la suma de sus respectivas varianzas. Por tanto, la desviación típica de esta matriz diferencia será $\sqrt{2}$ veces mayor que la del ruido original de la imagen. Así, la estimación real del ruido se obtiene calculando la desviación estándar estadística de estas diferencias y dividiéndola por el factor de corrección $\sqrt{2}$.
 \end{enumerate}
 
-Por último, para obtener la SNR final del filtro, solo hay que dividir esa media de la imagen entre el ruido estimado.
+Finalmente, la estimación de la $\mathrm{SNR}$ que se introduce en el algoritmo de deconvolución se obtiene como el cociente directo entre el valor medio de la señal y esta estimación estadística del ruido.
 
 \subsection{Algoritmo de Richardson-Lucy}
 
 A diferencia de los métodos de Fourier y Wiener, que resuelven el problema de forma directa usando las frecuencias, el algoritmo de Richardson-Lucy funciona mediante iteraciones. Este método asume que el ruido de la imagen sigue una estadística de Poisson, lo cual viene muy bien para imágenes astronómicas que se basan en contar fotones.
 
-La principal ventaja de este método es que asegura que los píxeles de la imagen resultante sean siempre positivos (siempre que la original y la PSF también lo sean) y mantiene el flujo total de energía de la imagen. La ecuación iterativa del método es la siguiente:
+La principal ventaja de este método es que asegura que los píxeles de la imagen resultante sean siempre positivos (siempre que la original y la PSF también lo sean) y mantiene el flujo total de energía de la imagen. La ecuación iterativa del método es la siguiente \cite{richardsonBayesianBasedIterativeMethod1972}:
 
 \begin{equation}
     u^{(k+1)} = u^{(k)} \cdot \left( \frac{d_{observado}}{u^{(k)} \ast p} \ast p^* \right)
@@ -69,7 +72,7 @@ Para implementar esto en el código, el algoritmo hace los siguientes pasos repe
 
 Este proceso se va repitiendo un número determinado de veces, que en el código se controla con la variable \textit{pasos} (por defecto se ha puesto a 30). El mayor problema de usar este método es que no tiene un punto claro donde parar por sí solo. Si se hacen demasiadas iteraciones, el algoritmo intenta ajustar también el ruido de fondo, amplificándolo y creando pequeños artefactos (como puntos o ruido) por la imagen. \\
 
-Otro problema que se ha comentado anteriormente, el algoritmo solo detecta señales positivas. Por lo tanto es inválido para señales que contengan valores tanto positivos como negativos. Es el caso de la señal de Stokes $V$, que es necesario deconvolucionar para poder extraer el campo magnético. Pero aún así, como se indicará más adelante, este es el método con mejores resultados de los tres, por lo que es el utilizado. \\
+Otro problema que se ha comentado anteriormente, el algoritmo solo detecta señales positivas. Por lo tanto es inválido para señales que contengan valores tanto positivos como negativos. Es el caso de la señal de Stokes $V$, que es necesario deconvolucionar para poder extraer el campo magnético. Pero aún así, como se indicará más adelante, este es el método con mejores resultados para la intensidad de los tres, por lo que es el utilizado. \\
 
 Otro detalle a destacar de los dos últimos métodos es el uso del padding. Al realizar la convolución, los píxeles de los bordes de la imagen se ven afectados por el hecho de que no hay información fuera de la imagen. Para evitar esto, se añade un borde del tamaño de la PSF alrededor de la imagen, rellenando ese borde con un espejo de la imagen. De esta forma, al realizar la convolución, los píxeles de los bordes se ven afectados por un reflejo de la imagen y no por ceros, lo que hace que el resultado sea más estable en los bordes y se obtenga un mejor resultado. Al final, se recorta la imagen para quedarse solo con la parte original y no con el padding.
 

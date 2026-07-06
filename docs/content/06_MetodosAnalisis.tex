@@ -1,3 +1,25 @@
 % !TeX root = ../main.tex
 
 \section{Métodos de análisis de resultados}
+Para poder analizar los resultados de un algoritmo de deconvolución, hacemos uso de dos parámetros medibles que nos permiten evualuar la calidad de la reconstrucción a partir de datos sintéticos, ya que sabremos cual es la señal original y podremos compararla directamente. 
+
+\subsection{Raíz del error cuadrático medio (RMSE)}
+Este parámetro mide la magnitud promedio del error entre la señal original (ideal o de referencia) y otra señal distinta, ya sea la propia señal emborronada por el instrumento o la señal reconstruida tras aplicar un algoritmo de deconvolución. La ecuación que define esta métrica es la siguiente:
+
+\begin{equation}
+    \label{eq:RMSE}
+    RMSE = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - y_i)^2}
+\end{equation}
+
+Donde $x_i$ es el valor de la señal original en el punto (o píxel) $i$, $y_i$ es el valor de la señal a comparar en ese mismo punto, y $N$ es el número total de puntos de la señal. 
+
+Dado que penaliza las diferencias elevándolas al cuadrado, un valor de RMSE más bajo indica que la señal recuperada es cuantitativamente más fiel a la señal original. Por el contrario, un RMSE más alto evidencia una mayor discrepancia entre la señal procesada y la referencia.
+
+\subsection{Índice de Similitud Estructural (SSIM)}
+El SSIM es una métrica de calidad de imagen que, a diferencia del RMSE, evalúa la degradación de la estructura espacial. Tiene en cuentra tres factores: luminancia, contraste y estructura. El resultado de esta métrica es un valor entre $-1$ y $1$, donde un valor cercano a $1$ indican una imagen reconstruida muy similar a la original. \\
+
+Aunque puedan existir valores negativos, estos en la práctica implican valores invertidos a la señal original, donde el emborronamiento de imágenes no pueden realizar esto, por    lo que el rango de valores de interés para esta métrica es $[0,1]$. \\
+
+Debido a que el cálculo de esta métrica es compleja, se hace uso de la implementación de la función \texttt{ssim} de la librería \texttt{scikit-image} de Python, que permite calcular el SSIM entre dos imágenes de manera sencilla. \\
+
+Otra cuestión a tener en cuenta es que, aunque los valores de RMSE y SSIM son métricas de calidad, también la evaluación visual de las imágenes es importante para poder determinar si la reconstrucción es satisfactoria.

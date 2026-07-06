@@ -104,49 +104,138 @@ Por lo que, para este trabajo, es inviable deconvolucionar la señal de Stokes $
 
 
 \subsubsection{Método adaptado de Noor}
-Lo primero que revisaremos es cómo converge nuestro método. Si volvemos a preparar los datos de la misma manera que antes, convolucionandolo con la PSF y añadiendo un ruido. Al realizar la deconvolución 
+Lo primero que revisaremos es cómo converge nuestro método. Si volvemos a preparar los datos de la misma manera que antes, convolucionándolos con la PSF y añadiendo un ruido, podemos analizar el proceso. Al realizar la deconvolución de forma iterativa, el algoritmo va resolviendo un sistema de ecuaciones paso a paso. Para comprobar que el método funciona bien, miramos el error que va quedando en cada iteración, lo que se conoce como el residuo. 
 
+Este residuo es básicamente la diferencia entre el valor real esperado y la aproximación que ha conseguido el método en esa iteración. Si calculamos la norma (la norma euclidiana o $L_2$) de este residuo, obtenemos un valor que representa el error total, y a esto lo llamamos diferencia iterativa. El resultado de cómo evoluciona este error lo podemos ver en la siguiente gráfica, donde se ha puesto el eje vertical en escala logarítmica para apreciar bien cómo va cayendo:
 
-\paragraph{Mostrar el parámetro utilizado}
-\paragraph{Límites del método}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/experimento_noor_1_convergencia.png}
+    \caption{Esta imagen muestra la evolución de la diferencia iterativa (la norma del residuo) a lo largo de las iteraciones del algoritmo de Noor. Se puede observar cómo el error va disminuyendo progresivamente, lo que indica que el método converge de forma correcta.}
+    \label{fig:convergenciaNoor}
+\end{figure}
+
+Veremos entonces el resultado de esta deconvolución:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_noor_2_comparativa_b copy.png}
+    \caption{Comparativa visual del campo magnético. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con ruido, y resultado tras la deconvolución mediante el método adaptado de Noor.}
+    \label{fig:campoMagDeco}
+\end{figure}
+
+Igual que antes, volveremos a hacer zoom a la misma zona de interes para observar mejor los detalles de la imagen. El resultado es el siguiente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_noor_2b_comparativa_b_zoom.png}
+    \caption{Comparativa visual del campo magnético esta vez en una región de interes. De izquierda a derecha: mapa original (Ground Truth), mapa degradado con ruido, y resultado tras la deconvolución mediante el método adaptado de Noor. Se puede observar que el método logra recuperar detalles finos del campo magnético que se habían perdido en la imagen degradada.}
+    \label{fig:campoMagDecoZoom}
+\end{figure}
+
+Como se puede observar, el método lograr recuperar la estuctura original del campo magnético. Las regiones vuelven a ser más definidas y muchas estructuras vuelven a aparecer. Además hay información de picos de intensidad que vuelven a recoperarse, lo cual es un éxito. Por último argumentar que hay ciertos bulbos que no se han recuperado perfectamente. Esto es debido a que al emborronar la imagen, hemos perdido información de la señal original, por lo que el método no puede recuperarla. Pero aún así, el resultado es muy satisfactorio y demuestra que el método es capaz de recuperar la estructura del campo magnético a partir de la señal de Stokes $I$ y $V$. \\
+
+Si miramos un mapa de diferencias entre la imagen original y borrosa, y la imagen original y la deconvolucionada, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{img/experimento_noor_3b_residuos_zoom.png}
+    \caption{Mapa de diferencias entre la imagen original y la degradada, y la imagen original y la deconvolucionada.}
+    \label{fig:diferenciasZoom}
+\end{figure}
+
+Como se puede observar, la imagen presenta menor residuo en los filamentos, demostrando que logra reconstruir la estructura de la imagen. \\
+Esta mejora visual se corrobora con las métricas cuantitativas obtenidas. La imagen emborronada original partía de un índice de similitud estructural (SSIM) de $0.8401$ y un error cuadrático medio (RMSE) de $5.2568$. Tras aplicar la deconvolución mediante el método adaptado de Noor (con regularización de Laplace), el SSIM aumenta a $0.8575$, indicando una mejor recuperación de las estructuras espaciales, y el RMSE se reduce a $4.6995$, confirmando numéricamente la disminución del error respecto a la imagen ideal.
+
+Ahora analizaremos cómo se comporta el algoritmo frente a distintos niveles de ruido. Este algoritmo es bastante susceptible a los pasos de iteración, ya que puede sobreajustar la señal y amplificar el ruido si se realizan demasiadas iteraciones. Por lo tanto es importante encontrar un equilibrio entre la cantidad de iteraciones y el nivel de ruido presente en la imagen. \\
+
+Para ello se realizó un estudio donde se encuentra el mejor SSIM y RMSE para distintos niveles de ruido, variando el número de iteraciones. Si vemos el mejor SSIM frente al nivel de ruido, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/experimento_noor_4_limite_ruido.png}
+    \caption{Evolución del SSIM frente al nivel de ruido para el método adaptado de Noor. Se observa que el método siempre logra mejorar la imagen original.}
+    \label{fig:SSIMfrenteARuidoNoor}
+\end{figure}
+
+Y si presentamos el mejor RMSE frente al nivel de ruido, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/experimento_noor_4b_limite_ruido_rmse.png}
+    \caption{Evolución del RMSE frente al nivel de ruido para el método adaptado de Noor. Se observa que siempre es inferior.}
+    \label{fig:RMSEfrenteARuidoNoor}
+\end{figure}
+
+Como podemos observar, el método a pesar del nievl de ruido siempre consigue mejorar la imagen original. Esto se debe a que el método busca recuperar la imagen a partir de la física del problema, buscando el resultado entre todas las posibles soluciones que cumplan con la ecuación de transferencia radiativa. Por lo tanto, aunque el ruido sea elevado, el método siempre consigue recuperar parte de la señal original. \\
+
+Si analizamos el número de iteraciones que se necesitan para conseguir el mejor resultado, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{img/experimento_noor_5_limite_ruido_pasos.png}
+    \caption{Evolución del número de iteraciones frente al nivel de ruido para el método adaptado de Noor. La curva roja representa el numero de iteraciones para el valor de RMSE, y la curva azul representa el número de iteraciones para el valor de SSIM. Se observa que a medida que aumenta el nivel de ruido, se necesitan más iteraciones para conseguir el mejor resultado.}
+    \label{fig:pasosfrenteARuidoNoor}
+\end{figure}
+
+Como se muestra en la figura, el numero de pasos para encontrar el mejor RMSE siempre es mayor al SSIM. Esto significa que el algoritmo requiere mas pasos para quitar el ruido proporcionado, pero a partir de cierto punto también empieza a sobresuavizar la imagen, limpiando el ruido pero haciendo desaparecer la estructura, tal y como pasaba anteriormente con la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
 
 \subsection{Datos reales}
-Una vez validadas las propiedades teóricas del algoritmo mediante simulaciones sintéticas, hemos escalado el modelo para operar sobre observaciones reales del Sol capturadas por el telescopio Sunrise. Para este experimento, hemos utilizado un cubo de datos que contiene observaciones en la línea espectral de Mg I, con un tamaño espacial de $1600\times1600$ píxeles, junto con su Función de Dispersión de Punto (PSF) experimental recortada y normalizada.
+Para poner a prueba los resultados del experimento, usaremos datos reales del experimento Sunrise-TUMAG proporcionados por su web \cite{SUNRISETuMagTUMAGData}. En este caso, son los datos \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}, que contiene una imagen con la estructura $[10,\,4,\,1600,\,1600]$, donde 10 son las longitudes de onda, 4 son las componentes de Stokes y $1600\times1600$ es el tamaño de la imagen. \\
 
-\subsubsection{Deconvolución del Continuo (Stokes I)}
-
-Primero, aplicamos el clásico método de Richardson-Lucy a un corte espectral central de la intensidad (Stokes I) para observar la mejora morfológica sobre la granulación y estructuras superficiales de forma aislada.
+El PSF fue cedido por el equipo de óptica de la sección de  física solar del IAA. Esta PSF se consiguió modelando computacionalmente la óptica del telescopio Sunrise, y se puede observar en la siguiente figura:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{img/exp4_1_intensidad.png}
-    \caption{Intensidad (Stokes I) cruda observada por el telescopio (izquierda) vs Deconvolucionada con Richardson-Lucy (derecha).}
-    \label{fig:datosRealesI}
+    \includegraphics[width=0.7\textwidth]{img/exp4_4_psf.png}
+    \caption{Esta imagen muestra la PSF del telescopio Sunrise. Se muestra en escala logaritmica para poder observar mejor la caída de la intensidad en los anillos de difracción.}
+    \label{fig:psfReal}
 \end{figure}
 
-El contraste espacial (RMS) de la imagen original es de $0.2028$, mientras que el de la imagen deconvolucionada sube a $0.2193$. El incremento en el contraste espacial del ${\sim}8\%$ indica que la deconvolución logró invertir exitosamente los efectos del seeing atmosférico y la difracción instrumental, recuperando un rango dinámico mucho más nítido entre los gránulos brillantes y las zonas intergranulares más oscuras.
 
-\subsubsection{Inversión del Campo Magnético Acoplado}
-Dado el inmenso tamaño del cubo, resolver las ecuaciones acopladas sobre toda la matriz limitaba severamente el número de iteraciones posibles. Para evaluar el algoritmo de forma robusta, hemos extraído una Región de Interés (ROI) de $400\times400$ píxeles centrada en la zona de mayor actividad magnética, sobre la cual el Gradiente Conjugado ha iterado 100 veces.
+\subsubsection{Algoritmo de Richarson-Lucy}
 
-Para demostrar que la mejora proviene de la deconvolución de Noor, medimos la nitidez (Varianza del Laplaciano) en dos etapas: calculando el campo magnético directo a partir de las imágenes crudas, y calculando el campo magnético tras aplicar el algoritmo acoplado.
+Entonces, al igual que antes, cogemos una longitud de onda arbitraria y realizamos la deconvolución con el método de Richardson-Lucy. El resultado es el siguiente:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{img/exp4_3_campoB_zoom.png}
-    \caption{Recorte ampliado ($400\times400$) comparando el cálculo directo del campo magnético (izquierda) frente al resultado tras aplicar el algoritmo de Noor acoplado (derecha).}
-    \label{fig:datosRealesB}
+    \includegraphics[width=0.9\textwidth]{img/exp4_1_intensidad.png}
+    \caption{Intensidad de la imagen deconvolucionada con el método de Richardson-Lucy. En la parte izquierda se muestra la imagen original, mientras que en la parte derecha se muestra la imagen deconvolucionada. Se puede observar que la imagen deconvolucionada tiene más detalle y contraste que la imagen original.}
+    \label{fig:intensidadDecoReal}
 \end{figure}
 
-Cuantitativamente, la nitidez Laplaciana pasa de $1.96 \times 10^2$ (directo) a $2.03 \times 10^2$ (Noor), confirmando la recuperación de estructuras de alta frecuencia espacial que antes estaban diluidas por la difracción instrumental y el seeing.
+Como se observa, el método de Richardson-Lucy logra recuperar detalles de la imagen original. Se detallan mejor las estructuras de la imagen, y se observa también un aumento de contraste con la imagen original. \\
 
-Para aislar exactamente qué información aporta el algoritmo a la imagen real, restamos el mapa base del mapa procesado, obteniendo el mapa de residuos absolutos:
+Para medir la calidad de la deconvolución, al no tener la imagen original no emborronada, no podemos calcular el SSIM ni el RMSE. Utilizaremos entonces una métrica llamada RMS (\textit{Contraste Cuadrático Medio}) que nos permite medir el contraste de la imagen. Esta métrica se define como:
+\begin{equation}
+    RMS = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (I_i - \bar{I})^2}
+\end{equation}
+
+Cuanto mayor sea el valor de RMS, mayor será el contraste de la imagen. Por lo tanto, mayor contraste y detalle aparecerá en la imagen deconvolucionado. El resultado de la imagen pasamos de una RMS de $0.2028$ a una RMS de $0.2193$, lo que indica una mejora del $8.2\%$ en el contraste de la imagen. Esto indica que el método de Richardson-Lucy logra mejorar el contraste y detalle de la imagen original.
+
+\subsubsection{Medición del campo magnético}
+Ahora mediremos el algoritmo de Noor para medir el campo magnético a partir de la señal de Stokes $I$ y $V$. Para observar mejor los resultados, observaremos una región de interés de la imagen, que es la siguiente tras deconvolucionarlo con el algoritmo:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/exp4_5_diferencia.png}
-    \caption{Mapa de diferencia absoluta (en Gauss) entre el campo magnético deconvolucionado por el algoritmo de Noor y el cálculo directo crudo.}
-    \label{fig:datosRealesDif}
+    \includegraphics[width=0.9\textwidth]{img/exp4_3_campoB_zoom.png}
+    \caption{Campo magnético medido a partir de la señal de Stokes $I$ y $V$ mediante el método adaptado de Noor. Se observa que el campo magnético tiene una estructura más definida y detallada que la imagen original.}
+    \label{fig:campoMagDecoReal}
 \end{figure}
 
-Las zonas más brillantes de este mapa de diferencia trazan exactamente los contornos y fronteras de las estructuras magnéticas. Esto demuestra que el algoritmo reconcentra de forma precisa el flujo magnético que había sido esparcido por las alas de la PSF hacia sus núcleos originales, esculpiendo detalles de alta frecuencia sin inyectar ruido o estructuras espurias en el fondo vacío.
+Al igual que antes, se observa que el método logra recuperar la estructura del campo magnético, y se observan detalles que no se veían en la imagen original. Esto indica que el método es capaz de medir el campo magnético a partir de la señal de Stokes $I$ y $V$ de manera efectiva. \\
+
+Para poder medirlo, no es recomendable usar la RMS, ya que el campo magnético tiene polaridad, por lo que se puede cancelar la señal. Por lo que calcularemos la métrica de nitidez (\textit{varianza del Laplaciano}). El operador Laplaciano aisla las altas frecuencias de la imagen, que son los que contiene los detalles. Al calcular su varianza, obtenemos un valor que representa la cantidad de detalles que tiene la imagen: $nitidez = Var(\nabla^2 B)$. Cuanto mayor sea el valor de la varianza del Laplaciano, mayor será la nitidez de la imagen. \\
+
+Los resultados obtenidos son los siguientes, la imagen original tiene una nitidez de $1.96 \times 10^2$ y la imagen deconvolucionada tiene una nitidez de $2.03 \times 10^2$, lo que indica una mejora del $3.6\%$ en la nitidez de la imagen. Esto indica que el método logra mejorar la nitidez y detalle de la imagen original, y por lo tanto, es capaz de medir el campo magnético de manera efectiva. \\
+
+Si vemos la imagen de diferencias entre la imagen original y la deconvolucionada, obtenemos el siguiente resultado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/exp4_5_diferencia.png}
+    \caption{Mapa de diferencias entre la imagen original y la deconvolucionada del campo magnético, restando las imágenes. Se observa que las diferencias se concentran en las regiones donde el método logra recuperar detalles finos de la estructura del campo magnético.}
+    \label{fig:campoMagDecoRealDiferencias}
+\end{figure}
+
+Podemos observar que las zonas mas brillantes (colores verdes y amarillos) trazan los contornos y fronteras de la esturctura magnética, indicando que el algoritmo está reconcentrando el flujo magnético en las zonas que fueron esparcidas por la PSF. 

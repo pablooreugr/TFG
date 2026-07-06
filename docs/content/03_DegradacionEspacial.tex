@@ -2,7 +2,9 @@
 
 \section{Degradación espacial de imágenes: PSF, emborronamiento y deconvolución}
 
-Un telescopio real afecta a una imagen mediante una operación llamada convolución. En esta operación, la imagen que se obtiene es el resultado de la convolución de la imagen real con una función que se llama función de punto extendido (PSF, por sus siglas en inglés). La PSF describe cómo un punto de luz se extiende en la imagen debido a las limitaciones del telescopio.
+Un telescopio real afecta a una imagen mediante una operación llamada convolución. En esta operación, la imagen que se obtiene es el resultado de la convolución de la imagen real con una función que se llama función de punto extendido, PSF(\textit{Point Spread Function}). La PSF describe cómo un punto de luz se extiende en la imagen debido a los efectos de desenfoque, aberraciones, difracción, etc. \\
+
+
 
 Matemáticamente se describe de esta manera:
 
@@ -11,9 +13,19 @@ Matemáticamente se describe de esta manera:
     d_{observado} = d_{real} * p
 \end{equation}
 
-Donde $d_{observado}$ es la imagen que observamos en el telescopio, $d_{real}$ es el objeto extenso, y $p$ es la PSF del propio telescopio.
 
-Normalmente la forma de tratar este problema es usando las propiedades de la transformada de Fourier pasando al dominio de frecuencias. Al hacer una transformada de Fourier, existen ciertas propiedades con las operaciones. La convolución se transforma en una multiplicación, y la multiplicación se transforma en una convolución.
+Donde $d_{observado}$ es la imagen que observamos en el telescopio, $d_{real}$ es el objeto extenso, y $p$ es la PSF del propio telescopio. Si miramos una imagen de ejemplo para este caso:
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/ejemplo_degradacion.png}
+    \caption{En esta imagen se muestra un ejemplo de cómo una imagen real se degrada al pasar por una lente. Se muestra de izquierda a derecha la imagen real ($d_{real}$), la PSF de la lente ($p$), y la imagen observada ($d_{observado}$).}
+    \label{fig:ejemploConvolucion}
+\end{figure}
+
+
+Para tratar este problema matemático de forma más eficiente, se suele aplicar la Transformada de Fourier bidimensional para pasar del dominio de la posición al dominio de las frecuencias espaciales. Físicamente, las frecuencias espaciales indican la rapidez con la que varía la intensidad de la imagen a través del campo de visión: los cambios suaves de iluminación corresponden a bajas frecuencias espaciales, mientras que los detalles más finos y los bordes nítidos representan las altas frecuencias. La gran ventaja de trabajar en este dominio es que, de acuerdo con el Teorema de Convolución, las operaciones matemáticas se simplifican drásticamente: una convolución en el dominio espacial se transforma en una multiplicación en el dominio de las frecuencias, y viceversa.
 
 \begin{equation}
     \label{eq:propFurier}
@@ -30,7 +42,7 @@ De esta forma, si se realiza una transformada de Fourier a la expresión \ref{eq
     D_{observado} = D_{real} \cdot P
 \end{equation}
 
-Donde la notación se indica de manera que si está en minúscula está en el dominio de las posiciones, y mayúscula estando en el dominio de las frecuencias.
+Donde la notación se indica de manera que si está en minúscula está en el dominio de las posiciones, y mayúscula estando en el dominio de las frecuencias espaciales.
 
 Donde en un caso ideal una deconvolución sería obtener el $d_{real}$ de la siguiente manera. Se realiza la transformada de Fourier del $d_{real}$ y de la PSF, y se obtiene el $D_{real}$ de la siguiente manera:
 
