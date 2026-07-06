@@ -180,7 +180,7 @@ Si analizamos el número de iteraciones que se necesitan para conseguir el mejor
 
 Como se muestra en la figura, el número de iteraciones requerido para minimizar el RMSE siempre es mayor que el necesario para optimizar el SSIM. Esto implica que el algoritmo requiere más pasos para mitigar el ruido estadístico, pero a partir de cierto límite también comienza a sobresuavizar la imagen, limpiando el ruido a costa de difuminar la estructura, un efecto homólogo al observado en la componente $V$ en la figura (\ref{fig:visualizacionStokesV}).
 
-\subsection{Datos reales}
+\subsection{Datos reales} \label{sec:datosReales}
 Para poner a prueba los resultados del experimento, usaremos datos reales del experimento Sunrise-TUMAG proporcionados por su web \cite{SUNRISETuMagTUMAGData}. En este caso, son los datos \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}, que contiene una imagen con la estructura $[10,\,4,\,1600,\,1600]$, donde 10 son las longitudes de onda, 4 son las componentes de Stokes y $1600\times1600$ es el tamaño de la imagen. \\
 
 El PSF fue cedido por el equipo de óptica de la sección de  física solar del IAA. Esta PSF se consiguió modelando computacionalmente la óptica del telescopio Sunrise, y se puede observar en la siguiente figura:
