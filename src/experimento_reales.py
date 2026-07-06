@@ -108,13 +108,16 @@ def main():
     # 1. Intensidad
     fig, axes = plt.subplots(1, 2, figsize=(16, 8))
     vmin, vmax = np.percentile(I_centro, [1, 99.5])
-    axes[0].imshow(I_centro, cmap=sns.color_palette("magma", as_cmap=True), vmin=vmin, vmax=vmax)
+    im1 = axes[0].imshow(I_centro, cmap=sns.color_palette("magma", as_cmap=True), vmin=vmin, vmax=vmax)
 #     axes[0].set_title(f'Stokes I Original (FITS)\nContraste: {contraste_orig:.4f}')
     axes[0].axis('off')
+    fig.colorbar(im1, ax=axes[0], fraction=0.046, pad=0.04, label='Intensidad')
     
-    axes[1].imshow(I_centro_rl, cmap=sns.color_palette("magma", as_cmap=True), vmin=vmin, vmax=vmax)
+    im2 = axes[1].imshow(I_centro_rl, cmap=sns.color_palette("magma", as_cmap=True), vmin=vmin, vmax=vmax)
 #     axes[1].set_title(f'Stokes I Deconvolucionado (RL)\nContraste: {contraste_rl:.4f} (Mejora: {contraste_rl/contraste_orig:.1f}x)')
     axes[1].axis('off')
+    fig.colorbar(im2, ax=axes[1], fraction=0.046, pad=0.04, label='Intensidad')
+    
     plt.tight_layout()
     plt.savefig('output/exper/exp4_1_intensidad.png', dpi=300)
     plt.close()
@@ -124,13 +127,16 @@ def main():
     b_max = np.percentile(np.abs(B_completo_crudo), 99.5) # Usamos el maximo global para tener la misma escala de color
     cmap_b = sns.color_palette("icefire", as_cmap=True)
     
-    axes[0].imshow(B_directo_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
+    im1 = axes[0].imshow(B_directo_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
 #     axes[0].set_title(f'B Directo (I crudo, V crudo)\nNitidez: {lap_directo:.2e}')
     axes[0].axis('off')
+    fig.colorbar(im1, ax=axes[0], fraction=0.046, pad=0.04, label='Campo Magnético (Gauss)')
     
-    axes[1].imshow(B_noor_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
+    im2 = axes[1].imshow(B_noor_roi, cmap=cmap_b, vmin=-b_max, vmax=b_max)
 #     axes[1].set_title(f'B Noor Completo (100 iter)\nNitidez: {lap_noor:.2e}')
     axes[1].axis('off')
+    fig.colorbar(im2, ax=axes[1], fraction=0.046, pad=0.04, label='Campo Magnético (Gauss)')
+    
     plt.tight_layout()
     plt.savefig('output/exper/exp4_3_campoB_zoom.png', dpi=300)
     plt.close()
