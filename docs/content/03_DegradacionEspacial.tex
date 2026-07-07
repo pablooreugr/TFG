@@ -1,6 +1,6 @@
 \section{Degradación espacial de imágenes: PSF, emborronamiento y deconvolución}
 
-El sistema óptico de un telescopio altera la imagen capturada mediante un proceso matemático conocido como convolución. La imagen observada es el resultado de la convolución de la distribución espacial de la fuente real con la Función de Dispersión de Punto (PSF, por sus siglas en inglés, \textit{Point Spread Function}). La PSF caracteriza la respuesta del sistema óptico a una fuente puntual, modelando la dispersión de la luz originada por efectos de difracción y aberraciones ópticas \textbf{[AÑADIR CITA BIBLIOGRÁFICA]}. 
+En el ámbito de la astrofísica observacional, es un hecho bien establecido que el sistema óptico de cualquier telescopio altera inevitablemente la imagen capturada. Este fenómeno, caracterizado como un proceso de degradación espacial, ha sido extensamente estudiado en la literatura para el desarrollo de instrumentación solar (véase, por ejemplo, \cite{REFERENCIA_PSF}, \cite{REFERENCIA_OPTICA}). La distorsión se modela matemáticamente mediante la convolución de la distribución espacial de la fuente real con la Función de Dispersión de Punto (PSF, por sus siglas en inglés, \textit{Point Spread Function}). La PSF caracteriza la respuesta del sistema óptico a una fuente puntual, modelando la dispersión de la luz originada por efectos de difracción y aberraciones ópticas. 
 
 Matemáticamente, este proceso se describe mediante la siguiente ecuación:
 
@@ -63,3 +63,5 @@ La presencia del término de ruido $N$ convierte el problema de la deconvolució
 \end{equation}
 
 Dado que la función $P$ tiende a tomar valores muy cercanos a cero en las altas frecuencias, el término $\frac{N}{P}$ crece asintóticamente. Esto implica una amplificación severa del ruido de alta frecuencia, lo que destruye la información de la imagen estimada. Por tanto, la viabilidad de la deconvolución está estrictamente condicionada a la relación señal-ruido (SNR) original de la observación.
+
+Dado que la presencia de este ruido instrumental convierte la recuperación directa de la señal en un problema matemático inestable, la comunidad científica ha desarrollado diversas estrategias heurísticas y analíticas para mitigar este efecto \cite{REFERENCIA_RUIDO}. A continuación, en la Sección \ref{sec:metodosDeconvolucion}, se examinan los enfoques clásicos de deconvolución propuestos históricamente para abordar este desafío, con el fin de evaluar su aplicabilidad y exponer sus limitaciones teóricas frente al problema específico de la espectropolarimetría.

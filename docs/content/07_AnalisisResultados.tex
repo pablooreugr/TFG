@@ -3,15 +3,16 @@
 \section{Análisis de resultados}
 
 \subsection{Datos sintéticos}
-En primer lugar, se emplean datos sintéticos que simulan una región del Sol en calma para validar la implementación computacional. El formato tensorial de estos datos es $[101,\,4,\,336,\,336]$, lo que indica la presencia de $101$ puntos espectrales (longitudes de onda), las $4$ componentes del vector de Stokes ($I$, $Q$, $U$ y $V$) y un dominio espacial de $336\times336$ píxeles. \\
-Para evaluar el rendimiento de los diferentes métodos de deconvolución, el primer paso metodológico consistió en degradar artificialmente estas imágenes mediante la convolución con una Función de Dispersión de Punto (PSF, por sus siglas en inglés) de tipo Airy \cite{...}. Esta función representa una aproximación teórica del comportamiento de un telescopio ideal limitado únicamente por la difracción de una apertura circular. Matemáticamente, su perfil radial se expresa como:
+En primer lugar, se emplean datos sintéticos que simulan una región del Sol en calma para validar la implementación computacional propia. El formato de este cubo de datos presenta dimensiones de $101 \times 4 \times 336 \times 336$, lo que indica la presencia de 101 puntos espectrales (longitudes de onda), las 4 componentes del vector de Stokes ($I$, $Q$, $U$ y $V$) y un dominio espacial de $336 \times 336$ píxeles. 
+
+Para evaluar empíricamente el rendimiento de los diferentes métodos de deconvolución, la primera etapa metodológica consistió en degradar artificialmente estas imágenes mediante la convolución con una Función de Dispersión de Punto (PSF, por sus siglas en inglés) de tipo Airy \cite{born1999principles}. Esta función representa una aproximación teórica del comportamiento de un telescopio ideal limitado únicamente por la difracción de una apertura circular. Matemáticamente, su perfil radial se expresa como:
 \begin{equation}
     \label{eq:PSF}
     PSF(r) = I_0 \left(\frac{2 J_1(kr)}{kr} \right)^2
 \end{equation}
 donde $J_1$ es la función de Bessel de primer orden, $k$ es una constante dependiente del diámetro del telescopio y de la longitud de onda de observación, e $I_0$ es la intensidad central máxima. 
 
-En este análisis empírico se ha utilizado una PSF con un radio de 30 píxeles y un lóbulo central de 3 píxeles de anchura, cuya representación visual se muestra a continuación:
+En este análisis se ha utilizado una PSF con un radio de 30 píxeles y un lóbulo central de 3 píxeles de anchura, cuya representación visual se muestra a continuación:
 
 \begin{figure}[H]
     \centering
@@ -20,7 +21,7 @@ En este análisis empírico se ha utilizado una PSF con un radio de 30 píxeles 
     \label{fig:psfAiry}
 \end{figure}
 
-Para dotar de mayor realismo a la simulación, es imperativo introducir ruido estocástico en los perfiles. Se ha incorporado ruido blanco gaussiano independiente a cada componente de Stokes. Dado que la amplitud de la señal en el parámetro $I$ es varios órdenes de magnitud superior a la del parámetro $V$, se ha implementado un esquema de ruido relativo. Esto implica que la desviación estándar ($\sigma$) del ruido se define como un porcentaje $p$ de la amplitud máxima de cada señal independiente, modelando con mayor fidelidad las condiciones de una observación real:
+Para aproximar la simulación a las condiciones observacionales reales, es necesario introducir ruido estocástico en los perfiles. Se ha incorporado ruido blanco gaussiano independiente a cada componente de Stokes. Dado que la amplitud de la señal en el parámetro $I$ es varios órdenes de magnitud superior a la del parámetro $V$, se ha implementado un esquema de ruido relativo. Esto implica que la desviación estándar ($\sigma$) del ruido se define como un porcentaje $p$ de la amplitud máxima de cada señal independiente:
 \begin{equation}
     I_{max} = \max(I(\mathbf{x})), \quad V_{max} = \max(|V(\mathbf{x})|)
 \end{equation}
@@ -29,27 +30,26 @@ donde $\mathbf{x}$ representa las coordenadas espaciales y espectrales del cubo 
     \sigma_I = I_{max} \cdot \frac{p}{100}, \quad \sigma_V = V_{max} \cdot \frac{p}{100}
 \end{equation}
 
-
 \subsubsection{Análisis de los distintos métodos de deconvolución: Fourier, Wiener y Richardson-Lucy}
-A continuación, se procede a la comparación visual y cuantitativa de los métodos de deconvolución sobre la Intensidad (primer parámetro de Stokes). Se ha seleccionado una longitud de onda representativa, degradada con un nivel de ruido del $0.1\%$.
+A continuación, se comparan visual y cuantitativamente tres aproximaciones clásicas de deconvolución sobre la Intensidad (primer parámetro de Stokes). Se ha seleccionado una longitud de onda representativa, degradada con un nivel de ruido del $0.1\%$.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_1_original_borrosa.png}
-    \caption{Mapas bidimensionales de intensidad. Izquierda: mapa sintético original (Ground Truth). Derecha: mapa tras la convolución con la PSF teórica (Fig. \ref{fig:psfAiry}) y la adición de ruido aditivo del $0.1\%$. Se aprecia la pérdida significativa de altas frecuencias espaciales.}
+    \caption{Mapas bidimensionales de intensidad. Izquierda: mapa sintético original (Ground Truth). Derecha: mapa tras la convolución con la PSF teórica (Fig. \ref{fig:psfAiry}) y la adición de ruido aditivo del $0.1\%$. Se aprecia la atenuación de altas frecuencias espaciales.}
     \label{fig:intensidadSintEmborro}
 \end{figure}
 
-Para analizar el comportamiento de los algoritmos sobre las estructuras finas, se selecciona una subregión de interés mostrada en la siguiente figura:
+Para analizar el comportamiento de los algoritmos sobre las estructuras espaciales de pequeña escala, se selecciona una subregión de interés mostrada en la siguiente figura:
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_5_original_borrosa_zoom.png}
-    \caption{Ampliación de una región de interés de la Figura \ref{fig:intensidadSintEmborro}. Izquierda: mapa sintético original. Derecha: mapa degradado, donde se hace evidente el solapamiento espacial debido a la PSF.}
+    \caption{Ampliación de una región de interés de la Figura \ref{fig:intensidadSintEmborro}. Izquierda: mapa sintético original. Derecha: mapa degradado.}
     \label{fig:intensidadSintEmborroZoom}
 \end{figure}
 
-Tras aplicar los diferentes algoritmos clásicos de deconvolución (filtro inverso de Fourier, filtro de Wiener y el método de Richardson-Lucy \cite{...}), se obtienen los resultados visualizados a continuación:
+Tras aplicar los algoritmos clásicos de deconvolución (filtro inverso de Fourier, filtro de Wiener y el método de Richardson-Lucy \cite{richardson1972bayesian, lucy1974iterative}), se obtienen los siguientes resultados:
 
 \begin{figure}[H]
     \centering
@@ -58,174 +58,127 @@ Tras aplicar los diferentes algoritmos clásicos de deconvolución (filtro inver
     \label{fig:deconvolucionClasicaZoom}
 \end{figure}
 
-Para la evaluación cuantitativa de estas reconstrucciones, se emplean el Índice de Similitud Estructural (SSIM) y el Error Cuadrático Medio (RMSE), cuyas propiedades matemáticas, rangos e interpretación se detallaron formalmente en la sección anterior (ecuaciones \ref{eq:SSIM} y \ref{eq:RMSE}). Los valores obtenidos se presentan en la siguiente gráfica:
+Para la evaluación cuantitativa de estas reconstrucciones, se emplean las métricas SSIM \cite{wang2004image} y RMSE, cuyas propiedades matemáticas y rangos se detallaron en la sección anterior (ecuaciones \ref{eq:SSIM} y \ref{eq:RMSE}). Analíticamente, un RMSE inferior a la línea base (imagen degradada) indica una reducción del error absoluto respecto al Ground Truth, mientras que un SSIM cercano a 1 sugiere una recuperación genuina de la topología espacial. Complementar ambas métricas evita falsos positivos estructurales inducidos por la homogeneización del ruido.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/comparacion_intensidad_3_barras.png}
-    \caption{Valores correspondientes a las métricas SSIM (izquierda) y RMSE (derecha) para los diferentes métodos evaluados. Se incluye la imagen degradada como línea base de comparación. Dada la magnitud del RMSE obtenido por el método de Fourier, se ha incluido un recuadro de ampliación para resolver las diferencias entre los métodos restantes.}
+    \caption{Valores correspondientes a las métricas SSIM (izquierda) y RMSE (derecha) para los diferentes métodos evaluados. Se incluye la imagen degradada como línea base de comparación.}
     \label{fig:rsmeSsimIntensidad}
 \end{figure}
 
-Comenzando por la deconvolución directa en el dominio de Fourier, los resultados indican un rendimiento altamente deficiente: presenta un SSIM próximo a cero y un RMSE significativamente elevado. Físicamente, este método amplifica de forma descontrolada las altas frecuencias asociadas al ruido de la imagen. Como sugiere la teoría, la falta de regularización hace que este método sea inapropiado para imágenes con cualquier grado de ruido estocástico.
+La deconvolución directa en el dominio de Fourier presenta un SSIM próximo a cero y un RMSE significativamente elevado. Este comportamiento es coherente con la teoría analítica: la carencia de regularización induce una amplificación inestable de las altas frecuencias asociadas al ruido estocástico.
 
-En cuanto al filtro de Wiener, los resultados requieren una interpretación cautelosa. Aunque la inspección visual sugiere una recuperación de estructuras, el análisis cuantitativo revela que el SSIM es inferior y el RMSE es superior al de la propia imagen degradada inicial. Es decir, la reconstrucción introduce artefactos que alejan el resultado del Ground Truth real. Este comportamiento es atribuible al uso de la formulación estándar del filtro de Wiener; cabe destacar que existen en la literatura implementaciones bayesianas avanzadas capaces de mitigar este efecto \cite{orieuxBayesianEstimationRegularization2010}.
+En cuanto al filtro de Wiener, el análisis cuantitativo revela que el SSIM es inferior y el RMSE es superior al de la propia imagen degradada inicial. Es decir, la reconstrucción introduce artefactos numéricos que alejan el resultado del estado original. Este comportamiento es atribuible a las limitaciones de la formulación estándar del filtro en regímenes de bajo contraste, aunque existen en la literatura implementaciones bayesianas que mitigan parcialmente este efecto \cite{orieuxBayesianEstimationRegularization2010}.
 
-Por el contrario, el algoritmo iterativo de Richardson-Lucy, fundamentado en el teorema de Bayes y en la presunción de estadística de Poisson \cite{...}, presenta los resultados más favorables. Es el único método de los evaluados capaz de incrementar el SSIM y reducir el RMSE respecto a la imagen degradada original. Su robustez frente al ruido permite, como se aprecia visualmente, la recuperación de detalles estructurales previamente atenuados por el efecto de la PSF.
+El algoritmo iterativo de Richardson-Lucy presenta las métricas más favorables en este escenario. Es imperativo señalar que este método asume estadísticas de Poisson y requiere señales estrictamente no negativas para garantizar su convergencia \cite{richardson1972bayesian}. Dado que el parámetro de Stokes $I$ (intensidad) cumple estas condiciones, el método resulta idóneo y sugiere una capacidad empírica para recuperar detalles estructurales previamente atenuados.
 
 \subsubsection{Limitaciones en la deconvolución del parámetro de Stokes $V$}
-Al analizar la dependencia del proceso de deconvolución respecto al nivel de ruido aplicado específicamente sobre la componente de Stokes $V$, se obtienen las siguientes tendencias estadísticas:
+El comportamiento de los algoritmos varía sustancialmente al aplicarse sobre la componente de Stokes $V$, la cual presenta propiedades estadísticas distintas y puede adoptar valores negativos.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_3_comparativa_shift.png}
-    \caption{Evolución del índice SSIM en función del porcentaje de ruido simulado para los métodos aplicados sobre el parámetro Stokes V. Se compara la imagen degradada frente al método de Richardson-Lucy (con desplazamiento positivo), filtro de Fourier y filtro de Wiener.}
+    \caption{Evolución del índice SSIM en función del porcentaje de ruido simulado para los métodos aplicados sobre el parámetro Stokes V.}
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 
-Debido a que la amplitud intrínseca de la señal de Stokes $V$ es reducida, la relación señal-ruido (SNR) decae drásticamente frente a perturbaciones menores. Esto produce que las técnicas clásicas no logren restablecer la morfología original del campo de polarización. Aunque el filtro de Wiener reporta los mejores valores relativos, su efecto real se ilustra en la siguiente figura para un ruido del $2\%$:
+Debido a la reducida amplitud intrínseca de la señal de Stokes $V$, la relación señal-ruido (SNR) decae de manera acusada frente a perturbaciones menores. Adicionalmente, la naturaleza bipolar de este parámetro viola la restricción de positividad requerida por el método de Richardson-Lucy puro, lo que obliga a aplicar desplazamientos (shifts) en la señal base que alteran la linealidad del problema físico subyacente. 
+
+Aunque el filtro de Wiener reporta métricas relativas estables, su efecto morfológico, ilustrado en la siguiente figura para un ruido del $2\%$, evidencia un marcado sobre-suavizado espacial.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_2_visualizacion.png}
-    \caption{Comparativa visual del parámetro Stokes V. Izquierda: Ground Truth. Centro: mapa degradado con $2\%$ de ruido. Derecha: resultado tras aplicar el filtro de Wiener, evidenciando el sobre-suavizado espacial de la señal.}
+    \caption{Comparativa visual del parámetro Stokes V. Izquierda: Ground Truth. Centro: mapa degradado con $2\%$ de ruido. Derecha: resultado tras aplicar el filtro de Wiener.}
     \label{fig:visualizacionStokesV}
 \end{figure}
 
-El filtro de Wiener penaliza fuertemente las altas frecuencias para mitigar el ruido, resultando en un sobre-suavizado de la imagen. Esto justifica que la métrica SSIM se mantenga estable, ya que elimina el componente aleatorio del ruido, pero falla en la reconstrucción de los gradientes físicos originales. 
+Este análisis sugiere la inviabilidad metodológica de aplicar técnicas clásicas de deconvolución bidimensional de forma aislada sobre mapas de polarización. Por ello, la implementación desarrollada en este Trabajo de Fin de Grado adopta un enfoque acoplado, fundamentado en la resolución de la ecuación de transferencia radiativa \cite{delToroIniesta2003}, para inferir el campo magnético eludiendo la deconvolución directa de los perfiles de Stokes $V$.
 
-Este análisis preliminar sugiere la inviabilidad de aplicar técnicas clásicas de deconvolución de imágenes bi-dimensionales directamente sobre los mapas polarimétricos. Por ello, la metodología adoptada en este Trabajo de Fin de Grado implementa un enfoque acoplado que infiere el campo magnético directamente de la ecuación de transferencia radiativa, evadiendo la necesidad de deconvolucionar los mapas de Stokes $V$ de manera aislada.
-
-\subsubsection{Evaluación del método adaptado de van Noort}
-Previo al análisis morfológico de los resultados, se procede a verificar la convergencia computacional de la adaptación del método iterativo de van Noort \cite{...} implementada. Se emplean los mismos datos sintéticos degradados. El seguimiento de la convergencia se realiza mediante la evaluación del residuo en cada iteración.
-
-Este residuo se define matemáticamente como la norma euclidiana ($L_2$) de la diferencia entre el perfil espectral observado y el perfil sintético generado por el algoritmo en el paso iterativo actual. La siguiente gráfica representa la evolución de dicha norma residual en escala logarítmica:
+\subsubsection{Evaluación de la implementación computacional del método de van Noort}
+Previo al análisis morfológico, se verifica la convergencia computacional del algoritmo propuesto, basado en una adaptación propia del marco metodológico de van Noort \cite{vanNoort2012}. El seguimiento se realiza evaluando la norma euclidiana ($L_2$) del residuo entre el perfil espectral observado y el perfil sintético generado iterativamente.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/experimento_noor_1_convergencia.png}
-    \caption{Evolución de la norma del residuo (diferencia iterativa) en función del número de iteraciones para el algoritmo adaptado de van Noort. La disminución monótona de la curva indica una correcta convergencia numérica del sistema.}
+    \caption{Evolución de la norma del residuo en función del número de iteraciones para la adaptación metodológica empleada.}
     \label{fig:convergenciaNoor}
 \end{figure}
 
-Asegurada la estabilidad del algoritmo, se evalúa la reconstrucción del campo magnético longitudinal:
+Asegurada la estabilidad numérica, se evalúa la reconstrucción del campo magnético longitudinal:
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_noor_2_comparativa_b copy.png}
-    \caption{Comparativa visual del campo magnético longitudinal (en Gauss). Izquierda: mapa original sintético. Centro: mapa inferido tras la degradación instrumental y adición de ruido. Derecha: campo magnético recuperado mediante el método de van Noort.}
+    \caption{Comparativa del campo magnético longitudinal (en Gauss). Izquierda: mapa original sintético. Centro: mapa inferido tras degradación. Derecha: campo magnético reconstruido mediante el código implementado.}
     \label{fig:campoMagDeco}
 \end{figure}
 
-Aplicando un aumento sobre la misma región de interés previa para examinar la microestructura:
+Como se observa en la ampliación (Figura \ref{fig:campoMagDecoZoom}), la metodología implementada sugiere una recuperación parcial de la topología magnética original. Zonas de concentración de flujo presentan un incremento en la definición de sus gradientes espaciales. Las discrepancias residuales observadas en estructuras de menor escala espacial son inherentes al carácter mal condicionado del problema inverso.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_noor_2b_comparativa_b_zoom.png}
-    \caption{Ampliación de la región de interés del campo magnético (en Gauss). Izquierda: Ground Truth. Centro: campo inferido de datos degradados. Derecha: recuperación obtenida con la metodología propuesta.}
+    \caption{Ampliación de la región de interés del campo magnético (en Gauss). Izquierda: Ground Truth. Centro: campo inferido de datos degradados. Derecha: recuperación obtenida.}
     \label{fig:campoMagDecoZoom}
 \end{figure}
 
-Como se observa en las figuras, la implementación metodológica logra recuperar una fracción significativa de la estructura topológica original. Zonas de concentración magnética recuperan un nivel de nitidez que había sido atenuado espacialmente por la PSF. Existen discrepancias residuales en ciertas estructuras de menor escala espacial; un comportamiento esperable dado el carácter mal condicionado del problema inverso y la pérdida irreversible de información de alta frecuencia causada por la apertura finita del telescopio. No obstante, el resultado general indica un desempeño favorable de la aproximación acoplada propuesta.
-
-El mapa de residuos absolutos confirma estas observaciones:
+El mapa de residuos absolutos (Figura \ref{fig:diferenciasZoom}) muestra una atenuación de las diferencias en las zonas de mayor intensidad de campo. Cuantitativamente, el estado inicial degradado presentaba un SSIM de $0.8401$ y un RMSE de $5.2568$ Gauss. Tras la aplicación del algoritmo con regularización espacial de Laplace, las métricas experimentan una mejora moderada hasta un SSIM de $0.8575$ y un RMSE de $4.6995$ Gauss.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_noor_3b_residuos_zoom.png}
-    \caption{Mapas de diferencia absoluta. Izquierda: Diferencia entre el campo magnético original y el inferido sin corrección. Derecha: Diferencia entre el original y el campo reconstruido con el algoritmo propuesto.}
+    \caption{Mapas de diferencia absoluta frente al Ground Truth.}
     \label{fig:diferenciasZoom}
 \end{figure}
 
-La atenuación generalizada del residuo, especialmente en las regiones con fuertes gradientes magnéticos, apoya la capacidad del algoritmo para reconcentrar el flujo disperso. Cuantitativamente, el estado inicial degradado presentaba un SSIM de $0.8401$ y un RMSE de $5.2568$ Gauss. Tras aplicar el método de van Noort con regularización espacial de Laplace \cite{...}, las métricas mejoran hasta un SSIM de $0.8575$ y un RMSE de $4.6995$ Gauss.
-
-Para satisfacer los límites operativos del algoritmo, se realizó un estudio paramétrico variando el nivel de ruido inyectado, evaluando los máximos de rendimiento alcanzables en función del número de iteraciones:
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{img/experimento_noor_4_limite_ruido.png}
-    \caption{Valor óptimo alcanzable de SSIM en función del porcentaje de ruido simulado para el método de van Noort. La técnica demuestra ser capaz de mejorar sistemáticamente la métrica base independientemente del nivel de degradación estocástica.}
-    \label{fig:SSIMfrenteARuidoNoor}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{img/experimento_noor_4b_limite_ruido_rmse.png}
-    \caption{Evolución del valor mínimo de RMSE frente al nivel de ruido. Se observa una reducción constante respecto a la condición inicial degradada en todos los regímenes evaluados.}
-    \label{fig:RMSEfrenteARuidoNoor}
-\end{figure}
-
-Estos resultados indican que, gracias a la imposición de restricciones físicas acopladas derivadas de la resolución radiativa, el algoritmo mantiene un comportamiento robusto frente al ruido estocástico, consiguiendo extraer información subyacente de la señal que técnicas puramente matemáticas (como las vistas en la sección anterior) destruyen.
-
-La correlación entre el número de iteraciones requeridas para alcanzar estos óptimos y el nivel de ruido presente arroja la siguiente dinámica:
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{img/experimento_noor_5_limite_ruido_pasos.png}
-    \caption{Número de iteraciones necesarias para converger al óptimo de SSIM (curva azul) y de RMSE (curva roja) en función del ruido inyectado.}
-    \label{fig:pasosfrenteARuidoNoor}
-\end{figure}
-
-Se evidencia una discrepancia entre el criterio estructural (SSIM) y el criterio de intensidad absoluta (RMSE). Minimizar el error cuadrático demanda un mayor número de iteraciones para promediar la influencia estocástica del ruido. Sin embargo, este exceso de iteraciones comienza a penalizar la reconstrucción morfológica (caída de SSIM), incurriendo en el clásico compromiso o \textit{trade-off} estadístico entre la supresión de ruido y la preservación de gradientes de alta frecuencia.
-
 \subsection{Aplicación a datos observacionales reales} \label{sec:datosReales}
-Una vez validada la metodología computacional mediante datos sintéticos controlados, se procede a su aplicación sobre datos observacionales reales. Para este propósito, se han utilizado los datos de acceso público procedentes del vuelo estratosférico Sunrise-TUMAG \cite{SUNRISETuMagTUMAGData}. En concreto, se ha procesado el archivo de nivel 1:
-\begin{itemize}
-    \item \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}
-\end{itemize}
-
-El formato de este conjunto de datos es de $[10,\,4,\,1600,\,1600]$, correspondiendo a 10 muestreos espectrales, los 4 parámetros de Stokes, y un campo de visión (FOV) de $1600\times1600$ píxeles espaciales. 
-
-La caracterización instrumental de la PSF fue proporcionada por el equipo de ingeniería óptica del Instituto de Astrofísica de Andalucía (IAA-CSIC), obtenida mediante el modelado físico de las aberraciones del telescopio Sunrise. Su morfología se presenta a continuación:
+Tras la evaluación con datos sintéticos, el código implementado se aplica a observaciones reales procedentes del vuelo estratosférico Sunrise-TUMAG \cite{SUNRISETuMagTUMAGData} (archivo nivel 1: \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}). La PSF instrumental empírica, obtenida mediante modelado físico por el IAA-CSIC, se muestra en la Figura \ref{fig:psfReal}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{img/exp4_4_psf.png}
-    \caption{Modelo computacional de la PSF instrumental de la misión Sunrise. Se emplea una escala logarítmica para visualizar los lóbulos secundarios de difracción inducidos por el sistema óptico real.}
+    \caption{Modelo computacional de la PSF instrumental de la misión Sunrise.}
     \label{fig:psfReal}
 \end{figure}
 
-\subsubsection{Evaluación de Richardson-Lucy en datos de intensidad}
-Se seleccionó un punto espectral del continuo para aplicar la deconvolución mediante el método iterativo de Richardson-Lucy, basándonos en su rendimiento óptimo en la validación sintética.
+\subsubsection{Evaluación sobre intensidad}
+Se procedió a la deconvolución del espectro continuo de intensidad mediante el método de Richardson-Lucy (Figura \ref{fig:intensidadDecoReal}). 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/exp4_1_intensidad.png}
-    \caption{Comparativa de intensidad sobre datos reales. Izquierda: observación original de la misión Sunrise (nivel 1). Derecha: mapa tras la aplicación del algoritmo de Richardson-Lucy. Se aprecia cualitativamente un incremento en la definición de la granulación solar.}
+    \caption{Comparativa de intensidad sobre datos observacionales reales (Sunrise).}
     \label{fig:intensidadDecoReal}
 \end{figure}
 
-Al carecer de una imagen Ground Truth en observaciones reales, las métricas SSIM y RMSE carecen de aplicabilidad matemática directa. Como alternativa heurística para cuantificar el incremento de nitidez, se recurre a la métrica de Contraste Cuadrático Medio (RMS, por sus siglas en inglés), que evalúa la dispersión de la intensidad respecto a la media global de la imagen:
+Al carecer de un Ground Truth en observaciones empíricas, se recurre a la métrica de Contraste Cuadrático Medio (RMS) como estimador proxy de la nitidez global. El RMS evalúa la dispersión de la intensidad respecto a su media:
 \begin{equation}
     RMS = \frac{1}{\bar{I}} \sqrt{\frac{1}{N} \sum_{i=1}^{N} (I_i - \bar{I})^2}
 \end{equation}
-
-Bajo la presunción de que el sistema óptico degrada y homogeneiza las estructuras, un incremento del RMS sugiere una recuperación del contraste intrínseco. Cuantitativamente, el valor original del mapa asciende de $0.2028$ a $0.2193$ post-deconvolución, lo que supone un incremento relativo del $8.2\%$, respaldando las mejoras visuales en la definición de los gránulos.
+El valor de la imagen asciende de $0.2028$ a $0.2193$ (un incremento del $8.2\%$). Aunque esto sugiere una recuperación del contraste de la granulación solar, debe considerarse que parte de este incremento podría estar condicionado por la amplificación de ruido residual en las altas frecuencias \cite{puschmann2005}.
 
 \subsubsection{Inferencia del campo magnético acoplado}
-A continuación, se aplica la adaptación del algoritmo de van Noort para inferir el vector magnético directamente desde los perfiles observacionales acoplados. Se muestra un detalle del campo magnético longitudinal recuperado en una subregión activa:
+Finalmente, se aplica la implementación del algoritmo espacialmente acoplado sobre los perfiles observacionales reales.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/exp4_3_campoB_zoom.png}
-    \caption{Inferencia del campo magnético a partir de datos reales de Sunrise-TUMAG. Izquierda: campo magnético inferido por métodos convencionales. Derecha: campo reconstruido mediante la metodología acoplada propuesta, evidenciando una mayor cohesión estructural en las concentraciones de flujo.}
+    \caption{Inferencia del campo magnético en datos reales de Sunrise-TUMAG. Izquierda: inferencia convencional. Derecha: campo reconstruido mediante la metodología acoplada.}
     \label{fig:campoMagDecoReal}
 \end{figure}
 
-La aplicación directa de la métrica RMS sobre mapas magnetográficos resulta inadecuada, dado que la presencia de polaridades opuestas puede inducir cancelaciones matemáticas espurias. En su lugar, se emplea una métrica de nitidez espacial basada en la \textit{Varianza del Laplaciano}. El operador Laplaciano ($\nabla^2$) actúa como un filtro pasa-altas direccional; por ende, la varianza de su aplicación refleja la cantidad de energía contenida en los bordes y las estructuras de pequeña escala:
+Para cuantificar el contraste espacial en mapas de campo magnético —donde el RMS tradicional resulta inviable por las cancelaciones de polaridad— se emplea la \textit{Varianza del Laplaciano} \cite{pech2000diatom}. El operador Laplaciano ($\nabla^2$) actúa como un filtro pasa-altas, por lo que su varianza correlaciona teóricamente con la energía contenida en los gradientes estructurales:
 \begin{equation}
-    \text{Nitidez} = Var(\nabla^2 B)
+    \text{Nitidez} = \operatorname{Var}(\nabla^2 B)
 \end{equation}
 
-La nitidez calculada para el mapa base es de $1.96 \times 10^2$, aumentando a $2.03 \times 10^2$ tras la aplicación del método propuesto. Esta mejora relativa del $3.6\%$ sugiere que el algoritmo contribuye a realzar y delimitar la topología de los elementos magnéticos solares frente a las observaciones de nivel 1.
-
-La distribución espacial de estas mejoras puede analizarse mediante el diferencial entre ambos estados:
+La métrica evaluada asciende de $1.96 \times 10^2$ a $2.03 \times 10^2$ (aumento relativo del $3.6\%$). Aunque matemáticamente indica un mayor contraste en los gradientes magnéticos periféricos (Figura \ref{fig:campoMagDecoRealDiferencias}), la ausencia de un marco de referencia absoluto impone una interpretación sumamente prudente. Es plausible que una fracción de este incremento derive de leves artefactos numéricos introducidos por el proceso iterativo. Por lo tanto, si bien los resultados sugieren una reconcentración estructural coherente con la teoría física, no es posible confirmar de manera definitiva la naturaleza estrictamente física de todas las estructuras reveladas en el límite de difracción.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/exp4_5_diferencia.png}
-    \caption{Mapa espacial de la diferencia absoluta entre la inferencia magnética original y la tratada mediante el algoritmo espacialmente acoplado. Las mayores variaciones se concentran en el contorno perimetral de las estructuras magnéticas de mayor intensidad.}
+    \caption{Mapa espacial de la diferencia absoluta entre la inferencia original y la tratada. Las variaciones se localizan mayoritariamente en los contornos de las concentraciones de flujo.}
     \label{fig:campoMagDecoRealDiferencias}
 \end{figure}
-
-El mapa de diferencias indica que los aportes del algoritmo (representados por los picos de intensidad en tonos claros) se localizan mayoritariamente en los bordes e interfaces de las concentraciones magnéticas. Esto es físicamente consistente con el objetivo del algoritmo: reconcentrar el flujo magnético en las regiones centrales de los elementos, revirtiendo la dispersión introducida periféricamente por las alas de la PSF instrumental.

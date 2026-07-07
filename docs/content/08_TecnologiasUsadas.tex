@@ -1,15 +1,15 @@
-% !TeX root = ../main.tex
+ !TeX root = ../main.tex
 \section{Tecnologías usadas}
-Dado el carácter computacional de este trabajo, resulta pertinente detallar las herramientas y tecnologías empleadas para su desarrollo. El lenguaje de programación principal elegido ha sido \texttt{Python}, destacando por su alta legibilidad y por ser uno de los lenguajes predominantes en el procesamiento de imágenes y el análisis de datos astrofísicos, contando con un amplio ecosistema de bibliotecas avaladas por la comunidad científica.
+Debido a que este proyecto es de programación, es conveniente hablar de las tecnologías que se han usado en el proyecto, ya que todo el proyecto fue una forma de mejorar y obtener conocimiento sobre estos. El lenguaje de programación que se ha usado es \texttt{Python}, debido a la facilidad de legibilidad, además de que es de los lenguajes mas usados en el procesado de imágenes y datos astrofísicos, por lo que existen librerías muy utilizadas en la comunidad científica. 
 
-Para el manejo y la manipulación matricial de los datos se ha empleado la biblioteca \texttt{NumPy}. Asimismo, para la lectura y tratamiento de los datos astrofísicos observacionales, se ha recurrido a \texttt{Astropy}, una herramienta estándar para operar con el formato de archivo \texttt{FITS}, de uso habitual en esta disciplina.
+Como base para manejar los datos, se ha usado la librería de vectorización \texttt{Numpy}, y para obtener los datos reales astrofísicos es ampliamente conocida la librería \texttt{Astropy}, que permite obtener los datos a partir de archivos \texttt{FITS}, usualmente usados en este ámbito.
 
-En cuanto al procesamiento matemático de las imágenes, se ha hecho uso de \texttt{SciPy}. Esta biblioteca proporciona funciones eficientes para el cálculo de la convolución y la transformada de Fourier, implementaciones fundamentales en los métodos de deconvolución expuestos en la sección \ref{sec:metodosDeconvolucion}. Adicionalmente, \texttt{SciPy} provee interfaces para la creación de operadores lineales y rutinas de optimización iterativas, como el método del gradiente conjugado empleado en la sección \ref{sec:metodoDes}. Estas herramientas han facilitado, además, la paralelización eficiente del código para aprovechar las arquitecturas multinúcleo de los procesadores actuales.
+Para el procesado de las imágenes, se ha usado la librería \texttt{Scipy}, ya que tiene multiples funciones de procesado de imágenes, cómo la convolución o la transformada de Fourier, que se usaron en los métodos de deconvolución de la sección (\ref{sec:metodosDeconvolucion}). Además, esta librería también tiene funciones para crear operadores lineales a partir de funciones y funciones de optimización como el del complejo conjugado usados en la sección (\ref{sec:metodoDes}). También permitía paralelizar el código sencillamente y mandarlo a todos los núcleos del procesador.
 
-Por último, dada la naturaleza de desarrollo del proyecto, se han utilizado modelos de inteligencia artificial generativa como herramientas de asistencia a lo largo de la realización de este TFG. Éstas no han sido empleadas para el desarrollo autónomo del trabajo, sino como apoyo metodológico en los siguientes aspectos:
+Por último, como antes sugerí, al ser un proyecto de programación, se usó la inteligencia artificial. Este ha sido una herramienta muy potente, no para que haga el trabajo por si solo, sino como una herramienta de apoyo para todo el proyecto. El uso que le he dado a la inteligencia artificial está en estos tres casos:
 
 \begin{itemize}
-    \item Como soporte teórico para clarificar conceptos complejos presentes en la literatura especializada (artículos y libros de texto), acelerando así el proceso de asimilación e investigación.
-    \item Como asistente de depuración para identificar y corregir errores en el código de manera ágil, así como para generar los \textit{scripts} de visualización de datos responsables de las gráficas presentadas en esta memoria.
-    \item Como apoyo en la corrección de estilo y revisión ortográfica del propio documento, con el fin de enriquecer la redacción, corregir expresiones y garantizar un tono académico riguroso.
+    \item Para pedirles explicaciones de ciertos conceptos que no entendía mientras leía papers o libros, aumentando la rapidez de aprendizaje y comprensión de los conceptos.
+    \item Para poder encontrar errores en el código de una manera más rápida, además de pedirle que genere los scripts de visualización de los datos y gráficas presentado en este proyecto.
+    \item Como ayuda ortográfica y de estilo en la redacción de este documento, para poder mejorar la calidad del mismo y corregir ciertas expresiones.
 \end{itemize}

@@ -2,7 +2,9 @@
 
 \section{Fundamentos Teóricos}
 \subsection{Datos espectrales y parámetros de Stokes}
-Previamente al análisis detallado, resulta pertinente establecer la naturaleza física de las magnitudes medidas. La información proveniente del Sol se adquiere mediante el estudio de la radiación electromagnética. Las observaciones empleadas en este trabajo se circunscriben al rango visible, comprendido entre 4000 y 7000 Å. Debido a las elevadas frecuencias características de este espectro, la medición directa de las propiedades fundamentales del campo electromagnético, tales como su amplitud o fase, resulta instrumentalmente inviable.
+El marco teórico que sustenta este trabajo se asienta sobre principios físicos ampliamente consolidados en la literatura especializada. Siguiendo de cerca la formulación canónica presentada por \cite{toroiniestaIntroductionSpectropolarimetry2003}, en esta sección se exponen los conceptos fundamentales sobre la naturaleza espectral de los datos, la transferencia radiativa y el efecto Zeeman, imprescindibles para la comprensión del problema.
+
+La información proveniente del Sol se adquiere mediante el estudio de la radiación electromagnética. Las observaciones empleadas en este trabajo se circunscriben al rango visible, comprendido entre 4000 y 7000 Å. Debido a las elevadas frecuencias características de este espectro, la medición directa de las propiedades fundamentales del campo electromagnético, tales como su amplitud o fase, resulta instrumentalmente inviable.
 
 En consecuencia, los instrumentos telescópicos no registran el campo eléctrico instantáneo, sino un promedio temporal de la energía electromagnética, denominado intensidad. Para analizar rigurosamente tanto el flujo energético como el estado de polarización de la radiación, se recurre al tensor de polarización.
 
@@ -375,6 +377,8 @@ Al aplicar una expansión de Taylor de primer orden sobre los perfiles de absorc
 donde $C = 4.67 \times 10^{-13} \text{ G}^{-1}\text{Å}^{-1}$ es la constante escalar. Para evaluar el éxito de esta aproximación empíricamente, se emplea el Error Cuadrático Medio (RMSE) entre la señal observada $V$ y la derivada modelada. Un RMSE cercano a 0 indica un ajuste matemático óptimo (confirmando el régimen de campo débil), mientras que residuos amplios sugieren campos intensos o asimetrías convectivas.
 
 A modo de ilustración con datos observacionales (cuya procedencia e instrumentación se detallan formalmente en la sección \ref{sec:datosReales}, correspondiente a la metodología propia del trabajo), la Figura \ref{fig:intensidadReal.} muestra la morfología empírica de los perfiles. Se sugiere que la aproximación teórica deducida proporciona un ajuste estructuralmente coherente con los datos adquiridos.
+
+A partir de estas relaciones fundamentales se define analíticamente la intensidad del campo magnético longitudinal solar. Sin embargo, en la práctica observacional, estas señales ideales se ven ineludiblemente alteradas por la instrumentación óptica del telescopio antes de llegar al detector. Comprender y modelar matemáticamente esta degradación espacial, fenómeno que se detalla en la siguiente sección, resulta un paso previo e imperativo antes de intentar cualquier inferencia física a partir de los datos.
 
 \begin{figure}[H]
     \centering
