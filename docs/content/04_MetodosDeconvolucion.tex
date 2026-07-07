@@ -56,7 +56,7 @@ El comportamiento adaptativo del filtro se evidencia en la ecuación (\ref{eq:wi
 
 \subsection{Algoritmo de Richardson-Lucy}
 
-A diferencia de los métodos algebraicos en el dominio frecuencial, el algoritmo de Richardson-Lucy constituye un procedimiento numérico iterativo. Este enfoque asume que el ruido de la imagen sigue una distribución de Poisson, característica idónea para imágenes astronómicas limitadas por el conteo discreto de fotones.
+A diferencia de los métodos algebraicos en el dominio frecuencial, el algoritmo de Richardson-Lucy \cite{Lucy1974} constituye un procedimiento numérico iterativo. Este enfoque asume que el ruido de la imagen sigue una distribución de Poisson, característica idónea para imágenes astronómicas limitadas por el conteo discreto de fotones.
 
 La principal ventaja matemática de este algoritmo es que preserva el flujo total de energía y garantiza la no negatividad de los píxeles en la solución (siempre que la imagen de entrada y la PSF sean estrictamente positivas). La ecuación iterativa subyacente se expresa como \cite{richardsonBayesianBasedIterativeMethod1972}:
 
@@ -100,7 +100,7 @@ Un aspecto técnico crítico en la implementación de convoluciones es la gesti�
 
 \subsection{El problema de la deconvolución del campo magnético}
 
-El núcleo del desafío técnico abordado en este trabajo surge al analizar la ecuación de aproximación de campo magnético débil (\ref{eq:campoDebil}). Las magnitudes observables espectropolarimétricas son los parámetros de Stokes $V$ e $I$. Como se ha establecido previamente, la deconvolución directa de $V$ con herramientas estándar como Richardson-Lucy resulta matemáticamente inviable debido a la presencia física de valores negativos en la señal de polarización circular.
+El núcleo del desafío técnico abordado en este trabajo surge al analizar la ecuación de aproximación de campo magnético débil (\ref{eq:campoDebil}). Las magnitudes observables espectropolarimétricas son los parámetros de Stokes $V$ e $I$. Como se ha establecido previamente en métodos clásicos de inversión \cite{AsensioRamos2008}, la deconvolución directa de $V$ con herramientas estándar como Richardson-Lucy resulta matemáticamente inviable debido a la presencia física de valores negativos en la señal de polarización circular.
 
 Al expresar matemáticamente la señal observada afectada por la degradación instrumental (modelada mediante la convolución con la PSF) e introducir la ecuación de aproximación de campo débil (\ref{eq:campoDebil}), se obtiene la siguiente expresión:
 

@@ -2,7 +2,7 @@
 
 En esta sección se presenta el método desarrollado en este trabajo para aislar y extraer el campo magnético, partiendo de las señales observables de Stokes $V$ e $I$. El núcleo metodológico se fundamenta en la base matemática propuesta por Van Noort \cite{vannoortSpatiallyCoupledInversion2012}. La aportación principal de este trabajo reside en la adaptación e implementación computacional de dicha teoría para su aplicación específica al problema de convolución abordado.
 
-El método original planteado por Van Noort opera de la siguiente manera: se parte de unos datos observados $d$ y de un modelo teórico $F(x)$ dependiente de un conjunto de parámetros $x$. En este caso de estudio, el modelo corresponde a la aproximación de campo débil \cite{CITA_CAMPO_DEBIL} % TODO: Sustituir CITA_CAMPO_DEBIL por tu clave bibliográfica
+El método original planteado por Van Noort opera de la siguiente manera: se parte de unos datos observados $d$ y de un modelo teórico $F(x)$ dependiente de un conjunto de parámetros $x$. En este caso de estudio, el modelo corresponde a la aproximación de campo débil \cite{cteGeff, Unno1956}
 y el parámetro a ajustar es el campo magnético paralelo. Tomando una estimación inicial de los parámetros $x_0$, el residuo se define como:
 
 \begin{equation}
@@ -105,7 +105,7 @@ Este proceso conduce al sistema:
 
 En notación algebraica estándar, la matriz del sistema es $A = J^T J$, la incógnita es la corrección $x = \Delta B_{\parallel}$, y el término independiente es $b = J^T \beta$. La resolución proporciona el mapa bidimensional de correcciones $\Delta B_{\parallel}$, que actualiza la estimación inicial: $B_{\parallel}^f = B_{\parallel}^0 + \Delta B_{\parallel}$.
 
-Ante la imposibilidad de almacenar $A$, la estrategia de formular el problema mediante operadores lineales permite el uso de métodos iterativos basados en Subespacios de Krylov \cite{CITA_KRYLOV}. % TODO: Sustituir CITA_KRYLOV por tu clave bibliográfica
+Ante la imposibilidad de almacenar $A$, la estrategia de formular el problema mediante operadores lineales permite el uso de métodos iterativos basados en Subespacios de Krylov.
 Matemáticamente, un subespacio de Krylov de orden $m$ se define como el espacio generado por las proyecciones sucesivas de la matriz sobre el vector independiente:
 
 \begin{equation}
@@ -114,5 +114,5 @@ Matemáticamente, un subespacio de Krylov de orden $m$ se define como el espacio
 
 La principal virtud de estos algoritmos radica en que no requieren conocer la matriz de forma explícita; únicamente precisan evaluar el producto matriz-vector, lo cual equivale a aplicar los operadores de forma secuencial sobre la imagen. 
 
-Dentro de esta familia de métodos, el Gradiente Conjugado (CG) resulta particularmente adecuado para este problema dado que la matriz $J^T J$ es, por construcción, simétrica y definida positiva. Este método iterativo busca la solución alrededor de vectores ortogonalesen el subespacio de Krylov, garantizando una convergencia eficiente hacia la solución óptima.
+Dentro de esta familia de métodos, el Gradiente Conjugado (CG) \cite{hestenes1952methods} resulta particularmente adecuado para este problema dado que la matriz $J^T J$ es, por construcción, simétrica y definida positiva. Este método iterativo busca la solución alrededor de vectores ortogonalesen el subespacio de Krylov, garantizando una convergencia eficiente hacia la solución óptima.
 Al ser un algoritmo de uso extendido, su integración computacional se ha realizado utilizando librerías matemáticas estándar de Python.

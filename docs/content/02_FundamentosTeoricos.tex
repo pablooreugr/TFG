@@ -45,7 +45,7 @@ Para formular este tensor, es preciso definir el estado de polarización de la o
         \draw[->, color=vectorblue, line width=1.8pt] (Origen) -- (E);
 
     \end{tikzpicture}
-    \caption{Componentes de una onda electromagnética polarizada, representada como la superposición de dos ondas proyectadas sobre los ejes $x$ e $y$, compartiendo frecuencia pero difiriendo en su fase relativa.}
+    \caption{Representacion de una onda electromagnética polarizada, representada como la superposición de dos ondas proyectadas sobre los ejes $x$ e $y$, compartiendo frecuencia pero difiriendo en su fase relativa.}
     \label{fig:componentes_em}
 \end{figure}
 
@@ -56,7 +56,7 @@ Por consiguiente, el tensor empleado para evaluar la intensidad y el desfase ado
     C \equiv \begin{pmatrix} \langle E_x E_x^* \rangle & \langle E_x E_y^* \rangle \\ \langle E_y E_x^* \rangle & \langle E_y E_y^* \rangle \end{pmatrix}
 \end{equation}
 
-Esta matriz está definida mediante números complejos que contienen información sobre la fase absoluta del campo eléctrico. Sin embargo, los detectores únicamente registran intensidades, correspondientes a magnitudes reales. Para soslayar esta limitación, se emplea una combinación lineal de los elementos matriciales que define los parámetros de Stokes. Estos constituyen la base física adecuada para representar las correlaciones del campo sin requerir el conocimiento de las fases absolutas. Al tratarse de magnitudes reales con dimensiones de energía, son directamente medibles. Las definiciones formales se recogen en las expresiones (\ref{eq:stokes}) \cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}.
+Esta matriz está definida mediante números complejos que contienen información sobre la correlación y fase relativa del campo eléctrico. Sin embargo, los detectores únicamente registran intensidades, correspondientes a magnitudes reales. Para soslayar esta limitación, se emplea una combinación lineal de los elementos matriciales que define los parámetros de Stokes. Estos constituyen la base física adecuada para representar las correlaciones del campo sin requerir el conocimiento de las fases absolutas. Al tratarse de magnitudes reales con dimensiones de intensidad, son directamente medibles. Las definiciones formales se recogen en las expresiones (\ref{eq:stokes}) \cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}.
 
 \begin{equation}
     \label{eq:stokes}
@@ -77,10 +77,10 @@ En este contexto, $\kappa$ actúa como un factor de proporcionalidad inherente a
     \item $V$ mide la polarización circular neta, diferenciando la predominancia de la helicidad dextrógira frente a la levógira.
 \end{itemize}
 
-Es imperativo destacar que los parámetros de polarización oscilan dentro del rango matemático $[-I, I]$. A partir de ellos se define el grado de polarización total como $\sqrt{Q^2 + U^2 + V^2} / I$. En condiciones ideales, este valor se sitúa entre 0 (luz natural) y 1 (luz totalmente polarizada). Un resultado superior a 1 carecería de sentido físico, indicando invariablemente la presencia de ruido instrumental severo o errores sistemáticos en la calibración. El parámetro $V$ resulta de especial interés para el presente estudio, dado que permite inferir la intensidad del campo magnético longitudinal solar.
+El parámetro $V$ resulta de especial interés para el presente estudio, dado que permite inferir la intensidad del campo magnético longitudinal solar.
 
 \subsection{Transferencia radiativa}
-Uno de los objetivos fundamentales de la física solar consiste en inferir las propiedades termodinámicas y magnéticas de la atmósfera estelar a partir de la radiación emergente. Sin embargo, durante su propagación, la radiación interactúa con distintos medios físicos, alterando sus propiedades de forma dependiente del índice de refracción. Siguiendo la formulación de \cite{sanchezSolarObservationsTechniques1992}, si se considera una onda electromagnética monocromática atravesando un medio con índice de refracción $n$, su campo eléctrico se describe como:
+Uno de los objetivos fundamentales de la física solar consiste en inferir las propiedades termodinámicas y magnéticas de la atmósfera estelar a partir de la radiación emergente \cite{Rutten2003}. Sin embargo, durante su propagación, la radiación interactúa con distintos medios físicos, alterando sus propiedades de forma dependiente del índice de refracción \cite{chandrasekhar1960radiative}. Siguiendo la formulación de \cite{sanchezSolarObservationsTechniques1992}, si se considera una onda electromagnética monocromática atravesando un medio con índice de refracción $n$, su campo eléctrico se describe como:
 
 \begin{equation}
     \label{eq:ondaElectro}
@@ -89,7 +89,7 @@ Uno de los objetivos fundamentales de la física solar consiste en inferir las p
 
 donde $\nu$ es la frecuencia, $n$ es el índice de refracción y $\Omega$ representa la dirección de propagación. 
 
-En un medio anisótropo, como el plasma solar bajo la influencia de un campo magnético, cada dirección de propagación se asocia a un índice de refracción distinto. Asumiendo que el medio posee tres direcciones principales ortogonales (con vectores normales $\vec{u_\alpha}$, donde $\alpha = 1, 2, 3$), la función de onda se expresa como:
+En un medio anisótropo, las propiedades ópticas dependen de la dirección de propagación y del estado de polarización de la onda. Para una dirección dada pueden existir distintos modos propios, cada uno caracterizado por un índice de refracción diferente. Asumiendo que el medio posee tres direcciones principales ortogonales (con vectores normales $\vec{u_\alpha}$, donde $\alpha = 1, 2, 3$), la función de onda se expresa como:
 
 \begin{equation}
     \label{eq:ondaAnisotropa}
@@ -255,7 +255,7 @@ La radiación electromagnética generada por cada uno de estos osciladores prese
 
 Bajo una observación paralela a las líneas de campo magnético ($\theta = 0^\circ$), el oscilador lineal de frecuencia $\nu_0$ no irradia energía hacia el observador (un dipolo no emite a lo largo de su eje). Únicamente se detectarán las dos componentes circulares del plano ortogonal: radiación polarizada circularmente a derechas y a izquierdas con frecuencias desplazadas simétricamente $\nu_0 \pm \nu_L$. 
 
-Por el contrario, en una dirección de observación transversal al campo magnético ($\theta = 90^\circ$), los movimientos circulares se proyectarán como oscilaciones lineales ortogonales a $\vec{B}$, emitiendo en $\nu_0 \pm \nu_L$. Simultáneamente, el oscilador central resultará observable, emitiendo con polarización lineal paralela a $\vec{B}$ en su frecuencia natural $\nu_0$. Esta configuración observacional genera tres componentes linealmente polarizadas, conformando el triplete de Lorentz normal.
+Por el contrario, en una dirección de observación transversal al campo magnético ($\theta = 90^\circ$), los movimientos circulares se proyectarán como oscilaciones lineales ortogonales a $\vec{B}$, emitiendo en $\nu_0 \pm \nu_L$. Simultáneamente, el oscilador central resultará observable, emitiendo con polarización lineal paralela a $\vec{B}$ en su frecuencia natural $\nu_0$. Esta configuración observacional genera tres componentes linealmente polarizadas, conformando el triplete de Zeeman normal.
 
 La inserción de esta descripción analítica en la ecuación fundamental de la transferencia radiativa permite obtener los coeficientes de absorción selectiva ($\eta$) y de dispersión ($\rho$) de la matriz de propagación (Ecuación \ref{eq:transfMatriz}):
 
@@ -287,14 +287,14 @@ En estas expresiones, $\phi$ representa el perfil de absorción y $\psi$ denota 
 \end{equation}
 
 \subsubsection{Enfoque Cuántico del Efecto Zeeman}
-Si bien la formulación clásica describe de forma precisa la dependencia angular de la polarización, el espectro estelar empírico revela líneas espectrales con patrones de desdoblamiento complejos (efecto Zeeman anómalo). Esta fenomenología radica en la naturaleza mecánico-cuántica de los átomos multielectrónicos \cite[pag. 104]{sanchezSolarObservationsTechniques1992}.
+Si bien la formulación clásica describe de forma precisa la dependencia angular de la polarización, el espectro estelar empírico revela líneas espectrales con patrones de desdoblamiento complejos (efecto Zeeman anómalo). Esta fenomenología radica en la naturaleza mecánico-cuántica de los átomos multielectrónicos \cite[pag. 104]{sanchezSolarObservationsTechniques1992}, tal y como desarrollaron en su momento teóricos de la formación de líneas espectrales como Unno \cite{Unno1956} y Rachkovsky \cite{Rachkovsky1962}.
 
-Bajo el marco de la mecánica cuántica, un nivel de energía atómico se define por su número cuántico de momento angular total, $J$. En ausencia de perturbaciones magnéticas, este nivel presenta una degeneración de $2J+1$ estados. La introducción de un campo magnético externo rompe esta degeneración espacial. Dichos subniveles se caracterizan mediante el número cuántico magnético $M$, cuyos valores discretos oscilan entre $-J$ y $+J$ en incrementos enteros.
+Bajo el marco de la mecánica cuántica y en lo que respecta al efecto Zeeman, un nivel de energía atómico se define por su número cuántico de momento angular total, $J$. En ausencia de perturbaciones magnéticas, este nivel presenta una degeneración de $2J+1$ estados. La introducción de un campo magnético externo rompe esta degeneración espacial. Dichos subniveles se caracterizan mediante el número cuántico magnético $M$, cuyos valores discretos oscilan entre $-J$ y $+J$ en incrementos enteros.
 
 El desplazamiento energético que experimentan estos subniveles, expresado en frecuencia, se rige por:
 \begin{equation}
     \label{eq:desplazamientoZeemanCuantico}
-    \nu_M = g M \nu_L
+    \Delta \nu_M = g M \nu_L
 \end{equation}
 
 Esta expresión introduce el factor de Landé ($g$), un parámetro adimensional que cuantifica la sensibilidad magnética de cada nivel energético particular.
