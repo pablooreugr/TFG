@@ -1,73 +1,65 @@
-% !TeX root = ../main.tex
-
 \section{Degradación espacial de imágenes: PSF, emborronamiento y deconvolución}
 
-Un telescopio real afecta a una imagen mediante una operación llamada convolución. En esta operación, la imagen que se obtiene es el resultado de la convolución de la imagen real con una función que se llama función de punto extendido, PSF (\textit{Point Spread Function}). La PSF describe cómo un punto de luz se extiende en la imagen debido a los efectos de desenfoque, aberraciones, difracción, etc. 
+El sistema óptico de un telescopio altera la imagen capturada mediante un proceso matemático conocido como convolución. La imagen observada es el resultado de la convolución de la distribución espacial de la fuente real con la Función de Dispersión de Punto (PSF, por sus siglas en inglés, \textit{Point Spread Function}). La PSF caracteriza la respuesta del sistema óptico a una fuente puntual, modelando la dispersión de la luz originada por efectos de difracción y aberraciones ópticas \textbf{[AÑADIR CITA BIBLIOGRÁFICA]}. 
 
-Matemáticamente se describe de esta manera:
+Matemáticamente, este proceso se describe mediante la siguiente ecuación:
 
 \begin{equation}
     \label{eq:convolucion}
-    d_{observado} = d_{real} * p
+    d_{\text{obs}} = d_{\text{real}} * p
 \end{equation}
 
-
-En esta expresión, $d_{observado}$ es la imagen adquirida por el telescopio, $d_{real}$ es el objeto extenso original, y $p$ es la PSF del sistema óptico. A modo ilustrativo, se presenta la siguiente figura:
-
+En esta expresión, $d_{\text{obs}}$ es la imagen adquirida por el telescopio, $d_{\text{real}}$ es el objeto extenso original y $p$ es la PSF del sistema óptico. A modo ilustrativo, se presenta la siguiente figura:
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/ejemplo_degradacion.png}
-    \caption{En esta imagen se muestra un ejemplo de cómo una imagen real se degrada al pasar por una lente. Se muestra de izquierda a derecha la imagen real ($d_{real}$), la PSF de la lente ($p$), y la imagen observada ($d_{observado}$).}
+    \caption{Representación del proceso de degradación óptica de una imagen. Se muestra, de izquierda a derecha, la señal original ($d_{\text{real}}$), la PSF del sistema ($p$) y la imagen resultante tras la convolución ($d_{\text{obs}}$).}
     \label{fig:ejemploConvolucion}
 \end{figure}
 
-
-Para hacer que este problema matemático sea más manejable, la técnica habitual es aplicar la Transformada de Fourier bidimensional. Esto nos permite pasar del dominio de la posición al dominio de las frecuencias espaciales. Si lo pensamos físicamente, estas frecuencias nos dicen cómo de rápido cambia la intensidad de la luz a lo largo de la imagen. Por ejemplo, las zonas donde la iluminación cambia poco a poco son las bajas frecuencias, mientras que los bordes marcados o los detalles más finos corresponden a las altas frecuencias. La gran ventaja matemática de saltar a este dominio es el Teorema de Convolución: gracias a él, una operación tan pesada como la convolución se convierte en una simple multiplicación, y viceversa.
+Para simplificar la resolución de este problema inverso, se recurre habitualmente a la Transformada de Fourier bidimensional \textbf{[AÑADIR CITA BIBLIOGRÁFICA]}. Esta transformación permite cambiar la representación de la señal del dominio espacial al dominio de las frecuencias espaciales. Físicamente, dichas frecuencias representan la tasa de variación de la intensidad luminosa en la imagen: las variaciones graduales corresponden a bajas frecuencias, mientras que los bordes definidos o los detalles de alta resolución se asocian a las altas frecuencias. La principal ventaja analítica de operar en este dominio radica en el Teorema de Convolución, el cual establece que la convolución en el dominio espacial equivale al producto algebraico en el dominio frecuencial:
 
 \begin{equation}
-    \label{eq:propFurier}
-    \begin{split}
-        \cdot &\Longrightarrow * \\
-        * &\Longrightarrow \cdot
-    \end{split}
+    \label{eq:teoremaConvolucion}
+    \mathcal{F}\{f * g\} = \mathcal{F}\{f\} \cdot \mathcal{F}\{g\}
 \end{equation}
 
-Sabiendo esto, si aplicamos la transformada a nuestra ecuación inicial (\ref{eq:convolucion}), el modelo en frecuencias queda mucho más limpio:
+Aplicando este teorema a la Ecuación \ref{eq:convolucion}, el modelo en el dominio de las frecuencias espaciales se simplifica a:
 
 \begin{equation}
     \label{eq:convolucionFourier}
-    D_{observado} = D_{real} \cdot P
+    D_{\text{obs}} = D_{\text{real}} \cdot P
 \end{equation}
 
-En este texto, la convención de notación emplea letras minúsculas para el dominio espacial y mayúsculas para el dominio de las frecuencias espaciales.
+En el presente documento, la convención de notación emplea letras minúsculas para designar variables en el dominio espacial y mayúsculas para el dominio de las frecuencias espaciales.
 
-Si estuviéramos en un caso puramente ideal, bastaría con despejar directamente para encontrar $d_{real}$. Solo tendríamos que dividir la transformada de la imagen observada entre la de la PSF, llegando a la siguiente ecuación:
+En un escenario ideal exento de ruido, la estimación de la señal original requeriría únicamente una división algebraica. Dividiendo la transformada de la imagen observada por la transformada de la PSF, se obtiene:
 
 \begin{equation}
     \label{eq:deconvolucionIdeal}
-    D_{real} = \frac{D_{observado}}{P}
+    D_{\text{real}} = \frac{D_{\text{obs}}}{P}
 \end{equation}
 
-Finalmente, bastaría con deshacer la transformada (aplicar la inversa) para recuperar nuestra imagen $d_{real}$. Sin embargo, la realidad es bastante distinta, ya que las observaciones reales siempre arrastran ruido. Por ello, el modelo completo tiene que incluir este nuevo factor:
+Posteriormente, la aplicación de la Transformada Inversa de Fourier permitiría recuperar la imagen $d_{\text{real}}$ exacta. No obstante, las observaciones empíricas están intrínsecamente sujetas a la presencia de ruido. Por consiguiente, el modelo físico debe expandirse para incluir un término aditivo:
 
 \begin{equation}
     \label{eq:convolucionRuido}
-    d_{observado} = d_{real} * p + n
+    d_{\text{obs}} = d_{\text{real}} * p + n
 \end{equation}
 
-donde $n$ representa el ruido añadido por el detector, la atmósfera u otras fuentes instrumentales. Al pasar al dominio de Fourier, la expresión queda:
+donde $n$ engloba el ruido introducido por la instrumentación, el sensor electrónico y la atmósfera \textbf{[AÑADIR CITA BIBLIOGRÁFICA]}. En el dominio de Fourier, esta expresión se transforma en:
 
 \begin{equation}
     \label{eq:convolucionFourierRuido}
-    D_{observado} = D_{real} \cdot P + N
+    D_{\text{obs}} = D_{\text{real}} \cdot P + N
 \end{equation}
 
-Con el ruido presente, la idea de despejar dividiendo directamente se vuelve inestable. El motivo es que al dividir entre $P$, también acabamos amplificando el ruido:
+La presencia del término de ruido $N$ convierte el problema de la deconvolución directa (o filtrado inverso) en un proceso matemáticamente inestable \textbf{[AÑADIR CITA BIBLIOGRÁFICA]}. Al intentar despejar $D_{\text{real}}$, el término de ruido queda dividido por la PSF en el dominio frecuencial:
 
 \begin{equation}
     \label{eq:deconvolucionRuido}
-    D_{real} = \frac{D_{observado} - N}{P}
+    D_{\text{real}} = \frac{D_{\text{obs}} - N}{P} = \frac{D_{\text{obs}}}{P} - \frac{N}{P}
 \end{equation}
 
-Por tanto, la calidad de la deconvolución depende fuertemente de la relación señal-ruido.
+Dado que la función $P$ tiende a tomar valores muy cercanos a cero en las altas frecuencias, el término $\frac{N}{P}$ crece asintóticamente. Esto implica una amplificación severa del ruido de alta frecuencia, lo que destruye la información de la imagen estimada. Por tanto, la viabilidad de la deconvolución está estrictamente condicionada a la relación señal-ruido (SNR) original de la observación.

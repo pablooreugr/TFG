@@ -1,25 +1,30 @@
 % !TeX root = ../main.tex
 
 \section{Métodos de análisis de resultados}
-A la hora de juzgar qué algoritmo de deconvolución funciona mejor, no basta con mirar las imágenes. Necesitamos formas objetivas de medir la calidad de la reconstrucción. Al trabajar con datos sintéticos, contamos con una gran ventaja: conocemos exactamente la señal original, así que podemos compararla directamente con el resultado de nuestro procesado usando un par de parámetros métricos.
+Para evaluar el rendimiento de los algoritmos de deconvolución, la inspección visual resulta insuficiente, requiriéndose métricas objetivas que cuantifiquen la calidad de la reconstrucción. En el contexto de datos sintéticos, la disponibilidad de la señal original (conocida como \textit{ground truth} o verdad terreno) permite una comparación directa y cuantitativa con la imagen procesada mediante parámetros estadísticos.
 
-\subsection{Raíz del error cuadrático medio (RMSE)}
-El RMSE (por sus siglas en inglés) nos sirve para medir cuánto se desvía en promedio una señal de la original. Podemos usarlo para ver cuánto error introduce el emborronamiento inicial del instrumento, o para comprobar cuánto error queda después de intentar arreglar la imagen con la deconvolución. Su fórmula matemática es la siguiente:
+\subsection{Raíz del Error Cuadrático Medio (RMSE)}
+La raíz del error cuadrático medio (RMSE, por sus siglas en inglés, \textit{Root Mean Square Error}) cuantifica la desviación promedio entre una señal reconstruida y la señal de referencia. En este trabajo, se emplea tanto para evaluar la degradación inicial introducida por la función de dispersión del punto (PSF) del instrumento, como para estimar el error residual tras aplicar los métodos de deconvolución. Su expresión matemática se define como:
 
 \begin{equation}
     \label{eq:RMSE}
     RMSE = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - y_i)^2}
 \end{equation}
 
-donde $x_i$ es el valor de la señal original en el punto (o píxel) $i$, $y_i$ es el valor de la señal a comparar en ese mismo punto, y $N$ es el número total de puntos de la señal. 
-
-El truco de esta métrica es que, al elevar las diferencias al cuadrado, castiga mucho más los errores grandes. Lógicamente, cuanto más bajo sea el valor del RMSE, más se parecerá nuestra señal recuperada a la original. 
+donde $x_i$ representa el valor de intensidad de la señal original en el píxel $i$, $y_i$ es el valor correspondiente en la señal procesada, y $N$ es el número total de píxeles. Debido a la naturaleza cuadrática de la diferencia $(x_i - y_i)^2$, esta métrica penaliza de manera más severa las mayores discrepancias. El rango de valores del RMSE es $[0, \infty)$, donde un valor igual a $0$ representa una reconstrucción perfecta, mientras que valores ascendentes indican un mayor grado de error y alejamiento respecto a la señal original.
 
 \subsection{Índice de Similitud Estructural (SSIM)}
-El problema del RMSE es que a veces nos da buenos números numéricos, pero la imagen se sigue viendo borrosa o sin forma. Por eso usamos también el SSIM. A diferencia del RMSE, esta métrica se centra en evaluar la degradación de la estructura espacial, fijándose en tres cosas clave: la luminancia, el contraste y la estructura propiamente dicha. Nos devuelve un número entre $-1$ y $1$, y nuestro objetivo siempre será acercarnos lo máximo posible al $1$ (que indicaría una imagen perfecta).
+Una limitación conocida del RMSE es que no siempre se correlaciona con la calidad visual percibida; dos imágenes pueden presentar el mismo valor de RMSE pero mostrar diferencias estructurales significativas \cite{Wang2004}. Para mitigar esta deficiencia, se emplea de forma complementaria el Índice de Similitud Estructural (SSIM, \textit{Structural Similarity Index Measure}). A diferencia del cálculo de errores absolutos, esta métrica modela la percepción visual evaluando la degradación de la información espacial mediante tres componentes: la luminancia ($l$), el contraste ($c$) y la estructura ($s$). La formulación general entre dos señales locales $x$ e $y$ es:
 
-Aunque pueden aparecer valores negativos si las imágenes están invertidas, el emborronamiento instrumental no produce este efecto. Por lo tanto, en la práctica el rango de valores que nos interesa es $[0,1]$. 
+\begin{equation}
+    \label{eq:SSIM}
+    SSIM(x, y) = \frac{(2\mu_x\mu_y + c_1)(2\sigma_{xy} + c_2)}{(\mu_x^2 + \mu_y^2 + c_1)(\sigma_x^2 + \sigma_y^2 + c_2)}
+\end{equation}
 
-Como el cálculo de esta métrica es complejo, se utiliza directamente la función \texttt{ssim} de la biblioteca \texttt{scikit-image} en Python, lo que permite calcular este índice entre dos imágenes de forma rápida y sencilla. 
+donde $\mu_x, \mu_y$ y $\sigma_x^2, \sigma_y^2$ denotan la media y la varianza locales respectivamente, $\sigma_{xy}$ representa la covarianza de ambas señales, y $c_1, c_2$ son constantes empleadas para evitar inestabilidades numéricas en la división.
 
-Por último, aunque el RMSE y el SSIM nos den valores concretos para medir la calidad, la inspección visual de las imágenes sigue siendo igual de importante para determinar si la reconstrucción es verdaderamente útil y satisfactoria.
+El SSIM toma valores en el intervalo $[-1, 1]$. El objetivo ideal es alcanzar un valor de $1$, lo que sugiere una correlación estructural perfecta. Aunque pueden aparecer valores negativos si las imágenes presentan correlación inversa (por ejemplo, imágenes invertidas o en negativo), la degradación instrumental típica (convolución) no genera este fenómeno, por lo que el rango de interés en la práctica se restringe al intervalo $[0, 1]$.
+
+Para la implementación computacional de este análisis, se ha utilizado la función \texttt{ssim} de la biblioteca \texttt{scikit-image} en Python. Esta herramienta permite calcular el índice promediado a lo largo de toda la imagen de forma robusta.
+
+Finalmente, es importante destacar que, si bien el RMSE y el SSIM proporcionan métricas cuantitativas fundamentales para la comparación metodológica, la evaluación cualitativa mediante inspección visual sigue siendo un complemento necesario. Esto es especialmente relevante de cara a la futura aplicación de estos algoritmos sobre datos observacionales reales, donde no se dispondrá de una señal de referencia ideal con la que comparar.
