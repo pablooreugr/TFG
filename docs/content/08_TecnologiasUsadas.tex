@@ -2,16 +2,15 @@
 
 
 \section{Tecnologías usadas}
-Debido a que este proyecto es de programación, es conveniente hablar de las tecnologías que se han usado en el proyecto, ya que todo el proyecto fue una forma de mejorar y obtener conocimiento sobre estos. El lenguaje de programación que se ha usado es \texttt{Python}, debido a la facilidad de legibilidad, además de que es de los lenguajes mas usados en el procesado de imágenes y datos astrofísicos, por lo que existen librerías muy utilizadas en la comunidad científica. 
+\label{sec:tecnologias_usadas}
+Debido a la naturaleza computacional de este proyecto, el lenguaje principal de programación empleado ha sido \texttt{Python}, destacando por su legibilidad y amplia adopción en la comunidad astrofísica. Como base para la manipulación y vectorización de datos se utilizó \texttt{Numpy}, mientras que la librería \texttt{Astropy} facilitó el manejo de datos observacionales reales en formato \texttt{FITS}. 
 
-Como base para manejar los datos, se ha usado la librería de vectorización \texttt{Numpy}, y para obtener los datos reales astrofísicos es ampliamente conocida la librería \texttt{Astropy}, que permite obtener los datos a partir de archivos \texttt{FITS}, usualmente usados en este ámbito.
+Para el procesamiento de las imágenes, se empleó \texttt{Scipy}, cuyos módulos proporcionan herramientas esenciales como la convolución, transformadas de Fourier y algoritmos de optimización (aplicados en las secciones \ref{sec:metodosDeconvolucion} y \ref{sec:metodoDes}). Además, esta librería permitió paralelizar fácilmente el código.
 
-Para el procesado de las imágenes, se ha usado la librería \texttt{Scipy}, ya que tiene multiples funciones de procesado de imágenes, cómo la convolución o la transformada de Fourier, que se usaron en los métodos de deconvolución de la sección (\ref{sec:metodosDeconvolucion}). Además, esta librería también tiene funciones para crear operadores lineales a partir de funciones y funciones de optimización como el del complejo conjugado usados en la sección (\ref{sec:metodoDes}). También permitía paralelizar el código sencillamente y mandarlo a todos los núcleos del procesador.
-
-Por último, como antes sugerí, al ser un proyecto de programación, se usó la inteligencia artificial. Este ha sido una herramienta muy potente, no para que haga el trabajo por si solo, sino como una herramienta de apoyo para todo el proyecto. El uso que le he dado a la inteligencia artificial está en estos tres casos:
+Por último, se ha utilizado la inteligencia artificial como una potente herramienta de apoyo metodológico durante todo el proyecto, destacando en tres áreas principales:
 
 \begin{itemize}
-    \item Para pedirles explicaciones de ciertos conceptos que no entendía mientras leía papers o libros, aumentando la rapidez de aprendizaje y comprensión de los conceptos.
-    \item Para poder encontrar errores en el código de una manera más rápida, además de pedirle que genere los scripts de visualización de los datos y gráficas presentado en este proyecto.
-    \item Como ayuda ortográfica y de estilo en la redacción de este documento, para poder mejorar la calidad del mismo y corregir ciertas expresiones.
+    \item Para facilitar y acelerar la comprensión de conceptos teóricos complejos abordados en la literatura científica.
+    \item Para agilizar la localización de errores en el código y asistir en la generación de scripts para la visualización de datos y gráficas.
+    \item Como soporte ortográfico y de corrección de estilo para mejorar la calidad en la redacción de este documento.
 \end{itemize}

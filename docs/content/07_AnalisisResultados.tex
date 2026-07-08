@@ -16,7 +16,7 @@ En este análisis se ha utilizado una PSF con un radio de 30 píxeles y un lóbu
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/comparacion_intensidad_4_psf.png}
+    \includegraphics[width=0.5\textwidth]{img/comparacion_intensidad_4_psf.png}
     \caption{Representación bidimensional de la PSF de tipo Airy empleada para la degradación de los datos sintéticos. El lóbulo central posee una extensión de 3 píxeles y el radio total simulado es de 30 píxeles. La imagen se presenta en escala logarítmica para facilitar la visualización de la atenuación de intensidad en los anillos de difracción secundarios.}
     \label{fig:psfAiry}
 \end{figure}
@@ -126,7 +126,7 @@ Como se observa en la ampliación (Figura \ref{fig:campoMagDecoZoom}), la metodo
     \label{fig:campoMagDecoZoom}
 \end{figure}
 
-El mapa de residuos absolutos (Figura \ref{fig:diferenciasZoom}) muestra una atenuación de las diferencias en las zonas de mayor intensidad de campo. Cuantitativamente, el estado inicial degradado presentaba un SSIM de $0.8401$ y un RMSE de $5.2568$ Gauss. Tras la aplicación del algoritmo con regularización espacial de Laplace, las métricas experimentan una mejora moderada hasta un SSIM de $0.8575$ y un RMSE de $4.6995$ Gauss. Esta magnitud de mejora concuerda con las predicciones teóricas para simulaciones de inversiones acopladas espacialmente \cite{vannoortSpatiallyCoupledInversion2012}. La ganancia de aproximadamente un $2\%$ a $3\%$ en el índice SSIM y la reducción de alrededor de $0.5$ Gauss en el error absoluto confirman que la regularización espacial permite reconstruir de forma estable los gradientes magnéticos originales (frecuencias altas) que la PSF había difuminado, sin introducir artefactos numéricos significativos. Aunque el incremento porcentual en el índice SSIM pueda parecer conservador, este comportamiento es altamente significativo en el contexto de problemas inversos mal condicionados. Demuestra que el algoritmo es capaz de reconcentrar el flujo magnético esparcido por la PSF sin incurrir en una amplificación inestable del ruido estocástico, priorizando la fidelidad física sobre la maximización artificial de las métricas.
+El mapa de residuos absolutos (Figura \ref{fig:diferenciasZoom}) muestra una atenuación de las diferencias en las zonas de mayor intensidad de campo. Cuantitativamente, el estado inicial degradado presentaba un SSIM de $0.8401$ y un RMSE de $5.2568$ Gauss. Tras la aplicación del algoritmo con regularización espacial de Laplace, las métricas experimentan una mejora moderada hasta un SSIM de $0.8575$ y un RMSE de $4.6995$ Gauss. Esta magnitud de mejora concuerda con las predicciones teóricas para simulaciones de inversiones acopladas espacialmente \cite{vannoortSpatiallyCoupledInversion2012}. La ganancia de aproximadamente un $2\%$ a $3\%$ en el índice SSIM y la reducción de alrededor de $0.5$ Gauss en el error absoluto confirman que la regularización espacial permite reconstruir de forma estable los gradientes magnéticos originales (frecuencias altas) que la PSF había difuminado, sin introducir artefactos numéricos significativos. Aunque el incremento porcentual en el índice SSIM pueda parecer conservador, este comportamiento es altamente significativo en el contexto de problemas inversos mal condicionados. Sugiere que el algoritmo es capaz de reconcentrar el flujo magnético esparcido por la PSF sin incurrir en una amplificación inestable del ruido estocástico, priorizando la fidelidad física sobre la maximización artificial de las métricas.
 
 \begin{figure}[H]
     \centering
@@ -140,7 +140,7 @@ Tras la evaluación con datos sintéticos, el código implementado se aplica a o
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{img/exp4_4_psf.png}
+    \includegraphics[width=0.5\textwidth]{img/exp4_4_psf.png}
     \caption{Modelo computacional de la PSF instrumental de la misión Sunrise.}
     \label{fig:psfReal}
 \end{figure}
@@ -180,7 +180,7 @@ La métrica evaluada asciende de $1.96 \times 10^2$ a $2.03 \times 10^2$ (aument
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/exp4_5_diferencia.png}
+    \includegraphics[width=0.65\textwidth]{img/exp4_5_diferencia.png}
     \caption{Mapa espacial de la diferencia absoluta entre la inferencia original y la tratada. Las variaciones se localizan mayoritariamente en los contornos de las concentraciones de flujo.}
     \label{fig:campoMagDecoRealDiferencias}
 \end{figure}
