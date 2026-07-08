@@ -31,12 +31,12 @@ donde $\mathbf{x}$ representa las coordenadas espaciales y espectrales del cubo 
 \end{equation}
 
 \subsubsection{Análisis de los distintos métodos de deconvolución: Fourier, Wiener y Richardson-Lucy}
-A continuación, se comparan visual y cuantitativamente tres aproximaciones clásicas de deconvolución sobre la Intensidad (primer parámetro de Stokes). Se ha seleccionado una longitud de onda representativa, degradada con un nivel de ruido del $0.1\%$.
+A continuación, se comparan visual y cuantitativamente tres aproximaciones clásicas de deconvolución sobre la Intensidad (primer parámetro de Stokes). Se ha seleccionado una longitud de onda representativa ($6173$ \AA), degradada con un nivel de ruido del $0.1\%$.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_1_original_borrosa.png}
-    \caption{Mapas bidimensionales de intensidad. Izquierda: mapa sintético original (Ground Truth). Derecha: mapa tras la convolución con la PSF teórica (Fig. \ref{fig:psfAiry}) y la adición de ruido aditivo del $0.1\%$. Se aprecia la atenuación de altas frecuencias espaciales.}
+    \caption{Mapas bidimensionales de intensidad en la longitud de onda 6173 \AA. Izquierda: mapa sintético original (Ground Truth). Derecha: mapa tras la convolución con la PSF teórica (Fig. \ref{fig:psfAiry}) y la adición de ruido aditivo del $0.1\%$. Se aprecia una leve atenuación de altas frecuencias espaciales.}
     \label{fig:intensidadSintEmborro}
 \end{figure}
 
@@ -63,7 +63,7 @@ Para la evaluación cuantitativa de estas reconstrucciones, se emplean las métr
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/comparacion_intensidad_3_barras.png}
-    \caption{Valores correspondientes a las métricas SSIM (izquierda) y RMSE (derecha) para los diferentes métodos evaluados. Se incluye la imagen degradada como línea base de comparación.}
+    \caption{Valores correspondientes a las métricas SSIM (izquierda) y RMSE (derecha) para los diferentes métodos evaluados. Se incluye la imagen degradada como línea base de comparación. La ausencia de SSIM para Fourier indica que el valor es cercano a cero, lo que refleja una pérdida total de la estructura espacial.}
     \label{fig:rsmeSsimIntensidad}
 \end{figure}
 
@@ -76,16 +76,18 @@ El algoritmo iterativo de Richardson-Lucy presenta las métricas más favorables
 \subsubsection{Limitaciones en la deconvolución del parámetro de Stokes $V$}
 El comportamiento de los algoritmos varía sustancialmente al aplicarse sobre la componente de Stokes $V$, la cual presenta propiedades estadísticas distintas y puede adoptar valores negativos.
 
+En la siguiente figura se muetra un estidio donde se evalúa la evolución del índice SSIM frente a distintos niveles de ruido simulado, aplicando los métodos de Wiener y Richardson-Lucy sobre el parámetro Stokes $V$.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_3_comparativa_shift.png}
-    \caption{Evolución del índice SSIM en función del porcentaje de ruido simulado para los métodos aplicados sobre el parámetro Stokes V.}
+    \caption{Evolución del índice SSIM en función del porcentaje de ruido simulado para los métodos aplicados sobre el parámetro Stokes V. Se prueba los distintos métodos de deconvolución, donde el paréntesis (Normal) indica que se ha aplicado el algoritmo estandar, y (Shifted) de RL indica que se ha aplicado un desplazamiento hacia arriba de la señal de Stokes V para garantizar la positividad requerida por el método de Richardson-Lucy, verificando que es inviable.}
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 
-Debido a la reducida amplitud intrínseca de la señal de Stokes $V$, la relación señal-ruido (SNR) decae de manera acusada frente a perturbaciones menores. Adicionalmente, la naturaleza bipolar de este parámetro viola la restricción de positividad requerida por el método de Richardson-Lucy puro, lo que obliga a aplicar desplazamientos (shifts) en la señal base que alteran la linealidad del problema físico subyacente. 
+En la figura (\ref{fig:SSIM_frenteARuidoV}) se observa cómo ni el método de Fourier, ni el método de Richardson-Lucy pueden llegar a superar el SSIM de la imagen degradada, por lo que no consiguen recuperar la topología esperada. En el caso del método de Wiener, parece tener un comportamiento más estable frente al ruido, si observamos la figura (\ref{fig:visualizacionStokesV}), consigue eliminar el ruido de la imagen, pero sobresuaviza la imagen donde se pierden detalles de la topología original.
 
-Aunque el filtro de Wiener reporta métricas relativas estables, su efecto morfológico, ilustrado en la siguiente figura para un ruido del $2\%$, evidencia un marcado sobre-suavizado espacial.
+Debido a la reducida amplitud intrínseca de la señal de Stokes $V$, la relación señal-ruido (SNR) decae de manera acusada frente a perturbaciones menores. Adicionalmente, la naturaleza bipolar de este parámetro viola la restricción de positividad requerida por el método de Richardson-Lucy puro, lo que obliga a aplicar desplazamientos (shifts) en la señal base que alteran la linealidad del problema físico subyacente. 
 
 \begin{figure}[H]
     \centering
@@ -97,7 +99,7 @@ Aunque el filtro de Wiener reporta métricas relativas estables, su efecto morfo
 Este análisis sugiere la inviabilidad metodológica de aplicar técnicas clásicas de deconvolución bidimensional de forma aislada sobre mapas de polarización. Por ello, la implementación desarrollada en este Trabajo de Fin de Grado adopta un enfoque acoplado, fundamentado en la resolución de la ecuación de transferencia radiativa \cite{toroiniestaIntroductionSpectropolarimetry2003}, para inferir el campo magnético eludiendo la deconvolución directa de los perfiles de Stokes $V$.
 
 \subsubsection{Evaluación de la implementación computacional del método de van Noort}
-Previo al análisis morfológico, se verifica la convergencia computacional del algoritmo propuesto, basado en una adaptación propia del marco metodológico de van Noort \cite{vannoortSpatiallyCoupledInversion2012}. El seguimiento se realiza evaluando la norma euclidiana ($L_2$) del residuo entre el perfil espectral observado y el perfil sintético generado iterativamente.
+Previo al análisis morfológico, se verifica la convergencia computacional del algoritmo propuesto, basado en una adaptación propia del marco metodológico de van Noort \cite{vannoortSpatiallyCoupledInversion2012}. El seguimiento se realiza evaluando la norma euclidiana ($L_2$) del residuo (sumando todos los perfiles espectrales) observado de la imagen original y la nueva imagen generada iterativamente.
 
 \begin{figure}[H]
     \centering
@@ -124,12 +126,12 @@ Como se observa en la ampliación (Figura \ref{fig:campoMagDecoZoom}), la metodo
     \label{fig:campoMagDecoZoom}
 \end{figure}
 
-El mapa de residuos absolutos (Figura \ref{fig:diferenciasZoom}) muestra una atenuación de las diferencias en las zonas de mayor intensidad de campo. Cuantitativamente, el estado inicial degradado presentaba un SSIM de $0.8401$ y un RMSE de $5.2568$ Gauss. Tras la aplicación del algoritmo con regularización espacial de Laplace, las métricas experimentan una mejora moderada hasta un SSIM de $0.8575$ y un RMSE de $4.6995$ Gauss. Esta magnitud de mejora concuerda con las predicciones teóricas para simulaciones de inversiones acopladas espacialmente \cite{vannoortSpatiallyCoupledInversion2012}. La ganancia de aproximadamente un $2\%$ a $3\%$ en el índice SSIM y la reducción de alrededor de $0.5$ Gauss en el error absoluto confirman que la regularización espacial permite reconstruir de forma estable los gradientes magnéticos originales (frecuencias altas) que la PSF había difuminado, sin introducir artefactos numéricos significativos.
+El mapa de residuos absolutos (Figura \ref{fig:diferenciasZoom}) muestra una atenuación de las diferencias en las zonas de mayor intensidad de campo. Cuantitativamente, el estado inicial degradado presentaba un SSIM de $0.8401$ y un RMSE de $5.2568$ Gauss. Tras la aplicación del algoritmo con regularización espacial de Laplace, las métricas experimentan una mejora moderada hasta un SSIM de $0.8575$ y un RMSE de $4.6995$ Gauss. Esta magnitud de mejora concuerda con las predicciones teóricas para simulaciones de inversiones acopladas espacialmente \cite{vannoortSpatiallyCoupledInversion2012}. La ganancia de aproximadamente un $2\%$ a $3\%$ en el índice SSIM y la reducción de alrededor de $0.5$ Gauss en el error absoluto confirman que la regularización espacial permite reconstruir de forma estable los gradientes magnéticos originales (frecuencias altas) que la PSF había difuminado, sin introducir artefactos numéricos significativos. Aunque el incremento porcentual en el índice SSIM pueda parecer conservador, este comportamiento es altamente significativo en el contexto de problemas inversos mal condicionados. Demuestra que el algoritmo es capaz de reconcentrar el flujo magnético esparcido por la PSF sin incurrir en una amplificación inestable del ruido estocástico, priorizando la fidelidad física sobre la maximización artificial de las métricas.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{img/experimento_noor_3b_residuos_zoom.png}
-    \caption{Mapas de diferencia absoluta frente al Ground Truth.}
+    \includegraphics[width=0.85\textwidth]{img/experimento_noor_3b_residuos_zoom.png}
+    \caption{Mapas de diferencia absoluta frente al Ground Truth. La izquierda muestra el residuo del campo magnético degradado, mientras que la derecha representa el residuo tras la aplicación del método acoplado. Se observa una reducción de las discrepancias en las zonas de mayor intensidad de campo.}
     \label{fig:diferenciasZoom}
 \end{figure}
 
@@ -157,7 +159,7 @@ Al carecer de un Ground Truth en observaciones empíricas, se recurre a la métr
 \begin{equation}
     RMS = \frac{1}{\bar{I}} \sqrt{\frac{1}{N} \sum_{i=1}^{N} (I_i - \bar{I})^2}
 \end{equation}
-El valor de la imagen asciende de $0.2028$ a $0.2193$ (un incremento del $8.2\%$). Aunque esto sugiere una recuperación del contraste de la granulación solar, debe considerarse que parte de este incremento podría estar condicionado por la amplificación de ruido residual en las altas frecuencias \cite{Hunt1973, Lucy1974}. Este nivel de contraste en intensidad (aproximadamente un $22\%$) y el incremento porcentual alcanzado están en plena concordancia con los datos empíricos de la literatura para instrumentación de globo estratosférico. Concretamente, la misión Sunrise reporta sistemáticamente contrastes de granulación cercanos al $12-14\%$ para imágenes directas y en torno al $22-26\%$ para imágenes procesadas mediante reconstrucción del frente de onda \cite{MartinezPillet2011}. Por tanto, el aumento del $8.2\%$ obtenido en este análisis certifica el funcionamiento óptimo de la deconvolución implementada, situando las imágenes en los límites de difracción teóricos del instrumento.
+El valor de la imagen asciende de $0.2028$ a $0.2193$ (un incremento del $8.2\%$). Aunque esto sugiere una recuperación del contraste de la granulación solar, debe considerarse que parte de este incremento podría estar condicionado por la amplificación de ruido residual en las altas frecuencias \cite{Hunt1973, Lucy1974}. Este nivel de contraste en intensidad (aproximadamente un $22\%$) y el incremento porcentual alcanzado están en plena concordancia con los datos empíricos de la literatura para instrumentación de globo estratosférico. Concretamente, la misión Sunrise reporta sistemáticamente contrastes de granulación cercanos al $12-14\%$ para imágenes directas y en torno al $22-26\%$ para imágenes procesadas mediante reconstrucción del frente de onda \cite{MartinezPillet2011}. Por tanto, el aumento relativo del $8.2\%$ obtenido en este análisis sugiere fuertemente una recuperación del contraste compatible con los límites de difracción teóricos del instrumento, validando la viabilidad operativa de la deconvolución implementada.
 
 \subsubsection{Inferencia del campo magnético acoplado}
 Finalmente, se aplica la implementación del algoritmo espacialmente acoplado sobre los perfiles observacionales reales.
@@ -174,7 +176,7 @@ Para cuantificar el contraste espacial en mapas de campo magnético —donde el 
     \text{Nitidez} = \operatorname{Var}(\nabla^2 B)
 \end{equation}
 
-La métrica evaluada asciende de $1.96 \times 10^2$ a $2.03 \times 10^2$ (aumento relativo del $3.6\%$). Aunque matemáticamente indica un mayor contraste en los gradientes magnéticos periféricos (Figura \ref{fig:campoMagDecoRealDiferencias}), la ausencia de un marco de referencia absoluto impone una interpretación sumamente prudente. Este incremento del $3.6\%$ en la energía de los gradientes es consistente con los resultados de inversiones acopladas espacialmente propuestas en la literatura \cite{vannoortSpatiallyCoupledInversion2012}. Físicamente, el modelo de acoplamiento espacial no altera el flujo magnético neto ni genera grandes estructuras ficticias; en su lugar, se limita a redistribuir de forma coherente el flujo que la difracción óptica había esparcido a los píxeles adyacentes. Es por ello que un aumento del $\sim 3-4\%$ en la varianza del Laplaciano refleja precisamente esta reconcentración en los tubos de flujo no resueltos (pequeña escala), sin violar el balance energético global. Es plausible que una pequeña fracción de este incremento derive de leves artefactos numéricos introducidos por el proceso iterativo; sin embargo, los resultados sugieren una reconcentración estructural fundamentalmente alineada con la física del plasma magnético.
+La métrica evaluada asciende de $1.96 \times 10^2$ a $2.03 \times 10^2$ (aumento relativo del $3.6\%$). Aunque matemáticamente indica un mayor contraste en los gradientes magnéticos periféricos (Figura \ref{fig:campoMagDecoRealDiferencias}), la ausencia de un marco de referencia absoluto impone una interpretación sumamente prudente. Este incremento del $3.6\%$ en la energía de los gradientes es consistente con los resultados de inversiones acopladas espacialmente propuestas en la literatura \cite{vannoortSpatiallyCoupledInversion2012}. Físicamente, el modelo de acoplamiento espacial no altera el flujo magnético neto ni genera grandes estructuras ficticias; en su lugar, se limita a redistribuir de forma coherente el flujo que la difracción óptica había esparcido a los píxeles adyacentes. Es por ello que un aumento del $\sim 3-4\%$ en la varianza del Laplaciano refleja precisamente esta reconcentración en los tubos de flujo no resueltos (pequeña escala), sin violar el balance energético global. Es plausible que una pequeña fracción de este incremento derive de leves artefactos numéricos introducidos por el proceso iterativo; sin embargo, los resultados sugieren una reconcentración estructural fundamentalmente alineada con la física del plasma magnético, ya que el modelo logra redistribuir el flujo a pequeña escala respetando estrictamente el balance energético global y eludiendo la generación de topologías espurias.
 
 \begin{figure}[H]
     \centering
