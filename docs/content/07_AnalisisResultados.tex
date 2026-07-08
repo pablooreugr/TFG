@@ -81,7 +81,7 @@ En la siguiente figura se muetra un estidio donde se evalúa la evolución del �
 \begin{figure}[H]
     \centering
     \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_3_comparativa_shift.png}
-    \caption{Evolución del índice SSIM en función del porcentaje de ruido simulado para los métodos aplicados sobre el parámetro Stokes V. Se prueba los distintos métodos de deconvolución, donde el paréntesis (Normal) indica que se ha aplicado el algoritmo estandar, y (Shifted) de RL indica que se ha aplicado un desplazamiento hacia arriba de la señal de Stokes V para garantizar la positividad requerida por el método de Richardson-Lucy, verificando que es inviable.}
+    \caption{Evolución del índice SSIM en función del porcentaje de ruido simulado para los distintos métodos de deconvolución aplicados sobre el parámetro Stokes V. La etiqueta (Normal) indica la aplicación del algoritmo estándar. Por su parte, la variante (Shifted) del método de Richardson-Lucy (RL) denota que se ha sumado una constante a la señal de Stokes V para garantizar la estricta positividad requerida por este algoritmo, sustrayéndose dicho valor tras la deconvolución.}
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 

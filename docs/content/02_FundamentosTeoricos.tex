@@ -56,7 +56,7 @@ Por consiguiente, el tensor empleado para evaluar la intensidad y el desfase ado
     C \equiv \begin{pmatrix} \langle E_x E_x^* \rangle & \langle E_x E_y^* \rangle \\ \langle E_y E_x^* \rangle & \langle E_y E_y^* \rangle \end{pmatrix}
 \end{equation}
 
-Esta matriz está definida mediante números complejos que contienen información sobre la correlación y fase relativa del campo eléctrico. Sin embargo, los detectores únicamente registran intensidades, correspondientes a magnitudes reales. Para soslayar esta limitación, se emplea una combinación lineal de los elementos matriciales que define los parámetros de Stokes. Estos constituyen la base física adecuada para representar las correlaciones del campo sin requerir el conocimiento de las fases absolutas. Al tratarse de magnitudes reales con dimensiones de intensidad, son directamente medibles. Las definiciones formales se recogen en las expresiones (\ref{eq:stokes}) \cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}.
+Esta matriz está definida mediante números complejos que contienen información sobre la correlación y fase relativa del campo eléctrico. Sin embargo, los detectores únicamente registran intensidades, correspondientes a magnitudes reales. Para eludir esta limitación, se emplea una combinación lineal de los elementos matriciales que define los parámetros de Stokes. Estos constituyen la base física adecuada para representar las correlaciones del campo sin requerir el conocimiento de las fases absolutas. Al tratarse de magnitudes reales con dimensiones de intensidad, son directamente medibles. Las definiciones formales se recogen en las expresiones (\ref{eq:stokes}) \cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}.
 
 \begin{equation}
     \label{eq:stokes}
@@ -353,7 +353,7 @@ El conjunto estructurado de estas transiciones define el multiplete o patrón de
 En la práctica observacional, la separación magnética $\nu_L$ debe interpretarse en conjunción con los efectos térmicos intrínsecos de la atmósfera estelar, particularmente el ensanchamiento Doppler ($\Delta\nu_D$) originado por la agitación térmica del plasma.
 
 \subsection{Campo magnético y aproximación de campo débil}
-En condiciones de Equilibrio Termodinámico Local (ETL), el término de emisión térmica no polarizada (función de Planck, $B_T$) se acopla a la transferencia radiativa:
+Siguiendo con la descripción teórica de \cite{sanchezSolarObservationsTechniques1992}, en condiciones de Equilibrio Termodinámico Local (ETL), el término de emisión térmica no polarizada (función de Planck, $B_T$), proveniente de las altas temperaturas del plasma solar, se acopla a la transferencia radiativa:
 
 \begin{equation}
     \label{eq:fuenteRadiacion}
@@ -374,7 +374,7 @@ Al aplicar una expansión de Taylor de primer orden sobre los perfiles de absorc
     V = -C \bar{g} \lambda_B^2 B_{\parallel} \frac{d I_0}{d \lambda} \quad,
 \end{equation}
 
-donde $C = 4.67 \times 10^{-13} \text{ G}^{-1}\text{Å}^{-1}$ es la constante escalar. Para evaluar el éxito de esta aproximación empíricamente, se emplea el Error Cuadrático Medio (RMSE) entre la señal observada $V$ y la derivada modelada. Un RMSE cercano a 0 indica un ajuste matemático óptimo (confirmando el régimen de campo débil), mientras que residuos amplios sugieren campos intensos o asimetrías convectivas.
+donde $C = 4.67 \times 10^{-13} \text{ G}^{-1}\text{Å}^{-1}$ es la constante escalar.
 
 A modo de ilustración con datos observacionales (cuya procedencia e instrumentación se detallan formalmente en la sección \ref{sec:datosReales}, correspondiente a la metodología propia del trabajo), la Figura \ref{fig:intensidadReal.} muestra la morfología empírica de los perfiles. Se sugiere que la aproximación teórica deducida proporciona un ajuste estructuralmente coherente con los datos adquiridos.
 
