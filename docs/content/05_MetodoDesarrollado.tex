@@ -12,7 +12,7 @@ y el parámetro a ajustar es el campo magnético paralelo. Tomando una estimaci�
 Para refinar esta estimación, se busca un vector de corrección $\nu$, de forma que la nueva aproximación sea $x_0 + \nu$. Dado que la función $F(x)$ suele ser compleja y no lineal, se aproxima a primer orden mediante una serie de Taylor:
 
 \begin{equation}
-    F(x_0 + \nu) \simeq F(x_0) + J \nu
+    F(x_0 + \nu) \simeq F(x_0) + J \nu \quad,
 \end{equation}
 
 donde $J$ es la matriz Jacobiana del sistema. El objetivo analítico del algoritmo es que la nueva estimación reproduzca los datos observados, anulando el residuo:

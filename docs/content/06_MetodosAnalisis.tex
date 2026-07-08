@@ -8,7 +8,7 @@ La raíz del error cuadrático medio (RMSE, por sus siglas en inglés, \textit{R
 
 \begin{equation}
     \label{eq:RMSE}
-    RMSE = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - y_i)^2}
+    RMSE = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - y_i)^2} \quad,
 \end{equation}
 
 donde $x_i$ representa el valor de intensidad de la señal original en el píxel $i$, $y_i$ es el valor correspondiente en la señal procesada, y $N$ es el número total de píxeles. Debido a la naturaleza cuadrática de la diferencia $(x_i - y_i)^2$, esta métrica penaliza de manera más severa las mayores discrepancias. El rango de valores del RMSE es $[0, \infty)$, donde un valor igual a $0$ representa una reconstrucción perfecta, mientras que valores ascendentes indican un mayor grado de error y alejamiento respecto a la señal original.
@@ -18,7 +18,7 @@ Una limitación conocida del RMSE es que no siempre se correlaciona con la calid
 
 \begin{equation}
     \label{eq:SSIM}
-    SSIM(x, y) = \frac{(2\mu_x\mu_y + c_1)(2\sigma_{xy} + c_2)}{(\mu_x^2 + \mu_y^2 + c_1)(\sigma_x^2 + \sigma_y^2 + c_2)}
+    SSIM(x, y) = \frac{(2\mu_x\mu_y + c_1)(2\sigma_{xy} + c_2)}{(\mu_x^2 + \mu_y^2 + c_1)(\sigma_x^2 + \sigma_y^2 + c_2)} \quad,
 \end{equation}
 
 donde $\mu_x, \mu_y$ y $\sigma_x^2, \sigma_y^2$ denotan la media y la varianza locales respectivamente, $\sigma_{xy}$ representa la covarianza de ambas señales, y $c_1, c_2$ son constantes empleadas para evitar inestabilidades numéricas en la división.

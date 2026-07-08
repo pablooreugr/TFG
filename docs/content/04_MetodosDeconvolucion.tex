@@ -38,7 +38,7 @@ Para mitigar este problema, se emplea el filtro de Wiener, una técnica de filtr
 El procedimiento consiste en calcular la Transformada de Fourier de la imagen observada y multiplicarla por la función de transferencia del filtro. Partiendo del modelo con ruido de la ecuación (\ref{eq:convolucionRuido}), la estimación de la imagen real $D_{real}(u,v)$ se define matemáticamente como \cite[cap. 5]{gonzalezDigitalImageProcessing2018}:
 
 \begin{equation}
-    D_{real}(u,v) = \left[ \frac{P^*(u,v)}{|P(u,v)|^2 + \frac{S_n(u,v)}{S_d(u,v)}} \right] D_{observado}(u,v)
+    D_{real}(u,v) = \left[ \frac{P^*(u,v)}{|P(u,v)|^2 + \frac{S_n(u,v)}{S_d(u,v)}} \right] D_{observado}(u,v) \quad,
 \end{equation}
 
 donde $P(u,v)$ es la transformada de Fourier de la PSF, $P^*(u,v)$ es su complejo conjugado, y los términos $S_n(u,v)$ y $S_d(u,v)$ representan los espectros de potencia del ruido y de la señal, respectivamente. 
@@ -61,7 +61,7 @@ A diferencia de los métodos algebraicos en el dominio frecuencial, el algoritmo
 La principal ventaja matemática de este algoritmo es que preserva el flujo total de energía y garantiza la no negatividad de los píxeles en la solución (siempre que la imagen de entrada y la PSF sean estrictamente positivas). La ecuación iterativa subyacente se expresa como \cite{richardsonBayesianBasedIterativeMethod1972}:
 
 \begin{equation}
-    u^{(k+1)} = u^{(k)} \cdot \left( \frac{d_{observado}}{u^{(k)} \ast p} \ast p^* \right)
+    u^{(k+1)} = u^{(k)} \cdot \left( \frac{d_{observado}}{u^{(k)} \ast p} \ast p^* \right) \quad,
 \end{equation}
 
 donde $u^{(k)}$ es la estimación de la imagen en la iteración $k$, $d_{observado}$ es la imagen adquirida, $p$ es la PSF y $p^*$ representa la PSF adjunta (invertida espacialmente). El símbolo $\ast$ denota el operador de convolución bidimensional.

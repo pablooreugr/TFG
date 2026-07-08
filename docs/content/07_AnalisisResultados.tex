@@ -5,10 +5,10 @@
 \subsection{Datos sintéticos}
 En primer lugar, se emplean datos sintéticos que simulan una región del Sol en calma para validar la implementación computacional propia. El formato de este cubo de datos presenta dimensiones de $101 \times 4 \times 336 \times 336$, lo que indica la presencia de 101 puntos espectrales (longitudes de onda), las 4 componentes del vector de Stokes ($I$, $Q$, $U$ y $V$) y un dominio espacial de $336 \times 336$ píxeles. 
 
-Para evaluar empíricamente el rendimiento de los diferentes métodos de deconvolución, la primera etapa metodológica consistió en degradar artificialmente estas imágenes mediante la convolución con una Función de Dispersión de Punto (PSF, por sus siglas en inglés) de tipo Airy \cite{BornWolf1999}. Esta función representa una aproximación teórica del comportamiento de un telescopio ideal limitado únicamente por la difracción de una apertura circular. Matemáticamente, su perfil radial se expresa como:
+Para evaluar empíricamente el rendimiento de los diferentes métodos de deconvolución, la primera etapa metodológica consistió en degradar artificialmente estas imágenes mediante la convolución con una PSF de tipo Airy \cite{BornWolf1999}. Esta función representa una aproximación teórica del comportamiento de un telescopio ideal limitado únicamente por la difracción de una apertura circular. Matemáticamente, su perfil radial se expresa como:
 \begin{equation}
     \label{eq:PSF}
-    PSF(r) = I_0 \left(\frac{2 J_1(kr)}{kr} \right)^2
+    PSF(r) = I_0 \left(\frac{2 J_1(kr)}{kr} \right)^2 \quad,
 \end{equation}
 donde $J_1$ es la función de Bessel de primer orden, $k$ es una constante dependiente del diámetro del telescopio y de la longitud de onda de observación, e $I_0$ es la intensidad central máxima. 
 
@@ -23,11 +23,11 @@ En este análisis se ha utilizado una PSF con un radio de 30 píxeles y un lóbu
 
 Para aproximar la simulación a las condiciones observacionales reales, es necesario introducir ruido estocástico en los perfiles. Se ha incorporado ruido blanco gaussiano independiente a cada componente de Stokes. Dado que la amplitud de la señal en el parámetro $I$ es varios órdenes de magnitud superior a la del parámetro $V$, se ha implementado un esquema de ruido relativo. Esto implica que la desviación estándar ($\sigma$) del ruido se define como un porcentaje $p$ de la amplitud máxima de cada señal independiente:
 \begin{equation}
-    I_{max} = \max(I(\mathbf{x})), \quad V_{max} = \max(|V(\mathbf{x})|)
+    I_{max} = \max(I(\mathbf{x})), \quad V_{max} = \max(|V(\mathbf{x})|) \quad,
 \end{equation}
 donde $\mathbf{x}$ representa las coordenadas espaciales y espectrales del cubo de datos. A partir de estos máximos, las desviaciones estándar correspondientes a un nivel de ruido $p$ se calculan como:
 \begin{equation}
-    \sigma_I = I_{max} \cdot \frac{p}{100}, \quad \sigma_V = V_{max} \cdot \frac{p}{100}
+    \sigma_I = I_{max} \frac{p}{100} \quad \sigma_V = V_{max} \frac{p}{100},
 \end{equation}
 
 \subsubsection{Análisis de los distintos métodos de deconvolución: Fourier, Wiener y Richardson-Lucy}

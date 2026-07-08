@@ -84,7 +84,7 @@ Uno de los objetivos fundamentales de la física solar consiste en inferir las p
 
 \begin{equation}
     \label{eq:ondaElectro}
-    \vec{E}(\vec{r}, t) = \vec{E_0} e^{2 \pi i \frac{\nu}{c}(n \vec{r} \cdot \vec{\Omega} - ct)}
+    \vec{E}(\vec{r}, t) = \vec{E_0} e^{2 \pi i \frac{\nu}{c}(n \vec{r} \cdot \vec{\Omega} - ct)} \quad,
 \end{equation}
 
 donde $\nu$ es la frecuencia, $n$ es el índice de refracción y $\Omega$ representa la dirección de propagación. 
@@ -93,7 +93,7 @@ En un medio anisótropo, las propiedades ópticas dependen de la dirección de p
 
 \begin{equation}
     \label{eq:ondaAnisotropa}
-    \vec{E} (\vec{r}, t) = \sum_\alpha \epsilon_\alpha \vec{u_\alpha} e^{2 \pi i \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)}
+    \vec{E} (\vec{r}, t) = \sum_\alpha \epsilon_\alpha \vec{u_\alpha} e^{2 \pi i \frac{\nu}{c}(n_\alpha \vec{r} \cdot \vec{\Omega} - ct)} \quad,
 \end{equation}
 
 siendo $\epsilon_\alpha$ la amplitud direccional y $n_\alpha$ el índice de refracción correspondiente. 
@@ -135,7 +135,7 @@ En la teoría de la transferencia radiativa, se evalúa el gradiente del campo e
 Sustituyendo la identidad (\ref{eq:identidad_inversa}) para eliminar las variables internas del medio, surge el sistema diferencial de amplitudes acopladas:
 
 \begin{equation}
-    \frac{\text{d}\epsilon_j(s,t)}{\text{d}s} = -\sum_k G_{jk} \epsilon_k(s,t) \qquad (j=1,2)
+    \frac{\text{d}\epsilon_j(s,t)}{\text{d}s} = -\sum_k G_{jk} \epsilon_k(s,t) \qquad (j=1,2) \quad,
     \label{eq:transferencia_campo}
 \end{equation}
 
@@ -169,7 +169,7 @@ Al expandir esta formulación y aplicar la definición de los parámetros de Sto
     \end{pmatrix}
     \begin{pmatrix}
     I \\ Q \\ U \\ V
-    \end{pmatrix}
+    \end{pmatrix} \quad,
 \end{equation}
 
 donde los coeficientes de absorción ($\eta$) y dispersión ($\rho$) se rigen por:
@@ -196,7 +196,7 @@ Cuando este sistema se somete a un campo magnético estático $\vec{B}$, el elec
 
 \begin{equation}
     \label{eq:segLeyNewton}
-    \frac{d^2\vec{x}}{dt^2} = -4\pi^2\nu_o^2\vec{x} - \frac{e_o}{mc}\frac{d\vec{x}}{dt}\times\vec{B} - \gamma\frac{d\vec{x}}{dt} - \frac{e_o}{m}\vec{E}e^{-2\pi i\nu t}
+    \frac{d^2\vec{x}}{dt^2} = -4\pi^2\nu_o^2\vec{x} - \frac{e_o}{mc}\frac{d\vec{x}}{dt}\times\vec{B} - \gamma\frac{d\vec{x}}{dt} - \frac{e_o}{m}\vec{E}e^{-2\pi i\nu t} \quad,
 \end{equation}
 
 donde $e_o$ es la carga del electrón, $m$ su masa, y $c$ la velocidad de la luz en el vacío. La resolución de esta ecuación diferencial se interpreta físicamente de forma directa mediante el teorema de Larmor. 
@@ -268,7 +268,7 @@ La inserción de esta descripción analítica en la ecuación fundamental de la 
 \eta_V &= \frac{\pi e_o^2}{m c} N \frac{1}{2} [\phi_r - \phi_b] \cos \theta \\[12pt]
 \rho_Q &= \frac{\pi e_o^2}{m c} N \frac{1}{2} \left[ \psi_p - \frac{\psi_b + \psi_r}{2} \right] \sin^2 \theta \cos 2\chi \\[4pt]
 \rho_U &= \frac{\pi e_o^2}{m c} N \frac{1}{2} \left[ \psi_p - \frac{\psi_b + \psi_r}{2} \right] \sin^2 \theta \sin 2\chi \\[4pt]
-\rho_V &= \frac{\pi e_o^2}{m c} N \frac{1}{2} [\psi_r - \psi_b] \cos \theta \, .
+\rho_V &= \frac{\pi e_o^2}{m c} N \frac{1}{2} [\psi_r - \psi_b] \cos \theta \, 
 \end{aligned}
 \end{equation}
 
@@ -282,7 +282,7 @@ En estas expresiones, $\phi$ representa el perfil de absorción y $\psi$ denota 
 \phi_r &= \frac{1}{\pi} \frac{\Gamma}{(\nu_o - \nu_L - \nu)^2 + \Gamma^2}; &
 \psi_r &= \frac{1}{\pi} \frac{\nu_o - \nu_L - \nu}{(\nu_o - \nu_L - \nu)^2 + \Gamma^2} \\[6pt]
 \phi_b &= \frac{1}{\pi} \frac{\Gamma}{(\nu_o + \nu_L - \nu)^2 + \Gamma^2}; &
-\psi_b &= \frac{1}{\pi} \frac{\nu_o + \nu_L - \nu}{(\nu_o + \nu_L - \nu)^2 + \Gamma^2} \, .
+\psi_b &= \frac{1}{\pi} \frac{\nu_o + \nu_L - \nu}{(\nu_o + \nu_L - \nu)^2 + \Gamma^2} \, 
 \end{aligned}
 \end{equation}
 
@@ -371,7 +371,7 @@ Al aplicar una expansión de Taylor de primer orden sobre los perfiles de absorc
 
 \begin{equation}
     \label{eq:campoDebil}
-    V = -C \bar{g} \lambda_B^2 B_{\parallel} \frac{d I_0}{d \lambda}
+    V = -C \bar{g} \lambda_B^2 B_{\parallel} \frac{d I_0}{d \lambda} \quad,
 \end{equation}
 
 donde $C = 4.67 \times 10^{-13} \text{ G}^{-1}\text{Å}^{-1}$ es la constante escalar. Para evaluar el éxito de esta aproximación empíricamente, se emplea el Error Cuadrático Medio (RMSE) entre la señal observada $V$ y la derivada modelada. Un RMSE cercano a 0 indica un ajuste matemático óptimo (confirmando el régimen de campo débil), mientras que residuos amplios sugieren campos intensos o asimetrías convectivas.
