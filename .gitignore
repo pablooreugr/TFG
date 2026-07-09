@@ -11,6 +11,6 @@ output/
 *.out
 *.synctex.gz
 *.toc
-*.pdf
+main.pdf
 *.blg
 __pycache__/
