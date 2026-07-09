@@ -114,5 +114,5 @@ Matemáticamente, un subespacio de Krylov de orden $m$ se define como el espacio
 
 La ventaja de estos algoritmos es que no necesitan la matriz explícita; únicamente precisan evaluar el producto matriz-vector, lo cual equivale a aplicar los operadores de forma secuencial sobre la imagen. 
 
-Dentro de esta familia de métodos, el Gradiente Conjugado (CG) \cite{hestenes1952methods} resulta particularmente adecuado para este problema dado que la matriz $J^T J$ es, por construcción, simétrica y definida positiva. Este método iterativo busca la solución alrededor de vectores ortogonalesen el subespacio de Krylov, garantizando una convergencia eficiente hacia la solución óptima.
+Dentro de esta familia de métodos, el Gradiente Conjugado (CG) \cite{hestenes1952methods} resulta particularmente adecuado para este problema dado que la matriz $J^T J$ es, por construcción, simétrica y definida positiva. Este método iterativo busca la solución alrededor de vectores ortogonales en el subespacio de Krylov, garantizando una convergencia eficiente hacia la solución óptima.
 Al ser un algoritmo de uso extendido, su integración computacional se ha realizado utilizando librerías matemáticas estándar de Python.

@@ -76,7 +76,7 @@ El algoritmo iterativo de Richardson-Lucy presenta las métricas más favorables
 \subsubsection{Limitaciones en la deconvolución del parámetro de Stokes $V$}
 El comportamiento de los algoritmos varía sustancialmente al aplicarse sobre la componente de Stokes $V$, la cual presenta propiedades estadísticas distintas y puede adoptar valores negativos.
 
-En la siguiente figura se muetra un estidio donde se evalúa la evolución del índice SSIM frente a distintos niveles de ruido simulado, aplicando los métodos de Wiener y Richardson-Lucy sobre el parámetro Stokes $V$.
+En la siguiente figura se muestra un estudio donde se evalúa la evolución del índice SSIM frente a distintos niveles de ruido simulado, aplicando los métodos de Wiener y Richardson-Lucy sobre el parámetro Stokes $V$.
 
 \begin{figure}[H]
     \centering
@@ -85,7 +85,7 @@ En la siguiente figura se muetra un estidio donde se evalúa la evolución del �
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 
-En la figura (\ref{fig:SSIM_frenteARuidoV}) se observa cómo ni el método de Fourier, ni el método de Richardson-Lucy pueden llegar a superar el SSIM de la imagen degradada, por lo que no consiguen recuperar la topología esperada. En el caso del método de Wiener, parece tener un comportamiento más estable frente al ruido, si observamos la figura (\ref{fig:visualizacionStokesV}), consigue eliminar el ruido de la imagen, pero sobresuaviza la imagen donde se pierden detalles de la topología original.
+En la figura (\ref{fig:SSIM_frenteARuidoV}) se observa cómo ni el método de Fourier, ni el método de Richardson-Lucy pueden llegar a superar el SSIM de la imagen degradada, por lo que no consiguen recuperar la topología esperada. En el caso del método de Wiener, parece tener un comportamiento más estable frente al ruido, si observamos la figura (\ref{fig:visualizacionStokesV}), consigue eliminar el ruido de la imagen, pero la suaviza en exceso, por lo que se pierden detalles de la topología original.
 
 Debido a la reducida amplitud intrínseca de la señal de Stokes $V$, la relación señal-ruido (SNR) decae de manera acusada frente a perturbaciones menores. Adicionalmente, como este parámetro tiene valores negativos, no cumple la restricción de positividad del método de Richardson-Lucy puro, lo que obliga a aplicar desplazamientos (shifts) en la señal base que alteran la linealidad del problema físico subyacente. 
 
@@ -136,7 +136,7 @@ El mapa de residuos absolutos (Figura \ref{fig:diferenciasZoom}) muestra una ate
 \end{figure}
 
 \subsection{Aplicación a datos observacionales reales} \label{sec:datosReales}
-Tras la evaluación con datos sintéticos, el código implementado se aplica a observaciones reales procedentes del vuelo estratosférico Sunrise-TUMAG \cite{SUNRISETuMagTUMAGData} (archivo nivel 1: \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}). La PSF instrumental empírica, obtenida mediante modelado físico por el IAA-CSIC, se muestra en la Figura \ref{fig:psfReal}.
+Tras la evaluación con datos sintéticos, el código implementado se aplica a observaciones reales procedentes del vuelo estratosférico Sunrise-TuMag \cite{SUNRISETuMagTUMAGData} (archivo nivel 1: \textit{01\_QSUN\_TM\_00\_Mg1\_10\_10072024T131604\_LV\_1.0\_v0.4.fits}). La PSF instrumental empírica, obtenida mediante modelado físico por el IAA-CSIC, se muestra en la Figura \ref{fig:psfReal}.
 
 \begin{figure}[H]
     \centering
@@ -167,7 +167,7 @@ Finalmente, se aplica la implementación del algoritmo espacialmente acoplado so
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/exp4_3_campoB_zoom.pdf}
-    \caption{Inferencia del campo magnético en datos reales de Sunrise-TUMAG. Izquierda: inferencia convencional. Derecha: campo reconstruido mediante la metodología acoplada.}
+    \caption{Inferencia del campo magnético en datos reales de Sunrise-TuMag. Izquierda: inferencia convencional. Derecha: campo reconstruido mediante la metodología acoplada.}
     \label{fig:campoMagDecoReal}
 \end{figure}
 

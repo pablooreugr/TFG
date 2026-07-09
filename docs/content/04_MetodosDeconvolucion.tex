@@ -46,13 +46,13 @@ donde $P(u,v)$ es la transformada de Fourier de la PSF, $P^*(u,v)$ es su complej
 En el procesamiento empírico de datos reales, los espectros de potencia exactos rara vez se conocen de antemano. Por ello, en la implementación computacional es práctica habitual aproximar el cociente de los espectros mediante una constante empírica $K$. De esta manera, la expresión implementada para el filtro $W(u,v)$ resulta ser:
 
 \begin{equation}
-    \label{eq:wieeener}
+    \label{eq:wiener}
     W(u,v) = \frac{P^*(u,v)}{|P(u,v)|^2 + K}
 \end{equation}
 
 El parámetro $K$ se determina de forma experimental, ajustándose en función de la relación señal-ruido (SNR) de cada conjunto de datos. 
 
-El comportamiento adaptativo del filtro se evidencia en la ecuación (\ref{eq:wieeener}): en bajas frecuencias, donde el término $|P(u,v)|^2$ es dominante, la expresión se aproxima al filtro inverso; sin embargo, en altas frecuencias espaciales, la magnitud de la PSF decrece y el término $K$ domina el denominador, limitando la ganancia del filtro y previniendo la amplificación del ruido instrumental.
+El comportamiento adaptativo del filtro se evidencia en la ecuación (\ref{eq:wiener}): en bajas frecuencias, donde el término $|P(u,v)|^2$ es dominante, la expresión se aproxima al filtro inverso; sin embargo, en altas frecuencias espaciales, la magnitud de la PSF decrece y el término $K$ domina el denominador, limitando la ganancia del filtro y previniendo la amplificación del ruido instrumental.
 
 \subsection{Algoritmo de Richardson-Lucy}
 
