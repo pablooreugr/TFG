@@ -16,7 +16,7 @@ En este análisis se ha utilizado una PSF con un radio de 30 píxeles y un lóbu
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{img/comparacion_intensidad_4_psf.png}
+    \includegraphics[width=0.5\textwidth]{img/comparacion_intensidad_4_psf.pdf}
     \caption{Representación bidimensional de la PSF de tipo Airy empleada para la degradación de los datos sintéticos. El lóbulo central posee una extensión de 3 píxeles y el radio total simulado es de 30 píxeles. La imagen se presenta en escala logarítmica para facilitar la visualización de la atenuación de intensidad en los anillos de difracción secundarios.}
     \label{fig:psfAiry}
 \end{figure}
@@ -35,7 +35,7 @@ A continuación, se comparan visual y cuantitativamente tres aproximaciones clá
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_1_original_borrosa.png}
+    \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_1_original_borrosa.pdf}
     \caption{Mapas bidimensionales de intensidad en la longitud de onda 6173 \AA. Izquierda: mapa sintético original (Ground Truth). Derecha: mapa tras la convolución con la PSF teórica (Fig. \ref{fig:psfAiry}) y la adición de ruido aditivo del $0.1\%$. Se aprecia una leve atenuación de altas frecuencias espaciales.}
     \label{fig:intensidadSintEmborro}
 \end{figure}
@@ -44,7 +44,7 @@ Para analizar el comportamiento de los algoritmos sobre las estructuras espacial
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_5_original_borrosa_zoom.png}
+    \includegraphics[width=0.9\textwidth]{img/comparacion_intensidad_5_original_borrosa_zoom.pdf}
     \caption{Ampliación de una región de interés de la Figura \ref{fig:intensidadSintEmborro}. Izquierda: mapa sintético original. Derecha: mapa degradado.}
     \label{fig:intensidadSintEmborroZoom}
 \end{figure}
@@ -53,7 +53,7 @@ Tras aplicar los algoritmos clásicos de deconvolución (filtro inverso de Fouri
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{img/comparacion_intensidad_6_deconvoluciones_zoom.png}
+    \includegraphics[width=1.0\textwidth]{img/comparacion_intensidad_6_deconvoluciones_zoom.pdf}
     \caption{Resultados comparativos de la deconvolución. Izquierda: filtro de Wiener. Centro: deconvolución directa en el dominio de Fourier. Derecha: algoritmo iterativo de Richardson-Lucy.}
     \label{fig:deconvolucionClasicaZoom}
 \end{figure}
@@ -62,7 +62,7 @@ Para la evaluación cuantitativa de estas reconstrucciones, se emplean las métr
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{img/comparacion_intensidad_3_barras.png}
+    \includegraphics[width=1.0\textwidth]{img/comparacion_intensidad_3_barras.pdf}
     \caption{Valores correspondientes a las métricas SSIM (izquierda) y RMSE (derecha) para los diferentes métodos evaluados. Se incluye la imagen degradada como línea base de comparación. La ausencia de SSIM para Fourier indica que el valor es cercano a cero, lo que refleja una pérdida total de la estructura espacial.}
     \label{fig:rsmeSsimIntensidad}
 \end{figure}
@@ -80,7 +80,7 @@ En la siguiente figura se muetra un estidio donde se evalúa la evolución del �
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_3_comparativa_shift.png}
+    \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_3_comparativa_shift.pdf}
     \caption{Evolución del índice SSIM en función del porcentaje de ruido simulado para los distintos métodos de deconvolución aplicados sobre el parámetro Stokes V. La etiqueta (Normal) indica la aplicación del algoritmo estándar. Por su parte, la variante (Shifted) del método de Richardson-Lucy (RL) denota que se ha sumado una constante a la señal de Stokes V para garantizar la estricta positividad requerida por este algoritmo, sustrayéndose dicho valor tras la deconvolución.}
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
@@ -91,7 +91,7 @@ Debido a la reducida amplitud intrínseca de la señal de Stokes $V$, la relaci�
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_2_visualizacion.png}
+    \includegraphics[width=1.0\textwidth]{img/experimento_stokesV_2_visualizacion.pdf}
     \caption{Comparativa visual del parámetro Stokes V. Izquierda: Ground Truth. Centro: mapa degradado con $2\%$ de ruido. Derecha: resultado tras aplicar el filtro de Wiener.}
     \label{fig:visualizacionStokesV}
 \end{figure}
@@ -103,7 +103,7 @@ Previo al análisis morfológico, se verifica la convergencia computacional del 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/experimento_noor_1_convergencia.png}
+    \includegraphics[width=0.8\textwidth]{img/experimento_noor_1_convergencia.pdf}
     \caption{Evolución de la norma del residuo en función del número de iteraciones para la adaptación metodológica empleada.}
     \label{fig:convergenciaNoor}
 \end{figure}
@@ -121,7 +121,7 @@ Como se observa en la ampliación (Figura \ref{fig:campoMagDecoZoom}), la metodo
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\textwidth]{img/experimento_noor_2b_comparativa_b_zoom.png}
+    \includegraphics[width=1.0\textwidth]{img/experimento_noor_2b_comparativa_b_zoom.pdf}
     \caption{Ampliación de la región de interés del campo magnético (en Gauss). Izquierda: Ground Truth. Centro: campo inferido de datos degradados. Derecha: recuperación obtenida.}
     \label{fig:campoMagDecoZoom}
 \end{figure}
@@ -130,7 +130,7 @@ El mapa de residuos absolutos (Figura \ref{fig:diferenciasZoom}) muestra una ate
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/experimento_noor_3b_residuos_zoom.png}
+    \includegraphics[width=0.85\textwidth]{img/experimento_noor_3b_residuos_zoom.pdf}
     \caption{Mapas de diferencia absoluta frente al Ground Truth. La izquierda muestra el residuo del campo magnético degradado, mientras que la derecha representa el residuo tras la aplicación del método acoplado. Se observa una reducción de las discrepancias en las zonas de mayor intensidad de campo.}
     \label{fig:diferenciasZoom}
 \end{figure}
@@ -140,7 +140,7 @@ Tras la evaluación con datos sintéticos, el código implementado se aplica a o
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{img/exp4_4_psf.png}
+    \includegraphics[width=0.5\textwidth]{img/exp4_4_psf.pdf}
     \caption{Modelo computacional de la PSF instrumental de la misión Sunrise.}
     \label{fig:psfReal}
 \end{figure}
@@ -150,7 +150,7 @@ Se procedió a la deconvolución del espectro continuo de intensidad mediante el
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/exp4_1_intensidad.png}
+    \includegraphics[width=0.9\textwidth]{img/exp4_1_intensidad.pdf}
     \caption{Comparativa de intensidad sobre datos observacionales reales (Sunrise).}
     \label{fig:intensidadDecoReal}
 \end{figure}
@@ -166,7 +166,7 @@ Finalmente, se aplica la implementación del algoritmo espacialmente acoplado so
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{img/exp4_3_campoB_zoom.png}
+    \includegraphics[width=0.9\textwidth]{img/exp4_3_campoB_zoom.pdf}
     \caption{Inferencia del campo magnético en datos reales de Sunrise-TUMAG. Izquierda: inferencia convencional. Derecha: campo reconstruido mediante la metodología acoplada.}
     \label{fig:campoMagDecoReal}
 \end{figure}
@@ -180,7 +180,7 @@ La métrica evaluada asciende de $1.96 \times 10^2$ a $2.03 \times 10^2$ (aument
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.65\textwidth]{img/exp4_5_diferencia.png}
+    \includegraphics[width=0.65\textwidth]{img/exp4_5_diferencia.pdf}
     \caption{Mapa espacial de la diferencia absoluta entre la inferencia original y la tratada. Las variaciones se localizan mayoritariamente en los contornos de las concentraciones de flujo.}
     \label{fig:campoMagDecoRealDiferencias}
 \end{figure}
