@@ -119,7 +119,7 @@ def main():
     fig.colorbar(im2, ax=axes[1], fraction=0.046, pad=0.04, label='Intensidad')
     
     plt.tight_layout()
-    plt.savefig('output/exper/exp4_1_intensidad.png', dpi=300)
+    plt.savefig('output/exper/exp4_1_intensidad.pdf', dpi=300, bbox_inches='tight')
     plt.close()
     
     # 2. Campo Magnético (Zoom ROI) - Comparamos aquí el efecto real
@@ -138,7 +138,7 @@ def main():
     fig.colorbar(im2, ax=axes[1], fraction=0.046, pad=0.04, label='Campo Magnético (Gauss)')
     
     plt.tight_layout()
-    plt.savefig('output/exper/exp4_3_campoB_zoom.png', dpi=300)
+    plt.savefig('output/exper/exp4_3_campoB_zoom.pdf', dpi=300, bbox_inches='tight')
     plt.close()
     
     # 3. PSF Real (escala logarítmica)
@@ -148,7 +148,7 @@ def main():
     ax_psf.axis('off')
     fig_psf.colorbar(im_psf, ax=ax_psf, fraction=0.046, pad=0.04)
     plt.tight_layout()
-    plt.savefig('output/exper/exp4_4_psf.png', dpi=300)
+    plt.savefig('output/exper/exp4_4_psf.pdf', dpi=300, bbox_inches='tight')
     plt.close()
     
     # 4. Mapa de Diferencia Absoluta (Residuos: |B Noor - B Directo|)
@@ -161,7 +161,7 @@ def main():
     ax_dif.axis('off')
     fig_dif.colorbar(im_dif, ax=ax_dif, fraction=0.046, pad=0.04, label='Diferencia Absoluta (Gauss)')
     plt.tight_layout()
-    plt.savefig('output/exper/exp4_5_diferencia.png', dpi=300)
+    plt.savefig('output/exper/exp4_5_diferencia.pdf', dpi=300, bbox_inches='tight')
     plt.close()
     
     print("Experimentos finalizados. Revisa 'output/exper/'.")

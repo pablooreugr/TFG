@@ -132,7 +132,7 @@ def experimento_algoritmo_noor():
 #     ax_c.set_title('Convergencia del Algoritmo de Noor', fontweight='bold')
     ax_c.grid(True, which="both", ls="--", alpha=0.5)
     plt.tight_layout()
-    plt.savefig('output/exper/experimento_noor_1_convergencia.png')
+    plt.savefig('output/exper/experimento_noor_1_convergencia.pdf', bbox_inches='tight')
 
     # Configurar colormap para B (icefire con centro blanco)
     cmap_b = sns.color_palette("icefire", as_cmap=True)
@@ -157,7 +157,7 @@ def experimento_algoritmo_noor():
     fig_b.colorbar(im3, ax=axes_b[2], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/exper/experimento_noor_2_comparativa_b.png')
+    plt.savefig('output/exper/experimento_noor_2_comparativa_b.pdf', bbox_inches='tight')
 
     # --- MAPA DE RESIDUOS ---
     residuos = np.abs(campoMagnetico - campoMagDeco)
@@ -178,7 +178,7 @@ def experimento_algoritmo_noor():
     fig_r.colorbar(im_r2, ax=axes_r[1], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/exper/experimento_noor_3_residuos.png')
+    plt.savefig('output/exper/experimento_noor_3_residuos.pdf', bbox_inches='tight')
     
     # --- COMPARATIVA VISUAL (B) - ZOOM ---
     y_ini, y_fin = 140, 235
@@ -202,7 +202,7 @@ def experimento_algoritmo_noor():
     fig_b_z.colorbar(im3_z, ax=axes_b_z[2], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/exper/experimento_noor_2b_comparativa_b_zoom.png')
+    plt.savefig('output/exper/experimento_noor_2b_comparativa_b_zoom.pdf', bbox_inches='tight')
 
     # --- MAPA DE RESIDUOS - ZOOM ---
     fig_r_z, axes_r_z = plt.subplots(1, 2, figsize=(12, 5))
@@ -218,7 +218,7 @@ def experimento_algoritmo_noor():
     fig_r_z.colorbar(im_r2_z, ax=axes_r_z[1], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/exper/experimento_noor_3b_residuos_zoom.png')
+    plt.savefig('output/exper/experimento_noor_3b_residuos_zoom.pdf', bbox_inches='tight')
 
     # --- LÍMITES DEL MÉTODO (Ruido) ---
     print("\n--- Evaluando límites del método ante el ruido ---")
@@ -284,7 +284,7 @@ def experimento_algoritmo_noor():
     ax_l.grid(True, linestyle='--', alpha=0.6)
     ax_l.legend()
     plt.tight_layout()
-    plt.savefig('output/exper/experimento_noor_4_limite_ruido.png')
+    plt.savefig('output/exper/experimento_noor_4_limite_ruido.pdf', bbox_inches='tight')
     
     # --- GRÁFICA RMSE INDEPENDIENTE ---
     fig_rmse, ax_rmse = plt.subplots(figsize=(10, 6))
@@ -296,7 +296,7 @@ def experimento_algoritmo_noor():
     ax_rmse.grid(True, linestyle='--', alpha=0.6)
     ax_rmse.legend()
     plt.tight_layout()
-    plt.savefig('output/exper/experimento_noor_4b_limite_ruido_rmse.png')
+    plt.savefig('output/exper/experimento_noor_4b_limite_ruido_rmse.pdf', bbox_inches='tight')
     
     # --- GRÁFICA NÚMERO DE PASOS INDEPENDIENTE ---
     fig_p, ax_p = plt.subplots(figsize=(10, 6))
@@ -310,7 +310,7 @@ def experimento_algoritmo_noor():
     ax_p.legend()
     
     plt.tight_layout()
-    plt.savefig('output/exper/experimento_noor_5_limite_ruido_pasos.png')
+    plt.savefig('output/exper/experimento_noor_5_limite_ruido_pasos.pdf', bbox_inches='tight')
     
     print("\nExperimento de Noor completado. Gráficas guardadas en 'output/exper/'.")
     plt.close('all')
@@ -380,7 +380,7 @@ def experimento_comparacion_intensidad():
     fig1.colorbar(im2, ax=axes1[1], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/exper/comparacion_intensidad_1_original_borrosa.png')
+    plt.savefig('output/exper/comparacion_intensidad_1_original_borrosa.pdf', bbox_inches='tight')
 
     # 6.2 Gráfica 2: 3 Deconvoluciones
     fig2, axes2 = plt.subplots(1, 3, figsize=(15, 5))
@@ -398,7 +398,7 @@ def experimento_comparacion_intensidad():
     fig2.colorbar(im5, ax=axes2[2], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/exper/comparacion_intensidad_2_deconvoluciones.png')
+    plt.savefig('output/exper/comparacion_intensidad_2_deconvoluciones.pdf', bbox_inches='tight')
     
     # 6.3 Gráfica 3: Barras (SSIM y RMSE)
     fig3, (ax3a, ax3b) = plt.subplots(1, 2, figsize=(14, 6))
@@ -429,7 +429,7 @@ def experimento_comparacion_intensidad():
     ax3b.indicate_inset_zoom(axins, edgecolor="black")
     
     plt.tight_layout()
-    plt.savefig('output/exper/comparacion_intensidad_3_barras.png')
+    plt.savefig('output/exper/comparacion_intensidad_3_barras.pdf', bbox_inches='tight')
 
     # 6.4 Gráfica 4: PSF (escala logarítmica)
     from matplotlib.colors import LogNorm
@@ -439,7 +439,7 @@ def experimento_comparacion_intensidad():
     fig4.colorbar(im6, ax=ax4, fraction=0.046, pad=0.04)
     
     plt.tight_layout()
-    plt.savefig('output/exper/comparacion_intensidad_4_psf.png')
+    plt.savefig('output/exper/comparacion_intensidad_4_psf.pdf', bbox_inches='tight')
     
     # 6.5 Gráfica 5: Original y Borrosa (Zoom)
     print("Generando visualizaciones con zoom y guardando en 'output/'...")
@@ -456,7 +456,7 @@ def experimento_comparacion_intensidad():
     fig5.colorbar(im2_z, ax=axes5[1], fraction=0.046, pad=0.04)
 
     plt.tight_layout()
-    plt.savefig('output/exper/comparacion_intensidad_5_original_borrosa_zoom.png')
+    plt.savefig('output/exper/comparacion_intensidad_5_original_borrosa_zoom.pdf', bbox_inches='tight')
     
     # 6.6 Gráfica 6: 3 Deconvoluciones (Zoom)
     fig6, axes6 = plt.subplots(1, 3, figsize=(15, 5))
@@ -474,7 +474,7 @@ def experimento_comparacion_intensidad():
     fig6.colorbar(im5_z, ax=axes6[2], fraction=0.046, pad=0.04)
 
     plt.tight_layout()
-    plt.savefig('output/exper/comparacion_intensidad_6_deconvoluciones_zoom.png')
+    plt.savefig('output/exper/comparacion_intensidad_6_deconvoluciones_zoom.pdf', bbox_inches='tight')
 
     # Mostrar todas las gráficas generadas
     plt.close('all')
@@ -547,7 +547,7 @@ def experimento_rl_pasos():
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 + labels2, loc='center right')
 
-    plt.savefig('output/experimento_rl_pasos.png')
+    plt.savefig('output/experimento_rl_pasos.pdf', bbox_inches='tight')
     plt.show()
 
 
@@ -641,8 +641,8 @@ def experimento_comparativa_rl_wk_ruido():
     ax.legend()
     
     plt.tight_layout()
-    path_salida = os.path.join(out_dir, 'limite_validez_wk_ruido.png')
-    plt.savefig(path_salida)
+    path_salida = os.path.join(out_dir, 'limite_validez_wk_ruido.pdf')
+    plt.savefig(path_salida, bbox_inches='tight')
     print(f"\nGráfica guardada en: {path_salida}")
     plt.show()
 
@@ -724,8 +724,8 @@ def experimento_wiener_compV_ruido():
     ax.legend()
     
     plt.tight_layout()
-    path_salida_1 = os.path.join(out_dir, 'experimento_stokesV_1_limite_ruido.png')
-    plt.savefig(path_salida_1)
+    path_salida_1 = os.path.join(out_dir, 'experimento_stokesV_1_limite_ruido.pdf')
+    plt.savefig(path_salida_1, bbox_inches='tight')
     
     # 4. Visualización directa de mapas
     if compV_ejemplo_borroso is not None:
@@ -751,8 +751,8 @@ def experimento_wiener_compV_ruido():
         fig_v.colorbar(im3, ax=axes_v[2], fraction=0.046, pad=0.04)
         
         plt.tight_layout()
-        path_salida_2 = os.path.join(out_dir, 'experimento_stokesV_2_visualizacion.png')
-        plt.savefig(path_salida_2)
+        path_salida_2 = os.path.join(out_dir, 'experimento_stokesV_2_visualizacion.pdf')
+        plt.savefig(path_salida_2, bbox_inches='tight')
         
     print(f"\nGráficas guardadas en {out_dir}")
     plt.close('all')
@@ -848,8 +848,8 @@ def experimento_stokesV_shift_ruido():
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     
     plt.tight_layout()
-    path_salida = os.path.join(out_dir, 'experimento_stokesV_3_comparativa_shift.png')
-    plt.savefig(path_salida)
+    path_salida = os.path.join(out_dir, 'experimento_stokesV_3_comparativa_shift.pdf')
+    plt.savefig(path_salida, bbox_inches='tight')
     print(f"\nGráfica guardada en {path_salida}")
     plt.close('all')
 
