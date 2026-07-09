@@ -13,39 +13,64 @@ Para formular este tensor, es preciso definir el estado de polarización de la o
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[
+        x={(-0.5cm,-0.4cm)}, y={(0cm,1cm)}, z={(1cm,0cm)}, 
+        scale=1.4,
         >=Stealth,
-        thick,
-        scale=1.2 
+        axis/.style={->, thick, color=gray!80}
     ]
-        \definecolor{vectorblue}{RGB}{41, 121, 255}
-        \definecolor{compgreen}{RGB}{46, 125, 50}
-        \definecolor{axesgray}{RGB}{100, 110, 120}
+        % Colores
+        \definecolor{myblue}{RGB}{30, 144, 255}
+        \definecolor{myred}{RGB}{220, 20, 60}
+        \definecolor{myresult}{RGB}{138, 43, 226} % Morado fuerte para la onda resultante
 
-        \draw[->, color=axesgray, line width=0.8pt] (-3,0) -- (3,0);
-        \draw[->, color=axesgray, line width=0.8pt] (0,-3) -- (0,3);
+        % Ejes
+        \draw[axis] (0,0,0) -- (3,0,0) node[anchor=north east, text=black] {$x$};
+        \draw[axis] (0,0,0) -- (0,2.5,0) node[anchor=south, text=black] {$y$};
+        \draw[axis] (0,0,0) -- (0,0,7.5) node[anchor=west, text=black] {$z$ (Propagación)};
 
-        \draw[color=axesgray!40, line width=0.8pt] (0,0) circle (2.2cm);
+        % Parámetros de la onda
+        \def\freq{90}  % Frecuencia (90 grados por unidad de z)
+        \def\fase{45}  % Desfase de la onda y
+        \def\ampX{1.8}
+        \def\ampY{1.4}
 
-        \def\angulo{43}
-        \def\radio{2.2}
+        % PLANO X-Z (Onda Ex)
+        \fill[myblue, opacity=0.1] (0,0,0) -- plot[domain=0:6.5, samples=150] ({\ampX*sin(\x*\freq)}, 0, \x) -- (0,0,6.5) -- cycle;
+        \draw[myblue, thick] plot[domain=0:6.5, samples=150] ({\ampX*sin(\x*\freq)}, 0, \x);
+        \foreach \z in {0.5, 1.5, 2.5, 3.5, 4.5, 5.5} {
+            \pgfmathsetmacro{\xval}{\ampX*sin(\z*\freq)}
+            \draw[->, myblue, thick] (0,0,\z) -- (\xval,0,\z);
+        }
 
-        \coordinate (Origen) at (0,0);
-        \coordinate (E) at (\angulo:\radio); 
-        \coordinate (Ex) at ({\radio*cos(\angulo)}, 0); 
-        \coordinate (Ey) at (0, {\radio*sin(\angulo)}); 
+        % PLANO Y-Z (Onda Ey)
+        \fill[myred, opacity=0.1] (0,0,0) -- plot[domain=0:6.5, samples=150] (0, {\ampY*sin(\x*\freq + \fase)}, \x) -- (0,0,6.5) -- cycle;
+        \draw[myred, thick] plot[domain=0:6.5, samples=150] (0, {\ampY*sin(\x*\freq + \fase)}, \x);
+        \foreach \z in {0.25, 1.25, 2.25, 3.25, 4.25, 5.25} {
+            \pgfmathsetmacro{\yval}{\ampY*sin(\z*\freq + \fase)}
+            \draw[->, myred, thick] (0,0,\z) -- (0,\yval,\z);
+        }
 
-        \draw[dashed, color=compgreen, line width=0.7pt] (E) -- (Ex);
-        \draw[dashed, color=compgreen, line width=0.7pt] (E) -- (Ey);
+        % ONDA RESULTANTE (Hélice)
+        \draw[myresult, line width=1.5pt] plot[domain=0:6.5, samples=150] ({\ampX*sin(\x*\freq)}, {\ampY*sin(\x*\freq + \fase)}, \x);
+        
+        % Un par de vectores resultantes explícitos para ilustrar la superposición
+        \foreach \z in {0.85, 2.85, 4.85} {
+            \pgfmathsetmacro{\xval}{\ampX*sin(\z*\freq)}
+            \pgfmathsetmacro{\yval}{\ampY*sin(\z*\freq + \fase)}
+            % proyecciones punteadas
+            \draw[dashed, gray, opacity=0.5] (\xval,0,\z) -- (\xval,\yval,\z);
+            \draw[dashed, gray, opacity=0.5] (0,\yval,\z) -- (\xval,\yval,\z);
+            % vector suma
+            \draw[->, myresult, thick] (0,0,\z) -- (\xval,\yval,\z);
+        }
 
-        \draw[->, color=compgreen, line width=1.5pt] (Origen) -- (Ex) 
-            node[below, yshift=-2pt] {$E_x$};
-        \draw[->, color=compgreen, line width=1.5pt] (Origen) -- (Ey) 
-            node[below right, xshift=2pt, yshift=-2pt] {$E_y$};
-
-        \draw[->, color=vectorblue, line width=1.8pt] (Origen) -- (E);
+        % Etiquetas
+        \node[myblue, font=\bfseries] at (\ampX, 0, 1) {$E_x$};
+        \node[myred, font=\bfseries] at (0, \ampY, 0.5) {$E_y$};
+        \node[myresult, font=\bfseries] at (1.5, 1.5, 0.85) {$\vec{E}$};
 
     \end{tikzpicture}
-    \caption{Representación de una onda electromagnética polarizada, representada como la superposición de dos ondas proyectadas sobre los ejes $x$ e $y$, compartiendo frecuencia pero difiriendo en su fase relativa.}
+    \caption{Esquema de la propagación de una onda electromagnética polarizada. Se muestran las componentes ortogonales del campo eléctrico, $E_x$ (azul) y $E_y$ (rojo). La superposición de ambas genera el campo eléctrico resultante $\vec{E}$ (morado), cuyo extremo describe una trayectoria helicoidal (elíptica) a medida que la onda avanza a través del eje $z$, debido a la diferencia de fase y amplitud entre las componentes.}
     \label{fig:componentes_em}
 \end{figure}
 
@@ -383,6 +408,6 @@ A partir de estas relaciones fundamentales se define analíticamente la intensid
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{img/pixel_sintetico_1249_1166.png}
-    \caption{Perfiles empíricos normalizados de la intensidad, su derivada espectral y la polarización circular para un píxel representativo. El ajuste morfológico observado sugiere concordancia fenomenológica con la aproximación de campo débil descrita en la Ecuación \ref{eq:campoDebil}.}
+    \caption{Perfiles empíricos normalizados de la intensidad, su derivada espectral multiplicado por longitud de onda al cuadrado y la polarización circular para un píxel representativo del experimento de la sección \ref{sec:datosReales}. El ajuste morfológico observado sugiere concordancia fenomenológica con la aproximación de campo débil descrita en la Ecuación \ref{eq:campoDebil}.}
     \label{fig:intensidadReal.}
 \end{figure}
