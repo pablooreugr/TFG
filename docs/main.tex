@@ -36,6 +36,7 @@
 \usepackage{booktabs}
 % \usepackage{parskip} % Comentado para habilitar la sangría (indentación) en los párrafos
 \usepackage{xtab}
+\usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=blue]{hyperref}
 \numberwithin{equation}{section}
 
@@ -122,7 +123,7 @@ Este estudio aborda la mitigación de la degradación óptica (difracción y abe
 \bigskip
 
 \begin{minipage}{0.8\linewidth}
-This study addresses the mitigation of optical degradation (diffraction and aberrations) in high-resolution solar spectropolarimetric observations from the TuMag instrument (Sunrise III mission). The objective is to infer the longitudinal magnetic field of the ``quiet Sun'' using the Weak Field Approximation (WFA). Given that classical image deconvolution techniques face difficulties when applied to the Stokes $V$ component ---due to its bipolar nature and the non-linearity of the problem---, a spatially coupled forward modeling methodology has been implemented. Based on van Noort's framework, this method integrates the telescope's optics and radiative transfer physics. By solving the system iteratively via the Conjugate Gradient method without instantiating the Jacobian matrix, a coherent reconcentration of the scattered magnetic flux is achieved. Tests on synthetic data validate the signal retrieval in the presence of instrumental noise, while its application to real observations suggests a reconcentration of the magnetic topology consistent with expectations.
+This study addresses the mitigation of optical degradation (diffraction and aberrations) in high-resolution solar spectropolarimetric observations from the TuMag instrument (Sunrise III mission). The objective is to infer the longitudinal magnetic field of the ``quiet Sun'' using the Weak Field Approximation (WFA). Given that classical image deconvolution techniques face difficulties when applied to the Stokes $V$ component ---due to its bipolar nature and the non-linearity of the problem---, a spatially coupled forward modeling methodology has been implemented. Based on van Noort's framework, this method integrates the telescope's optics and radiative transfer physics. By solving the system iteratively via the Conjugate Gradient method without instantiating the Jacobian matrix, a coherent reconcentration of the scattered magnetic flux is achieved. Tests on synthetic data show the signal retrieval in the presence of instrumental noise, while its application to real observations suggests a reconcentration of the magnetic topology consistent with expectations.
 \end{minipage}
 
 \vfill
@@ -133,8 +134,10 @@ This study addresses the mitigation of optical degradation (diffraction and aber
 
 % Indice %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\newpage
-\addtocontents{toc}{\protect\enlargethispage{5\baselineskip}}
+\begingroup
+\setlength{\parskip}{0pt}
 \tableofcontents
+\endgroup
 % Texto %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\newpage
 
@@ -152,19 +155,21 @@ This study addresses the mitigation of optical degradation (diffraction and aber
 \input{content/05_MetodoDesarrollado}
 \input{content/06_MetodosAnalisis}
 \input{content/07_AnalisisResultados}
+
+\clearpage
 \input{content/09_Conclusion}
+
 
 \appendix
 \input{content/08_TecnologiasUsadas}
 
-
-
+\clearpage
 
 \addcontentsline{toc}{section}{Referencias} % Elige según idioma
 %\addcontentsline{toc}{section}{References} % Elige según idioma
 
-% Estilo de la bibliografía (unsrt ordena numéricamente por aparición en el texto)
-\bibliographystyle{unsrt} 
+% Estilo de la bibliografía (apsrev4-2 para estilo American Physical Society)
+\bibliographystyle{apsrev4-2} 
 % Archivo exportado desde Zotero (sin poner la extensión .bib)
 \bibliography{referencias,referencias_nuevas} 
 

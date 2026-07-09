@@ -1,7 +1,7 @@
 % !TeX root = ../main.tex
 
 \section{Métodos de análisis de resultados}
-Para evaluar el rendimiento de los algoritmos de deconvolución, la inspección visual no basta; hacen falta métricas objetivas para cuantificar la calidad de la reconstrucción. En el contexto de datos sintéticos, la disponibilidad de la señal original (conocida como \textit{ground truth} o verdad terreno) permite una comparación directa y cuantitativa con la imagen procesada mediante parámetros estadísticos.
+Para evaluar el rendimiento de los algoritmos de deconvolución, la inspección visual no basta; hacen falta métricas objetivas para cuantificar la calidad de la reconstrucción. En el contexto de datos sintéticos, la disponibilidad de la señal original (conocida como \textit{ground truth}) permite una comparación directa y cuantitativa con la imagen procesada mediante parámetros estadísticos.
 
 \subsection{Raíz del Error Cuadrático Medio (RMSE)}
 La raíz del error cuadrático medio (RMSE, por sus siglas en inglés, \textit{Root Mean Square Error}) cuantifica la desviación promedio entre una señal reconstruida y la señal de referencia. En este trabajo, se emplea tanto para evaluar la degradación inicial introducida por la función de dispersión del punto (PSF) del instrumento, como para estimar el error residual tras aplicar los métodos de deconvolución. Su expresión matemática se define como:
@@ -27,4 +27,4 @@ El SSIM toma valores en el intervalo $[-1, 1]$. El objetivo ideal es alcanzar un
 
 Para la implementación computacional de este análisis, se ha utilizado la función \texttt{ssim} de la biblioteca \texttt{scikit-image} en Python. Esta herramienta permite calcular el índice promediado a lo largo de toda la imagen de forma robusta.
 
-Finalmente, es importante destacar que, si bien el RMSE y el SSIM proporcionan métricas cuantitativas fundamentales (muy usadas en la literatura de procesamiento de imágenes astrofísicas, e.g., \cite{alnajjarComparativeAnalysisImage2024}), la evaluación cualitativa mediante inspección visual experta sigue siendo un complemento necesario. Con este marco analítico sólidamente definido, la siguiente sección expone la aplicación de la metodología computacional desarrollada, evaluando rigurosamente sus resultados tanto en entornos simulados como en observaciones reales.
+Finalmente, es importante destacar que, si bien el RMSE y el SSIM proporcionan métricas cuantitativas fundamentales (muy usadas en la literatura de procesamiento de imágenes astrofísicas, e.g., \cite{alnajjarComparativeAnalysisImage2024}), la evaluación cualitativa mediante inspección visual experta sigue siendo un complemento necesario. Con este marco analítico definido, la siguiente sección expone la aplicación de la metodología computacional desarrollada, evaluando rigurosamente sus resultados tanto en entornos simulados como en observaciones reales.

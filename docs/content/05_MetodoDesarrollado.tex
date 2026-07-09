@@ -9,7 +9,7 @@ y el parámetro a ajustar es el campo magnético paralelo. Tomando una estimaci�
     \beta = d - F(x_0)
 \end{equation}
 
-Para refinar esta estimación, se busca un vector de corrección $\nu$, de forma que la nueva aproximación sea $x_0 + \nu$. Dado que la función $F(x)$ suele ser compleja y no lineal, se aproxima a primer orden mediante una serie de Taylor:
+Para refinar esta estimación, se busca un vector de corrección $\nu$, de forma que la nueva aproximación sea $x_0 + \nu$. Dado que la función $F(x)$ suele presentar una alta complejidad funcional, se aproxima a primer orden mediante una serie de Taylor:
 
 \begin{equation}
     F(x_0 + \nu) \simeq F(x_0) + J \nu \quad,
@@ -47,7 +47,7 @@ Para evidenciar esta linealidad, se parte de la aproximación de campo débil y 
     V = - C \bar{g} \lambda_B^2 \frac{dI_0}{d \lambda} B_{\parallel} = K(x, y, \lambda) B_{\parallel}
 \end{equation}
 
-De este modo, la variación de los datos observados respecto al parámetro libre (el campo $B_{\parallel}$) equivale a multiplicar por el factor $K$ y aplicar la convolución espacial. Dado que tanto la derivada como la convolución son operadores lineales, el Jacobiano puede expresarse funcionalmente como:
+De este modo, la variación de los datos observados respecto al parámetro libre (el campo $B_{\parallel}$) equivale a multiplicar por el factor $K$ y aplicar la convolución espacial. Dado que tanto la derivada como la convolución son operadores lineales con respecto a $B_{\parallel}$, el Jacobiano puede expresarse funcionalmente como:
 
 \begin{equation}
     J = \frac{\partial V_{\mathrm{obs}}}{\partial B_{\parallel}} = \frac{\partial}{\partial B_{\parallel}} \left[(K \cdot B_{\parallel}) * P \right] = \left[\frac{\partial}{\partial B_{\parallel}} (K \cdot B_{\parallel})\right] * P = K * P \label{eq:demosLinealidad}
