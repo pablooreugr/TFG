@@ -1,14 +1,15 @@
 % !TeX root = ../main.tex
 
+\newpage
 \section{Fundamentos Teóricos}
 \subsection{Datos espectrales y parámetros de Stokes}
-El marco teórico que sustenta este trabajo se asienta sobre principios físicos ampliamente consolidados en la literatura especializada. Siguiendo de cerca la formulación canónica presentada por \cite{toroiniestaIntroductionSpectropolarimetry2003}, en esta sección se exponen los conceptos fundamentales sobre la naturaleza espectral de los datos, la transferencia radiativa y el efecto Zeeman, imprescindibles para la comprensión del problema.
-
-La información proveniente del Sol se adquiere mediante el estudio de la radiación electromagnética. Las observaciones empleadas en este trabajo se circunscriben al rango visible, comprendido entre 4000 y 7000 Å. Debido a las elevadas frecuencias características de este espectro, la medición directa de las propiedades fundamentales del campo electromagnético, tales como su amplitud o fase, resulta instrumentalmente inviable.
+El marco teórico de este trabajo se basa en principios físicos bien establecidos. Siguiendo la estructura pedagógica de \cite{toroiniestaIntroductionSpectropolarimetry2003}, en esta sección se exponen los conceptos fundamentales sobre la naturaleza espectral de los datos, la transferencia radiativa y el efecto Zeeman, imprescindibles para la comprensión del problema.
+ (aprox. XX horas)
+La información proveniente del Sol se adquiere mediante el estudio de la radiación electromagnética. Las observaciones empleadas en este trabajo están en el rango visible, comprendido entre 4000 y 7000 \AA. Debido a las elevadas frecuencias características de este espectro, la medición directa de las propiedades fundamentales del campo electromagnético, tales como su amplitud o fase, resulta instrumentalmente inviable.
 
 En consecuencia, los instrumentos telescópicos no registran el campo eléctrico instantáneo, sino un promedio temporal de la energía electromagnética, denominado intensidad. Para analizar rigurosamente tanto el flujo energético como el estado de polarización de la radiación, se recurre al tensor de polarización.
 
-Para formular este tensor, es preciso definir el estado de polarización de la onda electromagnética. En esencia, una onda polarizada puede describirse como la superposición lineal de dos ondas ortogonales (perpendiculares a la dirección de propagación), que oscilan con idéntica frecuencia pero presentan un desfase relativo. El esquema de la Figura (\ref{fig:componentes_em}) ilustra la obtención de la onda resultante a partir de dichas componentes.
+Para formular este tensor, es preciso definir el estado de polarización de la onda electromagnética. En esencia, una onda polarizada puede describirse como la superposición lineal de dos ondas ortogonales (perpendiculares a la dirección de propagación), que oscilan con idéntica frecuencia pero difiriendo en su fase relativa. El esquema de la Figura \ref{fig:componentes_em} ilustra la obtención de la onda resultante a partir de dichas componentes.
 
 \begin{figure}[H]
     \centering
@@ -45,18 +46,18 @@ Para formular este tensor, es preciso definir el estado de polarización de la o
         \draw[->, color=vectorblue, line width=1.8pt] (Origen) -- (E);
 
     \end{tikzpicture}
-    \caption{Representacion de una onda electromagnética polarizada, representada como la superposición de dos ondas proyectadas sobre los ejes $x$ e $y$, compartiendo frecuencia pero difiriendo en su fase relativa.}
+    \caption{Representación de una onda electromagnética polarizada, representada como la superposición de dos ondas proyectadas sobre los ejes $x$ e $y$, compartiendo frecuencia pero difiriendo en su fase relativa.}
     \label{fig:componentes_em}
 \end{figure}
 
-Por consiguiente, el tensor empleado para evaluar la intensidad y el desfase adopta la forma descrita en (\ref{eq: tensorDePolarizacion}), donde $\langle \cdot \rangle$ denota el promedio temporal \cite[cap. 2.3]{toroiniestaIntroductionSpectropolarimetry2003}.
+Por consiguiente, el tensor empleado para evaluar la intensidad y el desfase adopta la forma descrita en la Ecuación \ref{eq: tensorDePolarizacion}, donde $\langle \cdot \rangle$ denota el promedio temporal \cite[cap. 2.3]{toroiniestaIntroductionSpectropolarimetry2003}.
 
 \begin{equation}
     \label{eq: tensorDePolarizacion}
     C \equiv \begin{pmatrix} \langle E_x E_x^* \rangle & \langle E_x E_y^* \rangle \\ \langle E_y E_x^* \rangle & \langle E_y E_y^* \rangle \end{pmatrix}
 \end{equation}
 
-Esta matriz está definida mediante números complejos que contienen información sobre la correlación y fase relativa del campo eléctrico. Sin embargo, los detectores únicamente registran intensidades, correspondientes a magnitudes reales. Para eludir esta limitación, se emplea una combinación lineal de los elementos matriciales que define los parámetros de Stokes. Estos constituyen la base física adecuada para representar las correlaciones del campo sin requerir el conocimiento de las fases absolutas. Al tratarse de magnitudes reales con dimensiones de intensidad, son directamente medibles. Las definiciones formales se recogen en las expresiones (\ref{eq:stokes}) \cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}.
+Esta matriz se define mediante números complejos que contienen información sobre la correlación y la fase relativa del campo eléctrico. Sin embargo, los detectores únicamente registran intensidades, correspondientes a magnitudes reales. Para superar esta limitación, se emplea una combinación lineal de los elementos matriciales que define los parámetros de Stokes. Estos constituyen la base física adecuada para representar las correlaciones del campo sin requerir el conocimiento de las fases absolutas. Al tratarse de magnitudes reales con dimensiones de intensidad, son directamente medibles. Las definiciones formales se recogen en las expresiones de \ref{eq:stokes} \cite[cap. 2.4]{toroiniestaIntroductionSpectropolarimetry2003}.
 
 \begin{equation}
     \label{eq:stokes}
@@ -87,7 +88,7 @@ Uno de los objetivos fundamentales de la física solar consiste en inferir las p
     \vec{E}(\vec{r}, t) = \vec{E_0} e^{2 \pi i \frac{\nu}{c}(n \vec{r} \cdot \vec{\Omega} - ct)} \quad,
 \end{equation}
 
-donde $\nu$ es la frecuencia, $n$ es el índice de refracción y $\Omega$ representa la dirección de propagación. 
+donde $\nu$ es la frecuencia, $n$ es el índice de refracción y $\vec{\Omega}$ representa la dirección de propagación. 
 
 En un medio anisótropo, las propiedades ópticas dependen de la dirección de propagación y del estado de polarización de la onda. Para una dirección dada pueden existir distintos modos propios, cada uno caracterizado por un índice de refracción diferente. Asumiendo que el medio posee tres direcciones principales ortogonales (con vectores normales $\vec{u_\alpha}$, donde $\alpha = 1, 2, 3$), la función de onda se expresa como:
 
@@ -105,7 +106,7 @@ Para definir los parámetros de Stokes, se debe proyectar la onda en la base del
     \vec{E} (\vec{r}, t) = \sum_k \epsilon_k (\vec{r}, t) \vec{e_k} 
 \end{equation}
 
-Igualando las expresiones (\ref{eq:ondaAnisotropa}) y (\ref{eq:direccionProp}) se obtiene el equilibrio entre la base del medio emisor y la del observador:
+Igualando las ecuaciones \ref{eq:ondaAnisotropa} y \ref{eq:direccionProp} se obtiene el equilibrio entre la base del medio emisor y la del observador:
 
 \begin{equation}
     \label{eq:igualandoOndas}
@@ -126,13 +127,13 @@ Aplicando las relaciones de ortonormalidad de los cosenos directores ($\sum_\alp
     \label{eq:identidad_inversa}
 \end{equation}
 
-En la teoría de la transferencia radiativa, se evalúa el gradiente del campo electromagnético a lo largo de la distancia geométrica $s = \vec{r} \cdot \vec{\Omega}$. Diferenciando la ecuación (\ref{eq:epsilon_j}) respecto a $s$, se obtiene:
+En la teoría de la transferencia radiativa, se evalúa el gradiente del campo electromagnético a lo largo de la distancia geométrica $s = \vec{r} \cdot \vec{\Omega}$. Diferenciando la ecuación \ref{eq:epsilon_j} respecto a $s$, se obtiene:
 
 \begin{equation}
     \frac{\text{d}\epsilon_j(s,t)}{\text{d}s} = 2\pi i \frac{\nu}{c} \sum_\alpha \epsilon_\alpha n_\alpha C_{\alpha j} e^{2\pi i \frac{\nu}{c}(n_\alpha s - ct)}
 \end{equation}
 
-Sustituyendo la identidad (\ref{eq:identidad_inversa}) para eliminar las variables internas del medio, surge el sistema diferencial de amplitudes acopladas:
+Sustituyendo la identidad \ref{eq:identidad_inversa} para eliminar las variables internas del medio, surge el sistema diferencial de amplitudes acopladas:
 
 \begin{equation}
     \frac{\text{d}\epsilon_j(s,t)}{\text{d}s} = -\sum_k G_{jk} \epsilon_k(s,t) \qquad (j=1,2) \quad,
@@ -145,7 +146,7 @@ donde $G_{jk}$ representa la matriz de propagación macroscópica:
     G_{jk} = -2\pi i \frac{\nu}{c} \sum_\alpha n_\alpha C_{\alpha j} C_{\alpha k}^* \qquad (j,k = 1,2)
 \end{equation}
 
-Derivando el tensor de polarización (Ecuación \ref{eq: tensorDePolarizacion}) respecto a $s$ e incorporando el sistema (\ref{eq:transferencia_campo}), resulta:
+Derivando el tensor de polarización (Ecuación \ref{eq: tensorDePolarizacion}) respecto a $s$ e incorporando el sistema \ref{eq:transferencia_campo}, resulta:
 
 \begin{equation}
     \label{eq:derivada_polarizacion}
@@ -287,7 +288,7 @@ En estas expresiones, $\phi$ representa el perfil de absorción y $\psi$ denota 
 \end{equation}
 
 \subsubsection{Enfoque Cuántico del Efecto Zeeman}
-Si bien la formulación clásica describe de forma precisa la dependencia angular de la polarización, el espectro estelar empírico revela líneas espectrales con patrones de desdoblamiento complejos (efecto Zeeman anómalo). Esta fenomenología radica en la naturaleza mecánico-cuántica de los átomos multielectrónicos \cite[pag. 104]{sanchezSolarObservationsTechniques1992}, tal y como desarrollaron en su momento teóricos de la formación de líneas espectrales como Unno \cite{Unno1956} y Rachkovsky \cite{Rachkovsky1962}.
+Si bien la formulación clásica describe de forma precisa la dependencia angular de la polarización, el espectro estelar empírico revela líneas espectrales con patrones de desdoblamiento complejos (efecto Zeeman anómalo). Este fenómeno se debe a la naturaleza cuántica de los átomos multielectrónicos \cite[pag. 104]{sanchezSolarObservationsTechniques1992}, tal y como desarrollaron en su momento teóricos de la formación de líneas espectrales como Unno \cite{Unno1956} y Rachkovsky \cite{Rachkovsky1962}.
 
 Bajo el marco de la mecánica cuántica y en lo que respecta al efecto Zeeman, un nivel de energía atómico se define por su número cuántico de momento angular total, $J$. En ausencia de perturbaciones magnéticas, este nivel presenta una degeneración de $2J+1$ estados. La introducción de un campo magnético externo rompe esta degeneración espacial. Dichos subniveles se caracterizan mediante el número cuántico magnético $M$, cuyos valores discretos oscilan entre $-J$ y $+J$ en incrementos enteros.
 
@@ -299,7 +300,7 @@ El desplazamiento energético que experimentan estos subniveles, expresado en fr
 
 Esta expresión introduce el factor de Landé ($g$), un parámetro adimensional que cuantifica la sensibilidad magnética de cada nivel energético particular.
 
-La radiación es emitida o absorbida durante la transición de un átomo entre un subnivel excitado ($J, M$) y un subnivel inferior ($J', M'$). No obstante, las estrictas reglas de selección dictaminan que las únicas transiciones radiativas permitidas implican una variación del estado magnético dada por:
+La radiación es emitida o absorbida durante la transición de un átomo entre un subnivel excitado ($J, M$) y un subnivel inferior ($J', M'$). No obstante, las estrictas reglas de selección establecen que las únicas transiciones permitidas implican una variación del estado magnético dada por:
 \begin{equation}
     \Delta M = M_{sup} - M_{inf} = 0, \pm 1
 \end{equation}
@@ -367,22 +368,22 @@ Este trabajo fundamenta su análisis en el régimen de campo magnético débil, 
     \lambda_B = \frac{e \lambda_o^2 B}{4 \pi m_e c}
 \end{equation}
 
-Al aplicar una expansión de Taylor de primer orden sobre los perfiles de absorción, los parámetros lineales se cancelan ($Q=U=0$), demostrando analíticamente que la polarización circular emergente obedece la siguiente relación proporcional a la derivada espectral de la intensidad:
+Al aplicar una expansión de Taylor de primer orden sobre los perfiles de absorción, los parámetros lineales se cancelan ($Q=U=0$), deduciéndose analíticamente que la polarización circular emergente obedece la siguiente relación proporcional a la derivada espectral de la intensidad:
 
 \begin{equation}
     \label{eq:campoDebil}
     V = -C \bar{g} \lambda_B^2 B_{\parallel} \frac{d I_0}{d \lambda} \quad,
 \end{equation}
 
-donde $C = 4.67 \times 10^{-13} \text{ G}^{-1}\text{Å}^{-1}$ es la constante escalar.
+donde $C = 4.67 \times 10^{-13} \text{ G}^{-1}\text{\AA}^{-1}$ es la constante escalar.
 
-A modo de ilustración con datos observacionales (cuya procedencia e instrumentación se detallan formalmente en la sección \ref{sec:datosReales}, correspondiente a la metodología propia del trabajo), la Figura \ref{fig:intensidadReal.} muestra la morfología empírica de los perfiles. Se sugiere que la aproximación teórica deducida proporciona un ajuste estructuralmente coherente con los datos adquiridos.
+A modo de ilustración con datos observacionales (cuya procedencia e instrumentación se detallan formalmente en la sección \ref{sec:datosReales}, correspondiente a la metodología propia del trabajo), la Figura \ref{fig:intensidadReal.} muestra la morfología empírica de los perfiles. Su análisis indica una concordancia compatible con lo esperado según la aproximación teórica deducida.
 
-A partir de estas relaciones fundamentales se define analíticamente la intensidad del campo magnético longitudinal solar. Sin embargo, en la práctica observacional, estas señales ideales se ven ineludiblemente alteradas por la instrumentación óptica del telescopio antes de llegar al detector. Comprender y modelar matemáticamente esta degradación espacial, fenómeno que se detalla en la siguiente sección, resulta un paso previo e imperativo antes de intentar cualquier inferencia física a partir de los datos.
+A partir de estas relaciones fundamentales se define analíticamente la intensidad del campo magnético longitudinal solar. Sin embargo, en la práctica observacional, estas señales ideales se ven alteradas por la instrumentación óptica del telescopio antes de llegar al detector. Comprender y modelar matemáticamente esta degradación espacial, fenómeno que se detalla en la siguiente sección, es un paso previo necesario antes de deducir información física a partir de los datos.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{img/pixel_sintetico_1249_1166.png}
-    \caption{Perfiles empíricos normalizados de la intensidad, su derivada espectral y la polarización circular para un píxel representativo. El ajuste morfológico observado sugiere concordancia fenomenológica con la aproximación de campo débil descrita en la Ecuación (\ref{eq:campoDebil}).}
+    \caption{Perfiles empíricos normalizados de la intensidad, su derivada espectral y la polarización circular para un píxel representativo. El ajuste morfológico observado sugiere concordancia fenomenológica con la aproximación de campo débil descrita en la Ecuación \ref{eq:campoDebil}.}
     \label{fig:intensidadReal.}
 \end{figure}

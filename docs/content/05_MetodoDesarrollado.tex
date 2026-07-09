@@ -39,7 +39,7 @@ Mientras que la formulación de Van Noort establece el marco teórico general pa
 
 En primer lugar, en el contexto físico tratado, la matriz $J$ representa el Jacobiano del sistema. En este trabajo, el modelo directo se implementa en dos etapas: en primer lugar, se calcula localmente la señal de polarización utilizando la aproximación de campo débil; posteriormente, se aplica una degradación espacial mediante una convolución con la Función de Dispersión del Punto (PSF). Este planteamiento asocia cada parámetro $x_i$ a un píxel de la imagen original, provocando que la dimensionalidad del problema aumente de forma sustancial. Para imágenes típicas de 1400x1400 píxeles, la construcción y el almacenamiento de la matriz Jacobiana completa en la memoria RAM resulta computacionalmente inasumible.
 
-Para abordar este severo desafío computacional, en el diseño del software desarrollado en este trabajo se ha descartado la construcción de $J$ como una matriz explícita. En su lugar, se ha optado por operar con ella estrictamente como un operador lineal. Esta linealidad asegura la existencia de su operador adjunto (o traspuesto) $J^T$. Dicha propiedad es fundamental, ya que permite la resolución iterativa del sistema sin requerir el almacenamiento de la matriz completa.
+Para solucionar este problema de memoria, en este trabajo se ha descartado la construcción de $J$ como una matriz explícita. En su lugar, se ha optado por operar con ella estrictamente como un operador lineal. Esta linealidad asegura la existencia de su operador adjunto (o traspuesto) $J^T$. Dicha propiedad es fundamental, ya que permite la resolución iterativa del sistema sin requerir el almacenamiento de la matriz completa.
 
 Para evidenciar esta linealidad, se parte de la aproximación de campo débil y se agrupan los términos independientes del campo magnético en un único factor espacial $K(x, y, \lambda)$:
 
@@ -112,7 +112,7 @@ Matemáticamente, un subespacio de Krylov de orden $m$ se define como el espacio
     \mathcal{K}_m(A, b) = \mathrm{span}\{b, Ab, A^2b, \dots, A^{m-1}b\}
 \end{equation}
 
-La principal virtud de estos algoritmos radica en que no requieren conocer la matriz de forma explícita; únicamente precisan evaluar el producto matriz-vector, lo cual equivale a aplicar los operadores de forma secuencial sobre la imagen. 
+La ventaja de estos algoritmos es que no necesitan la matriz explícita; únicamente precisan evaluar el producto matriz-vector, lo cual equivale a aplicar los operadores de forma secuencial sobre la imagen. 
 
 Dentro de esta familia de métodos, el Gradiente Conjugado (CG) \cite{hestenes1952methods} resulta particularmente adecuado para este problema dado que la matriz $J^T J$ es, por construcción, simétrica y definida positiva. Este método iterativo busca la solución alrededor de vectores ortogonalesen el subespacio de Krylov, garantizando una convergencia eficiente hacia la solución óptima.
 Al ser un algoritmo de uso extendido, su integración computacional se ha realizado utilizando librerías matemáticas estándar de Python.
