@@ -85,7 +85,7 @@ En la siguiente figura se muestra un estudio donde se evalúa la evolución del 
     \label{fig:SSIM_frenteARuidoV}
 \end{figure}
 
-En la figura (\ref{fig:SSIM_frenteARuidoV}) se observa cómo ni el método de Fourier, ni el método de Richardson-Lucy pueden llegar a superar el SSIM de la imagen degradada, por lo que no consiguen recuperar la topología esperada. En el caso del método de Wiener, parece tener un comportamiento más estable frente al ruido, si observamos la figura (\ref{fig:visualizacionStokesV}), consigue eliminar el ruido de la imagen, pero la suaviza en exceso, por lo que se pierden detalles de la topología original.
+En la figura \ref{fig:SSIM_frenteARuidoV} se observa cómo ni el método de Fourier, ni el método de Richardson-Lucy pueden llegar a superar el SSIM de la imagen degradada, por lo que no consiguen recuperar la topología esperada. En el caso del método de Wiener, parece tener un comportamiento más estable frente al ruido, si observamos la figura \ref{fig:visualizacionStokesV}, consigue eliminar el ruido de la imagen, pero la suaviza en exceso, por lo que se pierden detalles de la topología original.
 
 Debido a la reducida amplitud intrínseca de la señal de Stokes $V$, la relación señal-ruido (SNR) decae de manera acusada frente a perturbaciones menores. Adicionalmente, como este parámetro tiene valores negativos, no cumple la restricción de positividad del método de Richardson-Lucy puro, lo que obliga a aplicar desplazamientos (shifts) en la señal base que alteran la linealidad del problema físico subyacente. 
 
