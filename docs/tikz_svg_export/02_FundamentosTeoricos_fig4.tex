@@ -1,0 +1,48 @@
+\documentclass[tikz,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{eurosym}
+\usepackage{bbding}
+\usepackage{pifont}
+\usepackage{latexsym}
+\usepackage[spanish,es-nodecimaldot,es-tabla,es-lcroman,es-nosectiondot]{babel}
+\usetikzlibrary{arrows.meta,babel,positioning,shapes.geometric,calc}
+\usepackage{color}
+\begin{document}
+\begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        scale=1.5
+    ]
+        % Colores
+        \definecolor{axesgray}{RGB}{120, 120, 120}
+        \definecolor{Bfield}{RGB}{200, 50, 50}
+        \definecolor{oscpi}{RGB}{50, 150, 50}
+        \definecolor{oscsigmaplus}{RGB}{50, 50, 200}
+        \definecolor{oscsigmaminus}{RGB}{200, 150, 50}
+
+        % Ejes y campo magnético
+        \draw[->, color=axesgray] (0,-1.5) -- (0,2) node[above] {$z \parallel \vec{B}$};
+        \draw[->, color=axesgray] (-2,0) -- (2,0) node[right] {$y$};
+        \draw[->, color=axesgray] (-1.5,-1) -- (1.5,1) node[right] {$x$};
+        
+        \draw[->, color=Bfield, line width=2pt] (0.2,0.2) -- (0.2, 1.8) node[midway, right] {$\vec{B}$};
+
+        % Oscilador paralelo (Pi)
+        \draw[<->, color=oscpi, line width=1.5pt] (0,-1.2) -- (0,1.2) node[left] {$\nu_0$ ($\pi$)};
+        
+        % Osciladores perpendiculares (Sigma)
+        % Sigma +
+        \draw[->, color=oscsigmaplus, line width=1.2pt] (0,0) ellipse (1cm and 0.5cm) [rotate=20];
+        \node[color=oscsigmaplus] at (1.2, -0.4) {$\nu_0 + \nu_L$ ($\sigma_+$)};
+        
+        % Sigma -
+        \draw[<-, color=oscsigmaminus, line width=1.2pt, dashed] (0,0) ellipse (1.2cm and 0.6cm) [rotate=-20];
+        \node[color=oscsigmaminus] at (-1.4, 0.4) {$\nu_0 - \nu_L$ ($\sigma_-$)};
+
+    \end{tikzpicture}
+\end{document}

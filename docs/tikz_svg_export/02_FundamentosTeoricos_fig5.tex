@@ -1,0 +1,48 @@
+\documentclass[tikz,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{eurosym}
+\usepackage{bbding}
+\usepackage{pifont}
+\usepackage{latexsym}
+\usepackage[spanish,es-nodecimaldot,es-tabla,es-lcroman,es-nosectiondot]{babel}
+\usetikzlibrary{arrows.meta,babel,positioning,shapes.geometric,calc}
+\usepackage{color}
+\begin{document}
+\begin{tikzpicture}[
+        scale=1.2,
+        level/.style={line width=1.5pt},
+        transpi/.style={->, color=oscpi, line width=1pt, dashed},
+        transsigmaplus/.style={->, color=oscsigmaplus, line width=1pt},
+        transsigmaminus/.style={->, color=oscsigmaminus, line width=1pt}
+    ]
+        % Colores
+        \definecolor{oscpi}{RGB}{50, 150, 50}
+        \definecolor{oscsigmaplus}{RGB}{50, 50, 200}
+        \definecolor{oscsigmaminus}{RGB}{200, 150, 50}
+
+        % Nivel Superior J = 1 (Desdoblamiento en 3 niveles, M = -1, 0, 1)
+        \node at (-3, 3) {Nivel Superior ($J=1$)};
+        \draw[level] (-1, 3.5) -- (1, 3.5) node[right] {$M=1$};
+        \draw[level] (-1, 3) -- (1, 3) node[right] {$M=0$};
+        \draw[level] (-1, 2.5) -- (1, 2.5) node[right] {$M=-1$};
+        
+        % Nivel Inferior J = 0 (No se desdobla, M = 0)
+        \node at (-3, 0) {Nivel Inferior ($J=0$)};
+        \draw[level] (-1, 0) -- (1, 0) node[right] {$M=0$};
+
+        % Transiciones Sigma + (Delta M = 1) -> M_sup=1 a M_inf=0
+        \draw[transsigmaplus] (0.5, 3.5) -- (0.5, 0) node[midway, right] {$\sigma_+$};
+        
+        % Transiciones Pi (Delta M = 0) -> M_sup=0 a M_inf=0
+        \draw[transpi] (0, 3) -- (0, 0) node[midway, right] {$\pi$};
+        
+        % Transiciones Sigma - (Delta M = -1) -> M_sup=-1 a M_inf=0
+        \draw[transsigmaminus] (-0.5, 2.5) -- (-0.5, 0) node[midway, left] {$\sigma_-$};
+        
+    \end{tikzpicture}
+\end{document}

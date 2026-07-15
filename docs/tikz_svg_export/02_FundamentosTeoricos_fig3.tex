@@ -1,0 +1,74 @@
+\documentclass[tikz,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{eurosym}
+\usepackage{bbding}
+\usepackage{pifont}
+\usepackage{latexsym}
+\usepackage[spanish,es-nodecimaldot,es-tabla,es-lcroman,es-nosectiondot]{babel}
+\usetikzlibrary{arrows.meta,babel,positioning,shapes.geometric,calc}
+\usepackage{color}
+\begin{document}
+\begin{tikzpicture}[
+        x={(-0.5cm,-0.4cm)}, y={(0cm,1cm)}, z={(1cm,0cm)}, 
+        scale=1.4,
+        >=Stealth,
+        axis/.style={->, thick, color=gray!80}
+    ]
+        % Colores
+        \definecolor{myblue}{RGB}{30, 144, 255}
+        \definecolor{myred}{RGB}{220, 20, 60}
+        \definecolor{myresult}{RGB}{138, 43, 226} % Morado fuerte para la onda resultante
+
+        % Ejes
+        \draw[axis] (0,0,0) -- (3,0,0) node[anchor=north east, text=black] {$x$};
+        \draw[axis] (0,0,0) -- (0,2.5,0) node[anchor=south, text=black] {$y$};
+        \draw[axis] (0,0,0) -- (0,0,7.5) node[anchor=west, text=black] {$z$ (Propagación)};
+
+        % Parámetros de la onda
+        \def\freq{90}  % Frecuencia (90 grados por unidad de z)
+        \def\fase{45}  % Desfase de la onda y
+        \def\ampX{1.8}
+        \def\ampY{1.4}
+
+        % PLANO X-Z (Onda Ex)
+        \fill[myblue, opacity=0.1] (0,0,0) -- plot[domain=0:6.5, samples=150] ({\ampX*sin(\x*\freq)}, 0, \x) -- (0,0,6.5) -- cycle;
+        \draw[myblue, thick] plot[domain=0:6.5, samples=150] ({\ampX*sin(\x*\freq)}, 0, \x);
+        \foreach \z in {0.5, 1.5, 2.5, 3.5, 4.5, 5.5} {
+            \pgfmathsetmacro{\xval}{\ampX*sin(\z*\freq)}
+            \draw[->, myblue, thick] (0,0,\z) -- (\xval,0,\z);
+        }
+
+        % PLANO Y-Z (Onda Ey)
+        \fill[myred, opacity=0.1] (0,0,0) -- plot[domain=0:6.5, samples=150] (0, {\ampY*sin(\x*\freq + \fase)}, \x) -- (0,0,6.5) -- cycle;
+        \draw[myred, thick] plot[domain=0:6.5, samples=150] (0, {\ampY*sin(\x*\freq + \fase)}, \x);
+        \foreach \z in {0.25, 1.25, 2.25, 3.25, 4.25, 5.25} {
+            \pgfmathsetmacro{\yval}{\ampY*sin(\z*\freq + \fase)}
+            \draw[->, myred, thick] (0,0,\z) -- (0,\yval,\z);
+        }
+
+        % ONDA RESULTANTE (Hélice)
+        \draw[myresult, line width=1.5pt] plot[domain=0:6.5, samples=150] ({\ampX*sin(\x*\freq)}, {\ampY*sin(\x*\freq + \fase)}, \x);
+        
+        % Un par de vectores resultantes explícitos para ilustrar la superposición
+        \foreach \z in {0.85, 2.85, 4.85} {
+            \pgfmathsetmacro{\xval}{\ampX*sin(\z*\freq)}
+            \pgfmathsetmacro{\yval}{\ampY*sin(\z*\freq + \fase)}
+            % proyecciones punteadas
+            \draw[dashed, gray, opacity=0.5] (\xval,0,\z) -- (\xval,\yval,\z);
+            \draw[dashed, gray, opacity=0.5] (0,\yval,\z) -- (\xval,\yval,\z);
+            % vector suma
+            \draw[->, myresult, thick] (0,0,\z) -- (\xval,\yval,\z);
+        }
+
+        % Etiquetas
+        \node[myblue, font=\bfseries] at (\ampX, 0, 1) {$E_x$};
+        \node[myred, font=\bfseries] at (0, \ampY, 0.5) {$E_y$};
+        \node[myresult, font=\bfseries] at (1.5, 1.5, 0.85) {$\vec{E}$};
+
+    \end{tikzpicture}
+\end{document}

@@ -1,0 +1,32 @@
+\documentclass[tikz,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{eurosym}
+\usepackage{bbding}
+\usepackage{pifont}
+\usepackage{latexsym}
+\usepackage[spanish,es-nodecimaldot,es-tabla,es-lcroman,es-nosectiondot]{babel}
+\usetikzlibrary{arrows.meta,babel,positioning,shapes.geometric,calc}
+\usepackage{color}
+\begin{document}
+\begin{tikzpicture}[
+        node distance=0.8cm,
+        font=\small,
+        block/.style={rectangle, draw, fill=purple!10, text width=6.5cm, text centered, rounded corners, minimum height=1cm},
+        arrow/.style={-{Stealth[scale=1.0]}, thick}
+        ]
+        
+        \node[block] (step1) {\textbf{1. Inicialización:} \\ Estimación inicial $B_{\parallel}^0$};
+        \node[block, below=of step1] (step2) {\textbf{2. Modelo directo:} \\ Señal $V' = J B_{\parallel}^0$};
+        \node[block, below=of step2] (step3) {\textbf{3. Residuo:} \\ $\beta = V_{\mathrm{obs}} - V'$};
+        \node[block, below=of step3] (step4) {\textbf{4. Corrección:} \\ Resolver $J^T J \Delta B_{\parallel} = J^T \beta$};
+        
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+        \draw[arrow] (step3) -- (step4);
+    \end{tikzpicture}
+\end{document}

@@ -1,0 +1,34 @@
+\documentclass[tikz,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{eurosym}
+\usepackage{bbding}
+\usepackage{pifont}
+\usepackage{latexsym}
+\usepackage[spanish,es-nodecimaldot,es-tabla,es-lcroman,es-nosectiondot]{babel}
+\usetikzlibrary{arrows.meta,babel,positioning,shapes.geometric,calc}
+\usepackage{color}
+\begin{document}
+\begin{tikzpicture}[
+        node distance=0.8cm,
+        font=\small,
+        block/.style={rectangle, draw, fill=orange!10, text width=6.5cm, text centered, rounded corners, minimum height=1cm},
+        arrow/.style={-{Stealth[scale=1.0]}, thick}
+        ]
+        
+        \node[block] (step1) {\textbf{1. Simulación:} \\ $u^{(k)} \ast p + \epsilon$};
+        \node[block, below=of step1] (step2) {\textbf{2. Cociente escalar:} \\ $\frac{d_{obs}}{u^{(k)} \ast p}$};
+        \node[block, below=of step2] (step3) {\textbf{3. Corrección espacial:} \\ $\left( \frac{d_{obs}}{u^{(k)} \ast p} \right) \ast p^*$};
+        \node[block, below=of step3] (step4) {\textbf{4. Actualización:} \\ $u^{(k+1)} = u^{(k)} \cdot \text{Corrección}$};
+        
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+        \draw[arrow] (step3) -- (step4);
+        
+        \draw[arrow] (step4.west) -- ++(-0.5,0) |- node[anchor=east, pos=0.25, font=\footnotesize] {Siguiente iteración} (step1.west);
+    \end{tikzpicture}
+\end{document}
